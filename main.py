@@ -1,5 +1,6 @@
 import pygame, sys
 import world_builder
+import tile
 from creature import *
 from graphics import *
 from pygame.locals import (
@@ -22,6 +23,7 @@ SCREEN_HEIGHT = 800
 # Run the main game loop
 def main(args):
   screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
+  tileset = tile.TileSet()
 
   # Temporary: Create the world based on the max size to fit on the screen using tiles that are 64x32
   world_width = int(SCREEN_WIDTH / 64)
@@ -58,7 +60,7 @@ def main(args):
         if event.key == K_ESCAPE:
           running = False
 
-    draw_world(SCREEN_WIDTH, screen, world, player)
+    draw_world(SCREEN_WIDTH, screen, tileset, world, player)
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
 

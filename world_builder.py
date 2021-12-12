@@ -1,12 +1,25 @@
 import random, maze_gen, dungeon_gen
+from tile import Tile, WALL_TILESETS, FLOOR_TILESETS
 FLOOR = 0
 WALL = 1
 
 class World:
   def __init__(self, initial_array):
-    self.tiles = initial_array
-    self.width = len(self.tiles)
-    self.height = len(self.tiles[0])
+    self.width = len(initial_array)
+    self.height = len(initial_array[0])
+    self.tiles = self.finalize_tiles(initial_array)
+  
+  def finalize_tiles(self, initial_array):
+      tiles = []
+      for x in range(self.width):
+        col = []
+        for y in range(self.height):
+          if initial_array[x][y] == FLOOR:
+            col.append(Tile(True, random.randint(0, FLOOR_TILESETS-1)))
+          else:
+            col.append(Tile(False, random.randint(0, WALL_TILESETS-1)))
+        tiles.append(col)
+      return tiles
 
   def tile(self, x, y):
     return self.tiles[x][y]
@@ -17,7 +30,7 @@ class World:
   def is_floor(self, x, y):
     if x < 0 or y < 0 or x >= self.width or y >= self.height:
       return False
-    if self.tile(x,y) == FLOOR:
+    if self.tile(x,y).is_floor():
       return True
     return False
   
@@ -40,7 +53,10 @@ class World:
   def print_world(self):
     for y in range(self.height):
       for x in range(self.width):
-        print(str(self.tile(x,y)), end='')
+        if self.is_floor(x,y):
+          print(str(FLOOR), end='')
+        else:
+          print(str(WALL), end='')
       print()
     print()
 
