@@ -1,7 +1,7 @@
 import pygame, sys
+import world_builder
 from creature import *
 from graphics import *
-from world_builder import *
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -26,17 +26,16 @@ def main(args):
   # Temporary: Create the world based on the max size to fit on the screen using tiles that are 64x32
   world_width = int(SCREEN_WIDTH / 64)
   world_height = int(SCREEN_HEIGHT / 32)
-  world = make_empty_world(world_width, world_height)
 
   if "--no_paths" in args:
-    world = place_rooms(world, 9)
+    world = world_builder.place_rooms(6, world_width, world_height)
   elif "--maze" in args:
-    world = generate_maze(world, world_width, world_height)
-  else: # if "--dungeon" in args:     #For later if we add more world generation algorithms
-    world = generate_dungeon(world, world_width, world_height, 9)
-  print_world(world)
+    world = world_builder.generate_maze(world_width, world_height)
+  else: # Default to --dungeon
+    world = world_builder.generate_dungeon(world_width, world_height, 9)
+  world.print_world()
 
-  start_x, start_y = get_floor_tile(world)
+  start_x, start_y = world.get_floor_coordinate()
   player_icon = pygame.image.load("assets/player.png")
   player = Creature(start_x, start_y, player_icon)
   player.initialize_fov(world)
@@ -49,13 +48,13 @@ def main(args):
         sys.exit()
       if event.type == KEYDOWN:
         if event.key == K_RIGHT:
-          player.move(1, 0, world)
+          player.move(world, 1, 0)
         if event.key == K_LEFT:
-          player.move(-1, 0, world)
+          player.move(world, -1, 0)
         if event.key == K_UP:
-          player.move(0, -1, world)
+          player.move(world, 0, -1)
         if event.key == K_DOWN:
-          player.move(0, 1, world)
+          player.move(world, 0, 1)
         if event.key == K_ESCAPE:
           running = False
 

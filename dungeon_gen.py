@@ -64,10 +64,10 @@ class Edge:
 
 def find_all_hallways(rooms):
   all_edges = []
+  rooms2 = rooms.copy()
   for source in rooms:
-    for dest in rooms:
-      if source == dest:
-        continue
+    rooms2.remove(source)
+    for dest in rooms2:
       sx, sy = source
       dx, dy = dest
 
@@ -76,13 +76,11 @@ def find_all_hallways(rooms):
       all_edges.append(edge)
   return all_edges
 
+# Using Kruskal's Algorithm
 def find_good_hallways(rooms):
   all_edges = find_all_hallways(rooms)
   all_edges.sort(key=lambda x: x.length)
-  
-  # Kind of similar to Kruskal's algorithm
-  # 1. Keep picking the shortest edge that does not form a cycle until there are rooms-1 edges
-  # 2. To keep the dungeon fresh and not sucky, add the shortest edge that is not already in the graph to make 1 cycle
+
   edges = []
   i = 0
   while len(edges) < len(rooms)-1:
