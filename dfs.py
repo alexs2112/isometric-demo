@@ -26,7 +26,8 @@ def build_graph(vertices, edges):
       output.append(node)
   return output
 
-# Currently a little broken, can have unconnected parts
+# Currently a little broken, can have unconnected parts as sometimes cycles form
+# Much more pronounced on bigger worlds, fix this at some point
 def dfs(current, visited, parent):
   visited.append(current)
   for node in current.neighbors:

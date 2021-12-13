@@ -13,6 +13,12 @@ class Creature:
       self.y += dy
       self.update_fov(world)
 
+  def move_to(self, world, x, y):
+    if world.is_floor(x, y):
+      self.x = x
+      self.y = y
+      self.update_fov(world)
+
   def initialize_fov(self, world):
     self.fov = []
     world_width, world_height = world.dimensions()

@@ -1,38 +1,43 @@
 import pygame
+from helpers import get_tile_position
+from main import SCREEN_WIDTH, SCREEN_HEIGHT
 
 def initialize_screen(width, height):
   screen = pygame.display.set_mode((width, height))
   return screen
 
-def draw_world(screen_width, screen, tileset, world, player):
+def draw_world(offset_x, offset_y, screen, tileset, world, player):
   width, height = world.dimensions()
   for x in range(width):
     for y in range(height):
       if not player.has_seen(x, y):
         continue
+      sx, sy = get_tile_position(offset_x, offset_y, x * 32, y * 32)
+      if sx < -96 or sy < -64 or sx > SCREEN_WIDTH or sy > SCREEN_HEIGHT:
+        continue
 
       tileset_id = world.tile(x,y).tileset_id
 
       if world.is_floor(x,y):
-        screen.blit(tileset.get_floor(tileset_id), (get_isometric_position(screen_width, x * 32, y * 32)))
+        screen.blit(tileset.get_floor(tileset_id), (get_tile_position(offset_x, offset_y, x * 32, y * 32)))
         if x == player.x and y == player.y:
-          p_x, p_y = get_isometric_position(screen_width, x * 32, y * 32)
+          p_x, p_y = get_tile_position(offset_x, offset_y, x * 32, y * 32)
           screen.blit(player.icon, (p_x + 16, p_y - 16))
         continue
 
       # These need to be if statements in case its both NW and NE wall (corners)
       nw_wall = is_nw_wall(world, x, y)
       ne_wall = is_ne_wall(world, x, y)
-      iso_x, iso_y = get_isometric_position(screen_width, x * 32, y * 32)
+      iso_x, iso_y = get_tile_position(offset_x, offset_y, x * 32, y * 32)
       if is_outer_corner(world, x, y):
-        corner_x, corner_y = get_isometric_position(screen_width, x * 32 + 4, y * 32 - 20)
+        corner_x, corner_y = get_tile_position(offset_x, offset_y, x * 32 + 4, y * 32 - 20)
         screen.blit(tileset.get_corner(tileset_id), (corner_x, corner_y))
       if nw_wall:
         screen.blit(tileset.get_nw_wall(tileset_id), (iso_x + 32 - 8, iso_y - 16 - 4))
       if ne_wall:
         screen.blit(tileset.get_ne_wall(tileset_id), (iso_x, iso_y - 16 - 4))
       if nw_wall and ne_wall:
-        corner_x, corner_y = get_isometric_position(screen_width, x * 32 + 4, y * 32 - 20)
+        corner_x, corner_y = get_tile_position(offset_x, offset_y, x * 32 + 4, y * 32 - 20)
         screen.blit(tileset.get_corner(tileset_id), (corner_x, corner_y))
       # We probably want to handle corners on the left and right so that it looks like a corner when only one wall is shown
       # This might be a massive pain in the ass to how we are drawing walls, maybe redo it
@@ -57,11 +62,3 @@ def is_outer_corner(world, x, y):
       if world.is_wall(x+1,y) and world.is_wall(x,y+1):
         return True
   return False
-
-# Convert cartesian x and y coordinates to what their x and y should be when drawn to the screen
-def get_isometric_position(screen_width, cart_x, cart_y):
-  return int(screen_width/2) + cart_x - cart_y, int((cart_x + cart_y) / 2)
-
-# Convert isometric x and y on the screen to their cartesian equivalent
-def get_cartesian_position(screen_width, iso_x, iso_y):
-  return (2 * iso_y + iso_x) / 2 - int(screen_width/2), (2 * iso_y - iso_x) / 2

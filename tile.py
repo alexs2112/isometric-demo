@@ -2,7 +2,7 @@ import pygame, random
 from maze_gen import WALL
 
 # Keep track of the number of tilesets in floors.png and walls.png
-WALL_TILESETS = 2
+WALL_TILESETS = 3
 FLOOR_TILESETS = 3
 
 class Tile:

@@ -94,3 +94,12 @@ def place_rooms(rooms, width, height):
       for y in range(y_start, y_start + y_len):
         initial_array[x][y] = FLOOR
   return World(initial_array)
+
+def only_floors(width, height):
+  world = []
+  for _ in range(width):
+    col = []
+    for _ in range(height):
+      col.append(FLOOR)
+    world.append(col)
+  return World(world)
