@@ -26,9 +26,13 @@ class World:
   
   def dimensions(self):
     return self.width, self.height
+
+  def outside_world(self, x, y):
+    if x < 0 or y < 0 or x >= self.width or y >= self.height:
+      return True
   
   def is_floor(self, x, y):
-    if x < 0 or y < 0 or x >= self.width or y >= self.height:
+    if self.outside_world(x,y):
       return False
     if self.tile(x,y).is_floor():
       return True

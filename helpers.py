@@ -9,7 +9,7 @@ def get_tile_position(offset_x, offset_y, cart_x, cart_y):
   x, y = get_isometric_position(cart_x, cart_y)
   return x - offset_x, y - offset_y
 
-def get_clicked_tile(offset_x, offset_y, mouse_x, mouse_y):
+def get_mouse_tile(offset_x, offset_y, mouse_x, mouse_y):
   mouse_x += offset_x
   mouse_y += offset_y
   mouse_x -= 32         # Half the width of a tile

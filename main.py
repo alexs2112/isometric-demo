@@ -34,14 +34,14 @@ def main(args):
   running = True
   while running:
     screen.fill((0,0,0))
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    mouse_x, mouse_y = get_mouse_tile(offset_x, offset_y, mouse_x, mouse_y)
     for event in pygame.event.get():
       if event.type == QUIT:
         pygame.quit()
         sys.exit()
       if event.type == MOUSEBUTTONDOWN:
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        cart_x, cart_y = get_clicked_tile(offset_x, offset_y, mouse_x, mouse_y)
-        player.move_to(world, cart_x, cart_y)
+        player.move_to(world, mouse_x, mouse_y)
       if event.type == KEYDOWN:
         if event.key == K_SPACE:
           offset_x, offset_y = center_offset_on_player(player)
@@ -59,6 +59,7 @@ def main(args):
       offset_y += 15
 
     draw_world(offset_x, offset_y, screen, tileset, world, player)
+    draw_path_to_mouse(offset_x, offset_y, screen, world, player, mouse_x, mouse_y)
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
 

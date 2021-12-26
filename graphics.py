@@ -1,4 +1,5 @@
 import pygame
+from pathfinder import Path
 from helpers import get_tile_position
 from main import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -62,3 +63,16 @@ def is_outer_corner(world, x, y):
       if world.is_wall(x+1,y) and world.is_wall(x,y+1):
         return True
   return False
+
+highlight = pygame.image.load("assets/floor_highlights.png")
+def draw_path_to_mouse(offset_x, offset_y, screen, world, player, x, y):
+  if world.outside_world(x,y) or not (player.has_seen(x,y) and world.is_floor(x,y)):
+    return
+
+  path = Path(world, player.x, player.y, x, y).points
+  
+  # Temporary limitation on the length of the line
+  for tile in path:
+    tile_x, tile_y = tile
+    iso_x, iso_y = get_tile_position(offset_x, offset_y, tile_x * 32, tile_y * 32)
+    screen.blit(highlight, (iso_x, iso_y))
