@@ -26,10 +26,9 @@ SCREEN_HEIGHT = 800
 
 # Run the main game loop
 def main(args):
-  tileset = TileSet()
-  screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT, tileset)
+  screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
   world = create_world(args)
-  creatures = create_creatures(world, tileset)
+  creatures = create_creatures(world, screen.tileset)
   active_index = 0
   active = creatures[active_index]
   screen.center_offset_on_creature(active)
@@ -44,12 +43,12 @@ def main(args):
         pygame.quit()
         sys.exit()
       if event.type == MOUSEBUTTONDOWN:
-        active.move_to(world, mouse_x, mouse_y)
+        path = get_path_between_points(world, active.x, active.y, mouse_x, mouse_y)
+        active.move_along_path(world, path)
         world.update_fov(active)
       if event.type == KEYDOWN:
         if event.key == K_SPACE:
-          active_index = (active_index + 1) % len(creatures)
-          active = creatures[active_index]
+          active, active_index = get_next_active_creature(creatures, active_index)
           screen.center_offset_on_creature(active)
         if event.key == K_ESCAPE:
           running = False
@@ -70,6 +69,12 @@ def main(args):
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
 
+def get_next_active_creature(creatures, active_index):
+  active_index = (active_index + 1) % len(creatures)
+  active = creatures[active_index]
+  active.upkeep()
+  return active, active_index
+
 def create_world(args):
   world_width = 30
   world_height = 40
@@ -82,7 +87,9 @@ def create_world(args):
     world = world_builder.only_floors(world_width, world_height)
   else: # Default to --dungeon
     world = world_builder.generate_dungeon(world_width, world_height, 90)
-  world.print_world()
+
+  if '-v' in args:
+    world.print_world()
   
   return world
 
@@ -95,11 +102,12 @@ def create_creatures(world, tileset):
   for i in range(4):
     start_x, start_y = world.get_floor_coordinate()
     name = image_ids[i]
-    player_icon = tileset.get_creature(name)
-    player = Creature(name, player_icon, 5)
-    player.move_to(world, start_x, start_y)
-    creatures.append(player)
-    world.update_fov(player)
+    icon = tileset.get_creature(name)
+    creature = Creature(name, icon)
+    creature.set_misc_stats(3, 3, 5)
+    creature.move_to(world, start_x, start_y)
+    creatures.append(creature)
+    world.update_fov(creature)
   return creatures
 
 def start():

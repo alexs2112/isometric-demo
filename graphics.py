@@ -1,14 +1,22 @@
 import pygame
 from screen import Screen
+from tileset import TileSet
 from pathfinder import Path
-from helpers import get_tile_position, creature_location_dict
+from helpers import get_tile_position, creature_location_dict, get_path_between_points
 
-def initialize_screen(width, height, tileset):
+def initialize_screen(width, height):
+  tileset = TileSet()
   display = pygame.display.set_mode((width, height))
   return Screen(width, height, display, tileset)
 
 def draw_interface(screen, active):
-  screen.write(active.name + "'s Turn!", (12, screen.height - 64), screen.tileset.get_font())
+  screen.write(active.name + "'s Turn!", (12, screen.height - 72), screen.tileset.get_font())
+  move_string = str(active.ap) + "/" + str(active.max_ap)
+  if active.free_movement > 0:
+    move_string += " [" + str(active.free_movement) + "]"
+  elif active.ap == 0:
+    move_string += " (Press SPACE to end turn)"
+  screen.write(move_string, (12, screen.height - 42), screen.tileset.get_font())
 
 def draw_world(screen, world, creatures):
   width, height = world.dimensions()
@@ -71,11 +79,7 @@ def is_outer_corner(world, x, y):
 
 highlight = pygame.image.load("assets/floor_highlights.png")
 def draw_path_to_mouse(screen, world, active, x, y):
-  if world.outside_world(x,y) or not (world.is_floor(x,y) and world.has_seen(x,y)):
-    return
-
-  path = Path(world, active.x, active.y, x, y).points
-  
+  path = get_path_between_points(world, active.x, active.y, x, y)[:active.get_possible_distance()]
   for tile in path:
     tile_x, tile_y = tile
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)
