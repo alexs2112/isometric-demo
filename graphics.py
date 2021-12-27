@@ -2,7 +2,7 @@ import pygame
 from screen import Screen
 from tileset import TileSet
 from pathfinder import Path
-from helpers import get_tile_position, creature_location_dict, get_path_between_points
+from helpers import get_tile_position, get_path_between_points
 
 def initialize_screen(width, height):
   tileset = TileSet()
@@ -18,9 +18,9 @@ def draw_interface(screen, active):
     move_string += " (Press SPACE to end turn)"
   screen.write(move_string, (12, screen.height - 42), screen.tileset.get_font())
 
-def draw_world(screen, world, creatures):
+def draw_world(screen, world):
   width, height = world.dimensions()
-  creature_locations = creature_location_dict(creatures)
+  creature_locations = world.creature_location_dict()
   for x in range(width):
     for y in range(height):
       if not world.has_seen(x,y):
@@ -37,6 +37,10 @@ def draw_world(screen, world, creatures):
           creature = creature_locations[(x,y)]
           p_x, p_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
           screen.blit(creature.icon, (p_x + 16, p_y - 16))
+          healthbar = get_healthbar(screen.tileset, creature)
+          if healthbar:
+            screen.blit(healthbar, (p_x + 16, p_y + 16))
+
         continue
 
       # These need to be if statements in case its both NW and NE wall (corners)
@@ -77,9 +81,22 @@ def is_outer_corner(world, x, y):
         return True
   return False
 
+def get_healthbar(tileset, creature):
+  quarter = creature.max_hp / 4
+  if creature.hp == creature.max_hp:
+    return None
+  elif creature.hp > 3 * quarter:
+    return tileset.get_ui("health_full")
+  elif creature.hp > 2 * quarter:
+    return tileset.get_ui("health_most")
+  elif creature.hp > quarter:
+    return tileset.get_ui("health_half")
+  else:
+    return tileset.get_ui("health_quarter")
+
 highlight = pygame.image.load("assets/floor_highlights.png")
-def draw_path_to_mouse(screen, world, active, x, y):
-  path = get_path_between_points(world, active.x, active.y, x, y)[:active.get_possible_distance()]
+def draw_path_to_mouse(screen, world, creature, x, y):
+  path = creature.get_path_to(x, y)[:creature.get_possible_distance()]
   for tile in path:
     tile_x, tile_y = tile
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)

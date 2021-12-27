@@ -16,9 +16,12 @@ class TileSet:
     self.initialize_floors()
     self.initialize_walls()
 
-    # Creatures are stored by a tile id and the subsurface
+    # Creatures and ui elements are stored by a tile id and the subsurface
     self.creatures = {}
     self.initialize_creatures()
+
+    self.ui = {}
+    self.initialize_ui()
 
     self.fonts = [pygame.font.SysFont('Comic Sans MS', 30)]
 
@@ -36,6 +39,9 @@ class TileSet:
   
   def get_creature(self, image_id):
     return self.creatures[image_id] 
+
+  def get_ui(self, image_id):
+    return self.ui[image_id]
 
   def get_font(self):
     return self.fonts[0] 
@@ -88,4 +94,13 @@ class TileSet:
       y = int(i / 10) * image_height
       image = creatures_full.subsurface((x, y, image_width, image_height))
       self.creatures[image_ids[i]] = image
+    
+  def initialize_ui(self):
+    health_bars = pygame.image.load("assets/ui/health_bars.png")
+    image_width = 32
+    image_height = 6
+    health_ids = ["health_full", "health_most", "health_half", "health_quarter"]
+    for i in range(4):
+      image = health_bars.subsurface((0, i * image_height, image_width, image_height))
+      self.ui[health_ids[i]] = image
       

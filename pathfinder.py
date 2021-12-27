@@ -29,11 +29,14 @@ class Pathfinder:
     if child in self.costs:
       self.costs.pop(child)
   
-  def find_path(self, world, start, end, max_tries):
+  def find_path(self, creature, end, max_tries):
     # Might need to clear the class variables here
+    start = (creature.x, creature.y)
     self.open.append(start)
 
     for _ in range(max_tries):
+      if len(self.open) == 0:
+        break
       closest = self.get_closest_point(end)
       self.open.remove(closest)
       self.closed.append(closest)
@@ -41,7 +44,7 @@ class Pathfinder:
       if closest == end:
         return self.create_path(start, closest)
       else:
-        self.check_neighbours(world, end, closest)
+        self.check_neighbours(creature, end, closest)
     return self.create_path(start, closest)
   
   def get_closest_point(self, end):
@@ -51,10 +54,10 @@ class Pathfinder:
         closest = other
     return closest
   
-  def check_neighbours(self, world, end, closest):
+  def check_neighbours(self, creature, end, closest):
     for neighbour in self.get_neighbours(closest):
       if neighbour in self.closed or \
-        world.is_wall(neighbour[0], neighbour[1]) and neighbour != end:
+        not creature.can_enter(neighbour[0], neighbour[1]) and neighbour != end:
         continue
       
       if neighbour in self.open:
@@ -102,6 +105,6 @@ class Pathfinder:
     return path
 
 class Path:
-  def __init__(self, world, sx, sy, dx, dy):
+  def __init__(self, creature, dx, dy):
     pathfinder = Pathfinder()
-    self.points = pathfinder.find_path(world, (sx, sy), (dx,dy), 300)
+    self.points = pathfinder.find_path(creature, (dx,dy), 300)

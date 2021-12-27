@@ -10,6 +10,8 @@ class World:
     self.height = len(initial_array[0])
     self.tiles = self.finalize_tiles(initial_array)
     self.fov = FieldOfView(self.width, self.height)
+    self.creatures = []
+    self.active_index = 0
   
   def finalize_tiles(self, initial_array):
     from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
@@ -62,6 +64,36 @@ class World:
   
   def has_seen(self, x, y):
     return self.fov.contains(x,y)
+
+  def add_creature(self, creature):
+    self.creatures.append(creature)
+
+  def remove_creature(self, creature):
+    if creature in self.creatures:
+      i = self.creatures.index(creature)
+      if i <= self.active_index:
+        self.active_index -= 1
+      self.creatures.remove(creature)
+  
+  def get_active_creature(self):
+    return self.creatures[self.active_index]
+  
+  def get_next_active_creature(self):
+    self.active_index = (self.active_index + 1) % len(self.creatures)
+    active = self.get_active_creature()
+    active.upkeep()
+    return active
+  
+  def creature_location_dict(self):
+    locations = {}
+    for c in self.creatures:
+      locations[(c.x, c.y)] = c
+    return locations
+  
+  def get_creature_at_location(self, x, y):
+    for c in self.creatures:
+      if c.x == x and c.y == y:
+        return c
   
   # Simply print the world to the terminal
   def print_world(self):

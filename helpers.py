@@ -17,13 +17,6 @@ def get_mouse_tile(offset_x, offset_y, mouse_x, mouse_y):
   mouse_x -= 32         # Half the width of a tile
   return get_cartesian_position(mouse_x / 32, mouse_y / 32)
 
-# Return a dictionary of all creatures by {location: creature}
-def creature_location_dict(creatures):
-  locations = {}
-  for c in creatures:
-    locations[(c.x, c.y)] = c
-  return locations
-
 def get_path_between_points(world, sx, sy, dx, dy):
   if world.outside_world(dx,dy) or not (world.is_floor(dx,dy) and world.has_seen(dx,dy)):
     return []
