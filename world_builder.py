@@ -1,5 +1,6 @@
 import random, maze_gen, dungeon_gen
-from tile import Tile, WALL_TILESETS, FLOOR_TILESETS
+from tile import Tile
+from fov import FieldOfView
 FLOOR = 0
 WALL = 1
 
@@ -8,18 +9,20 @@ class World:
     self.width = len(initial_array)
     self.height = len(initial_array[0])
     self.tiles = self.finalize_tiles(initial_array)
+    self.fov = FieldOfView(self.width, self.height)
   
   def finalize_tiles(self, initial_array):
-      tiles = []
-      for x in range(self.width):
-        col = []
-        for y in range(self.height):
-          if initial_array[x][y] == FLOOR:
-            col.append(Tile(True, random.randint(0, FLOOR_TILESETS-1)))
-          else:
-            col.append(Tile(False, random.randint(0, WALL_TILESETS-1)))
-        tiles.append(col)
-      return tiles
+    from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
+    tiles = []
+    for x in range(self.width):
+      col = []
+      for y in range(self.height):
+        if initial_array[x][y] == FLOOR:
+          col.append(Tile(True, random.randint(0, FLOOR_TILESETS-1)))
+        else:
+          col.append(Tile(False, random.randint(0, WALL_TILESETS-1)))
+      tiles.append(col)
+    return tiles
 
   def tile(self, x, y):
     return self.tiles[x][y]
@@ -52,6 +55,13 @@ class World:
 
     # Honestly this shouldnt happen but right now the maze generator just sometimes just doesn't make a maze
     raise Exception("Could not find an empty floor tile in world!")
+
+  # Some wrapper methods around our field of view
+  def update_fov(self, creature):
+    self.fov.update(self, creature)
+  
+  def has_seen(self, x, y):
+    return self.fov.contains(x,y)
   
   # Simply print the world to the terminal
   def print_world(self):

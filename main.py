@@ -1,6 +1,7 @@
 import pygame, sys
 import world_builder
-import tile
+from fov import FieldOfView
+from tileset import TileSet
 from creature import *
 from graphics import *
 from helpers import *
@@ -25,41 +26,47 @@ SCREEN_HEIGHT = 800
 
 # Run the main game loop
 def main(args):
-  screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
-  tileset = tile.TileSet()
+  tileset = TileSet()
+  screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT, tileset)
   world = create_world(args)
-  player = create_player(args, world)
-  offset_x, offset_y = center_offset_on_player(player)
+  creatures = create_creatures(world, tileset)
+  active_index = 0
+  active = creatures[active_index]
+  screen.center_offset_on_creature(active)
 
   running = True
   while running:
-    screen.fill((0,0,0))
+    screen.display.fill((0,0,0))
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    mouse_x, mouse_y = get_mouse_tile(offset_x, offset_y, mouse_x, mouse_y)
+    mouse_x, mouse_y = get_mouse_tile(screen.offset_x, screen.offset_y, mouse_x, mouse_y)
     for event in pygame.event.get():
       if event.type == QUIT:
         pygame.quit()
         sys.exit()
       if event.type == MOUSEBUTTONDOWN:
-        player.move_to(world, mouse_x, mouse_y)
+        active.move_to(world, mouse_x, mouse_y)
+        world.update_fov(active)
       if event.type == KEYDOWN:
         if event.key == K_SPACE:
-          offset_x, offset_y = center_offset_on_player(player)
+          active_index = (active_index + 1) % len(creatures)
+          active = creatures[active_index]
+          screen.center_offset_on_creature(active)
         if event.key == K_ESCAPE:
           running = False
 
     keys = pygame.key.get_pressed()
     if keys[K_RIGHT]:
-      offset_x += 15
+      screen.offset_x += 15
     if keys[K_LEFT]:
-      offset_x -= 15
+      screen.offset_x -= 15
     if keys[K_UP]:
-      offset_y -= 15
+      screen.offset_y -= 15
     if keys[K_DOWN]:
-      offset_y += 15
+      screen.offset_y += 15
 
-    draw_world(offset_x, offset_y, screen, tileset, world, player)
-    draw_path_to_mouse(offset_x, offset_y, screen, world, player, mouse_x, mouse_y)
+    draw_world(screen, world, creatures)
+    draw_path_to_mouse(screen, world, active, mouse_x, mouse_y)
+    draw_interface(screen, active)
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
 
@@ -79,16 +86,21 @@ def create_world(args):
   
   return world
 
-def create_player(args, world):
-  start_x, start_y = world.get_floor_coordinate()
-  player_icon = pygame.image.load("assets/player.png")
-  player = Creature(start_x, start_y, player_icon, 5)
-  player.initialize_fov(world)
-  return player
+def create_creatures(world, tileset):
+  creatures = []
+  image_ids = [
+    'Edward', 'Goobert', 'Wizard', 'Harold'
+  ]
 
-def center_offset_on_player(player):
-  offset_x, offset_y = get_tile_position((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2), player.x * 32, player.y * 32)
-  return offset_x + 32, offset_y
+  for i in range(4):
+    start_x, start_y = world.get_floor_coordinate()
+    name = image_ids[i]
+    player_icon = tileset.get_creature(name)
+    player = Creature(name, player_icon, 5)
+    player.move_to(world, start_x, start_y)
+    creatures.append(player)
+    world.update_fov(player)
+  return creatures
 
 def start():
   args = sys.argv
@@ -112,7 +124,7 @@ def print_help():
     
   Controls:
    - Arrow keys to scroll the screen
-   - Spacebar to center screen on player
+   - Spacebar to control next creature
    - Left click to move
    - Escape to exit""")
   sys.exit(0)
