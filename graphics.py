@@ -1,24 +1,34 @@
 import pygame
+from creature import Creature
+from world_builder import World
 from screen import Screen
 from tileset import TileSet
-from pathfinder import Path
-from helpers import get_tile_position, get_path_between_points
+from helpers import get_tile_position
 
 def initialize_screen(width, height):
   tileset = TileSet()
   display = pygame.display.set_mode((width, height))
   return Screen(width, height, display, tileset)
 
-def draw_interface(screen, active):
-  screen.write(active.name + "'s Turn!", (12, screen.height - 72), screen.tileset.get_font())
-  move_string = str(active.ap) + "/" + str(active.max_ap)
+def draw_interface(screen, active: Creature):
+  line_base = 40
+  line_height = 36
+  line = 0
+  move_string = "AP: " + str(active.ap) + "/" + str(active.max_ap)
   if active.free_movement > 0:
     move_string += " [" + str(active.free_movement) + "]"
   elif active.ap == 0:
     move_string += " (Press SPACE to end turn)"
-  screen.write(move_string, (12, screen.height - 42), screen.tileset.get_font())
+  screen.write(move_string, (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
 
-def draw_world(screen, world):
+  line += 1
+  hp_string = "HP: " + str(active.hp) + "/" + str(active.max_hp)
+  screen.write(hp_string, (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
+
+  line += 1
+  screen.write(active.name + "'s Turn", (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
+
+def draw_world(screen, world: World):
   width, height = world.dimensions()
   creature_locations = world.creature_location_dict()
   for x in range(width):
@@ -40,7 +50,6 @@ def draw_world(screen, world):
           healthbar = get_healthbar(screen.tileset, creature)
           if healthbar:
             screen.blit(healthbar, (p_x + 16, p_y + 16))
-
         continue
 
       # These need to be if statements in case its both NW and NE wall (corners)
@@ -61,19 +70,19 @@ def draw_world(screen, world):
       # This might be a massive pain in the ass to how we are drawing walls, maybe redo it
 
 # Use the logic above to simply calculate the offset and position, then blit the tile.image to the screen
-def is_nw_wall(world, x, y):
+def is_nw_wall(world: World, x, y):
   width, _ = world.dimensions()
   if x >= width - 1 or x < 0:
     return False
   return world.is_wall(x,y) and world.is_floor(x+1,y)
 
-def is_ne_wall(world, x, y):
+def is_ne_wall(world: World, x, y):
   _, height = world.dimensions()
   if y >= height-1 or y < 0:
     return False
   return world.is_wall(x,y) and world.is_floor(x,y+1)
 
-def is_outer_corner(world, x, y):
+def is_outer_corner(world: World, x, y):
   width, height = world.dimensions()
   if y < height - 1 and x < width - 1:
     if world.is_wall(x,y) and world.is_floor(x+1,y+1):
@@ -81,7 +90,7 @@ def is_outer_corner(world, x, y):
         return True
   return False
 
-def get_healthbar(tileset, creature):
+def get_healthbar(tileset: TileSet, creature: Creature):
   quarter = creature.max_hp / 4
   if creature.hp == creature.max_hp:
     return None
@@ -95,7 +104,7 @@ def get_healthbar(tileset, creature):
     return tileset.get_ui("health_quarter")
 
 highlight = pygame.image.load("assets/floor_highlights.png")
-def draw_path_to_mouse(screen, world, creature, x, y):
+def draw_path_to_mouse(screen, creature, x, y):
   path = creature.get_path_to(x, y)[:creature.get_possible_distance()]
   for tile in path:
     tile_x, tile_y = tile

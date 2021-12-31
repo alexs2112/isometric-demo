@@ -15,8 +15,8 @@ class FieldOfView(list):
     return self[x][y]
 
   def update(self, world, creature):
-    for x in range(-creature.vision_radius, creature.vision_radius):
-      for y in range(-creature.vision_radius, creature.vision_radius):
+    for x in range(-creature.vision_radius, creature.vision_radius + 1):
+      for y in range(-creature.vision_radius, creature.vision_radius + 1):
         to_x, to_y = creature.x + x, creature.y + y
         if to_x < 0 or to_y < 0 or to_x >= self.width or to_y >= self.height:
           continue

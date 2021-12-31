@@ -1,11 +1,17 @@
 import fov, math
 from pathfinder import Path
+from world_builder import World
 
 class Creature:
-  def __init__(self, name, icon, world):
+  def __init__(self, name, icon, faction, world: World):
     self.name = name
     self.icon = icon
+    self.faction = faction
     self.world = world
+    self.ai = None
+
+  def set_ai(self, ai):
+    self.ai = ai
 
   def set_stats(self, max_hp, attack):
     self.max_hp = max_hp
@@ -22,6 +28,17 @@ class Creature:
   def upkeep(self):
     self.ap = self.max_ap
     self.free_movement = 0
+
+  def take_turn(self):
+    self.upkeep()
+    if self.ai:
+      self.ai.take_turn(self.world)
+
+  def is_player(self):
+    if self.faction == "Player":
+      return True
+    else:
+      return False
 
   def can_enter(self, x, y):
     if self.world.is_floor(x, y) and not self.world.get_creature_at_location(x,y):
@@ -52,9 +69,13 @@ class Creature:
     distance = len(path)
     if distance == 0:
       return
-    for (x,y) in path:
+    if self.is_player():
+      for (x,y) in path:
+        self.move_to(x, y)
+        self.world.update_fov(self)
+    else:
+      x,y = path[-1]
       self.move_to(x, y)
-      self.world.update_fov(self)
     remaining_distance = max(0, distance - self.free_movement)
     self.free_movement = max(0, self.free_movement - distance)
     self.ap -= math.ceil(remaining_distance / self.speed)

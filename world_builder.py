@@ -11,6 +11,7 @@ class World:
     self.tiles = self.finalize_tiles(initial_array)
     self.fov = FieldOfView(self.width, self.height)
     self.creatures = []
+    self.players = []   # A subset of creatures
     self.active_index = 0
     self.rooms = []
     self.start_room = None
@@ -87,6 +88,8 @@ class World:
 
   def add_creature(self, creature):
     self.creatures.append(creature)
+    if creature.is_player():
+      self.players.append(creature)
 
   def remove_creature(self, creature):
     if creature in self.creatures:
@@ -94,6 +97,8 @@ class World:
       if i <= self.active_index:
         self.active_index -= 1
       self.creatures.remove(creature)
+    if creature.is_player() and creature in self.players:
+      self.players.remove(creature)
   
   def get_active_creature(self):
     return self.creatures[self.active_index]
@@ -101,7 +106,6 @@ class World:
   def get_next_active_creature(self):
     self.active_index = (self.active_index + 1) % len(self.creatures)
     active = self.get_active_creature()
-    active.upkeep()
     return active
   
   def creature_location_dict(self):

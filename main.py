@@ -1,7 +1,6 @@
 import pygame, sys, random
 import world_builder
-from fov import FieldOfView
-from tileset import TileSet
+from creature_factory import CreatureFactory
 from creature import *
 from graphics import *
 from helpers import *
@@ -28,7 +27,8 @@ SCREEN_HEIGHT = 800
 def main(args):
   screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
   world = create_world(args)
-  create_creatures(world, screen.tileset)
+  creature_factory = CreatureFactory(world, screen.tileset)
+  create_creatures(world, creature_factory)
   active = world.get_active_creature()
   screen.center_offset_on_creature(active)
 
@@ -51,8 +51,14 @@ def main(args):
           active.attack_creature(c)
       if event.type == KEYDOWN:
         if event.key == K_SPACE:
-          active = world.get_next_active_creature()
-          screen.center_offset_on_creature(active)
+          active = take_turns(world)
+          if active:
+            screen.center_offset_on_creature(active)
+          else:
+            # Once we have more functional screens, we will want a game over screen here instead of a force quit
+            print("You Lose!")
+            pygame.quit()
+            sys.exit()
         if event.key == K_ESCAPE:
           running = False
 
@@ -67,10 +73,20 @@ def main(args):
       screen.offset_y += 15
 
     draw_world(screen, world)
-    draw_path_to_mouse(screen, world, active, mouse_x, mouse_y)
+    draw_path_to_mouse(screen, active, mouse_x, mouse_y)
     draw_interface(screen, active)
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
+
+# Move to the next active creature and keep taking their turn until it is a human player
+def take_turns(world: world_builder.World):
+  while len(world.creatures) > 0:
+    if len(world.players) == 0:
+      return None
+    active = world.get_next_active_creature()
+    active.take_turn()
+    if not active.ai:
+      return active
 
 def create_world(args):
   world_width = 30
@@ -86,36 +102,51 @@ def create_world(args):
   elif "--no_walls" in args:
     world = world_builder.only_floors(world_width, world_height)
   else: # Default to --dungeon
-    world = world_builder.generate_dungeon(world_width, world_height, 90)
+    world = world_builder.generate_dungeon(world_width, world_height, 15)
 
   if '-v' in args:
     world.print_world()
   
   return world
 
-def create_creatures(world, tileset):
-  image_ids = [
-    'Edward', 'Goobert', 'Wizard', 'Harold'
-  ]
-
+def create_players(world: world_builder.World, cf: CreatureFactory):
   if world.start_room:
     room = world.start_room
-  else:
+  elif world.rooms:
     room = random.choice(world.rooms)
+  else:
+    room = None
 
-  for i in range(4):
+  if '--solo' in sys.argv:
+    player_num = 1
+  else:
+    player_num = 4
+  for i in range(player_num):
     if room:
-      start_x, start_y = world.get_random_floor_in_room(room)
+      x, y = world.get_random_floor_in_room(room)
     else:
-      start_x, start_y = world.get_floor_coordinate()
-    name = image_ids[i]
-    icon = tileset.get_creature(name)
-    creature = Creature(name, icon, world)
-    creature.set_stats(max_hp=10, attack=3)
-    creature.set_misc_stats(max_ap=3, speed=3, vision_radius=5)
-    creature.move_to(start_x, start_y)
-    world.add_creature(creature)
-    world.update_fov(creature)
+      x, y = world.get_floor_coordinate()
+    if i == 0:
+      cf.new_edward(x,y)
+    elif i == 1:
+      cf.new_goobert(x,y)
+    elif i == 2:
+      cf.new_wizard(x,y)
+    elif i == 3:
+      cf.new_harold(x,y)
+
+def create_creatures(world: world_builder.World, cf: CreatureFactory):
+  create_players(world, cf)
+  for room in world.rooms:
+    if room == world.start_room:
+      continue
+
+    for _ in range(3):
+      x, y = world.get_random_floor_in_room(room)
+      if random.random() < 0.5:
+        cf.new_mushroom(x,y)
+      else:
+        cf.new_skeleton(x,y)
 
 def start():
   args = sys.argv
@@ -130,9 +161,12 @@ def print_help():
   print("""Isometric Prototype
   Options:
     -h, --help
+    -v
+    --solo
   
   World Types:
     --dungeon           (default)
+    --small
     --maze
     --no_paths
     --no_walls
@@ -140,7 +174,7 @@ def print_help():
   Controls:
    - Arrow keys to scroll the screen
    - Spacebar to control next creature
-   - Left click to move
+   - Left click to move and attack
    - Escape to exit""")
   sys.exit(0)
 

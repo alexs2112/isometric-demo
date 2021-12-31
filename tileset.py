@@ -1,25 +1,21 @@
 import pygame
 
 # Keep track of how many are even available in the files
-WALL_TILESETS = 5
-FLOOR_TILESETS = 3
+WALL_TILESETS = 6
+FLOOR_TILESETS = 5
 
 class TileSet:
   def __init__(self):
-    self.walls_full = pygame.image.load("assets/walls.png")
-    self.floors_full = pygame.image.load("assets/floors.png")
     self.corners = []
     self.ne_walls = []
     self.nw_walls = []
     self.floors = []
-    self.initialize_corners()   # Put corners and walls in one to load images in the methods instead of init
     self.initialize_floors()
     self.initialize_walls()
 
     # Creatures and ui elements are stored by a tile id and the subsurface
     self.creatures = {}
     self.initialize_creatures()
-
     self.ui = {}
     self.initialize_ui()
 
@@ -46,37 +42,39 @@ class TileSet:
   def get_font(self):
     return self.fonts[0] 
 
-  def initialize_corners(self):
+  def initialize_walls(self):
+    walls_full = pygame.image.load("assets/walls.png")
+    image_width = 40
+    image_height = 60
+    offset_x_ne = 0
+    offset_x_nw = image_width
+    offset_y = 64
+    for i in range(WALL_TILESETS):
+      ym = i % 6
+      xm = int(i / 6) * 96  # Width of both walls + corner
+      ne = walls_full.subsurface((offset_x_ne + xm, offset_y * ym, image_width, image_height))
+      nw = walls_full.subsurface((offset_x_nw + xm, offset_y * ym, image_width, image_height))
+      self.ne_walls.append(ne)
+      self.nw_walls.append(nw)
+    
     offset_x = 80
     offset_y = 64
     image_width = 16
     image_height = 48
-
     for i in range(WALL_TILESETS):
-      corner = self.walls_full.subsurface((offset_x, offset_y * i, image_width, image_height))
+      ym = i % 6
+      xm = int(i / 6) * 96
+      corner = walls_full.subsurface((offset_x + xm, offset_y * ym, image_width, image_height))
       self.corners.append(corner)
-
-  def initialize_walls(self):
-    image_width = 40
-    image_height = 60
-
-    offset_x_ne = 0
-    offset_x_nw = image_width
-    offset_y = 64
-
-    for i in range(WALL_TILESETS):
-      ne = self.walls_full.subsurface((offset_x_ne, offset_y * i, image_width, image_height))
-      nw = self.walls_full.subsurface((offset_x_nw, offset_y * i, image_width, image_height))
-      self.ne_walls.append(ne)
-      self.nw_walls.append(nw)
 
 
   def initialize_floors(self):
+    floors_full = pygame.image.load("assets/floors.png")
     image_width = 64
     image_height = 40
 
     for i in range(FLOOR_TILESETS):
-      floor = self.floors_full.subsurface((0, image_height * i, image_width, image_height))
+      floor = floors_full.subsurface((0, image_height * i, image_width, image_height))
       self.floors.append(floor)
 
   def initialize_creatures(self):
@@ -86,7 +84,7 @@ class TileSet:
     
     # Images are stored in rows of 10, this will hopefully keep it organized
     image_ids = [
-      'Edward', 'Goobert', 'Wizard', 'Harold'
+      'Edward', 'Goobert', 'Wizard', 'Harold', 'Mushroom', 'Skeleton'
     ]
 
     for i in range(len(image_ids)):
