@@ -12,6 +12,12 @@ class World:
     self.fov = FieldOfView(self.width, self.height)
     self.creatures = []
     self.active_index = 0
+    self.rooms = []
+    self.start_room = None
+    self.end_room = None
+
+  def set_rooms(self, rooms):
+    self.rooms = rooms
   
   def finalize_tiles(self, initial_array):
     from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
@@ -52,10 +58,24 @@ class World:
       attempts -= 1
       x = random.randint(0, self.width-1)
       y = random.randint(0, self.height-1)
-      if self.is_floor(x,y):
+      if self.is_floor(x,y) and not self.get_creature_at_location(x,y):
         return x, y
 
     # Honestly this shouldnt happen but right now the maze generator just sometimes just doesn't make a maze
+    raise Exception("Could not find an empty floor tile in world!")
+  
+  def get_random_floor_in_room(self, room):
+    x1, y1 = room.p1
+    x2, y2 = room.p2
+
+    attempts = 100
+    while attempts > 0:
+      attempts -= 1
+      x = random.randint(x1, x2)
+      y = random.randint(y1, y2)
+      if self.is_floor(x,y) and not self.get_creature_at_location(x,y):
+        return x, y
+
     raise Exception("Could not find an empty floor tile in world!")
 
   # Some wrapper methods around our field of view
@@ -106,6 +126,17 @@ class World:
       print()
     print()
 
+class Room:
+  def __init__(self, id, origin, p1, p2):
+    self.id = id
+    self.origin = origin
+    self.p1 = p1          # The top left corner of the room
+    self.p2 = p2          # The bottom right corner of the room
+    self.neighbors = []
+  
+  def add_neighbor(self, room):
+    self.neighbors.append(room)
+
 # Fill a world of the specified dimensions with walls and return it
 def make_empty_initial_array(width, height):
   world = []
@@ -121,11 +152,15 @@ def generate_maze(width, height):
   initial_array = maze_gen.generate_maze(initial_array, width, height)
   return World(initial_array)
 
+# Will generate at most the number of rooms specified, constrained by world size
 def generate_dungeon(width, height, rooms):
-  # Will generate at most the number of rooms specified, constrained by world size
   initial_array = make_empty_initial_array(width, height)
-  initial_array = dungeon_gen.generate_dungeon(initial_array, width, height, rooms)
-  return World(initial_array)
+  initial_array, rooms, start_room, end_room = dungeon_gen.generate_dungeon(initial_array, width, height, rooms)
+  world = World(initial_array)
+  world.set_rooms(rooms)
+  world.start_room = start_room
+  world.end_room = end_room
+  return world
 
 # A simple algorithm, place a bunch of random squares in a world and return it
 def place_rooms(rooms, width, height):

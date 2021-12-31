@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 import world_builder
 from fov import FieldOfView
 from tileset import TileSet
@@ -75,6 +75,9 @@ def main(args):
 def create_world(args):
   world_width = 30
   world_height = 40
+  if "--small" in args:
+    world_width = 25
+    world_height = 25
 
   if "--no_paths" in args:
     world = world_builder.place_rooms(6, world_width, world_height)
@@ -95,8 +98,16 @@ def create_creatures(world, tileset):
     'Edward', 'Goobert', 'Wizard', 'Harold'
   ]
 
+  if world.start_room:
+    room = world.start_room
+  else:
+    room = random.choice(world.rooms)
+
   for i in range(4):
-    start_x, start_y = world.get_floor_coordinate()
+    if room:
+      start_x, start_y = world.get_random_floor_in_room(room)
+    else:
+      start_x, start_y = world.get_floor_coordinate()
     name = image_ids[i]
     icon = tileset.get_creature(name)
     creature = Creature(name, icon, world)
