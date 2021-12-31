@@ -18,7 +18,7 @@ def draw_interface(screen, active: Creature):
   if active.free_movement > 0:
     move_string += " [" + str(active.free_movement) + "]"
   elif active.ap == 0:
-    move_string += " (Press SPACE to end turn)"
+    move_string += " (Press ENTER to end turn)"
   screen.write(move_string, (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
 
   line += 1

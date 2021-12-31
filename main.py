@@ -11,6 +11,7 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     K_SPACE,
+    K_ENTER,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT
@@ -51,6 +52,8 @@ def main(args):
           active.attack_creature(c)
       if event.type == KEYDOWN:
         if event.key == K_SPACE:
+          screen.center_offset_on_creature(active)
+        if event.key == K_ENTER:
           active = take_turns(world)
           if active:
             screen.center_offset_on_creature(active)
@@ -144,9 +147,10 @@ def create_creatures(world: world_builder.World, cf: CreatureFactory):
     for _ in range(3):
       x, y = world.get_random_floor_in_room(room)
       if random.random() < 0.5:
-        cf.new_mushroom(x,y)
+        c = cf.new_mushroom(x,y)
       else:
-        cf.new_skeleton(x,y)
+        c = cf.new_skeleton(x,y)
+      c.set_home_room(room)
 
 def start():
   args = sys.argv
@@ -173,7 +177,8 @@ def print_help():
     
   Controls:
    - Arrow keys to scroll the screen
-   - Spacebar to control next creature
+   - Spacebar to center screen on active player
+   - Enter to end turn
    - Left click to move and attack
    - Escape to exit""")
   sys.exit(0)

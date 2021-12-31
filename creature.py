@@ -9,9 +9,13 @@ class Creature:
     self.faction = faction
     self.world = world
     self.ai = None
+    self.home_room = None
 
   def set_ai(self, ai):
     self.ai = ai
+
+  def set_home_room(self, room):
+    self.home_room = room
 
   def set_stats(self, max_hp, attack):
     self.max_hp = max_hp
