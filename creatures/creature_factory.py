@@ -1,7 +1,7 @@
-import ai
-from creature import Creature
+import creatures.ai as ai
+from creatures.creature import Creature
 from tileset import TileSet
-from world_builder import World
+from world.world_builder import World
 
 class CreatureFactory:
   def __init__(self, world: World, tileset: TileSet):

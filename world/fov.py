@@ -1,4 +1,4 @@
-import line
+import helpers
 
 # A 2d list that simply stores True if a tile has been seen, or False if it has not
 class FieldOfView(list):
@@ -50,7 +50,7 @@ def can_see(world, sx, sy, dx, dy, radius):
     if (sx - dx) * (sx - dx) + (sy - dy) * (sy - dy) > radius * radius:
       return False
 
-    l = line.get_line(sx, sy, dx, dy)
+    l = helpers.get_line(sx, sy, dx, dy)
     for p_x, p_y in l:
       if world.is_floor(p_x, p_y) or (p_x == dx and p_y == dy):
         continue

@@ -1,6 +1,8 @@
-import random, maze_gen, dungeon_gen
-from tile import Tile
-from fov import FieldOfView
+import random
+import world.maze_gen as maze_gen
+import world.dungeon_gen as dungeon_gen
+from world.tile import Tile
+from world.fov import FieldOfView
 FLOOR = 0
 WALL = 1
 

@@ -1,5 +1,5 @@
-from world_builder import World
-from creature import Creature
+from world.world_builder import World
+from creatures.creature import Creature
 
 # Basic class to override
 class AI:

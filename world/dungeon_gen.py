@@ -1,4 +1,5 @@
-import random, math, line, dfs
+import random, math, helpers
+import world.dfs as dfs
  
 FLOOR = 0
 WALL = 1
@@ -28,7 +29,7 @@ def create_rooms(world, width, height, amount):
 # Return False, None if the new room overlaps with an existing room
 # Return True, (x,y) if the room can be placed
 def try_to_place_room(world, width, height, room_id):
-  from world_builder import Room    
+  from world.world_builder import Room    
   # This is really awkward import to have here, otherwise we need to have Room in dungeon_gen.py which doesnt
   # make a ton of sense, or we have a circular import and everything breaks
   # Fix this when we come up with a better solution
@@ -83,7 +84,7 @@ def find_all_hallways(rooms):
       sx, sy = source
       dx, dy = dest
 
-      path = line.get_line_no_diagonal(sx, sy, dx, dy)
+      path = helpers.get_line_no_diagonal(sx, sy, dx, dy)
       edge = Edge(source, dest, path, len(path))
       all_edges.append(edge)
   return all_edges

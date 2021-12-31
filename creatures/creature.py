@@ -1,6 +1,6 @@
-import fov, math
-from pathfinder import Path
-from world_builder import World
+import world.fov as fov, math
+from creatures.pathfinder import Path
+from world.world_builder import World
 
 class Creature:
   def __init__(self, name, icon, faction, world: World):

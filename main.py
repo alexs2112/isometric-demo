@@ -1,8 +1,7 @@
 import pygame, sys, random
-import world_builder
-from creature_factory import CreatureFactory
-from creature import *
-from graphics import *
+import world.world_builder as world_builder
+from creatures.creature_factory import CreatureFactory
+from screens.main_graphics import *
 from helpers import *
 from pygame.locals import (
     K_UP,
@@ -11,7 +10,7 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     K_SPACE,
-    K_ENTER,
+    K_RETURN,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT
@@ -53,7 +52,7 @@ def main(args):
       if event.type == KEYDOWN:
         if event.key == K_SPACE:
           screen.center_offset_on_creature(active)
-        if event.key == K_ENTER:
+        if event.key == K_RETURN:
           active = take_turns(world)
           if active:
             screen.center_offset_on_creature(active)

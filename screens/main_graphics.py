@@ -1,7 +1,7 @@
 import pygame
-from creature import Creature
-from world_builder import World
-from screen import Screen
+from creatures.creature import Creature
+from world.world_builder import World
+from screens.screen import Screen
 from tileset import TileSet
 from helpers import get_tile_position
 
