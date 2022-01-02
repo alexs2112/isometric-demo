@@ -1,8 +1,10 @@
 import helpers
+from tileset import TileSet
+from pygame import Surface
 
 # A simple object to hold a bunch of useful information for the screen
 class Screen:
-  def __init__(self, width, height, display, tileset):
+  def __init__(self, width, height, display: Surface, tileset: TileSet):
     self.width = width
     self.height = height
     self.display = display
@@ -21,3 +23,9 @@ class Screen:
   def write(self, text, coords, font, colour=(255,255,255)):
     text_surface = font.render(text, False, colour)
     self.display.blit(text_surface, coords)
+  
+  def write_centered(self, text, coords, font, colour=(255,255,255)):
+    width, _ = font.size(text)
+    (x,y) = coords
+    x -= width / 2
+    self.write(text, (x,y), font, colour)

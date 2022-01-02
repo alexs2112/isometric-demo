@@ -10,25 +10,53 @@ def initialize_screen(width, height):
   display = pygame.display.set_mode((width, height))
   return Screen(width, height, display, tileset)
 
-def draw_interface(screen, active: Creature):
-  line_base = 40
-  line_height = 36
-  line = 0
-  move_string = "AP: " + str(active.ap) + "/" + str(active.max_ap)
-  if active.free_movement > 0:
-    move_string += " [" + str(active.free_movement) + "]"
-  elif active.ap == 0:
-    move_string += " (Press ENTER to end turn)"
-  screen.write(move_string, (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
+def draw_interface(screen: Screen, active: Creature):
+  start_x = screen.width - 256
+  start_y = 0
+  screen.blit(screen.tileset.get_ui("player_base_stats"), (start_x, start_y))
 
-  line += 1
-  hp_string = "HP: " + str(active.hp) + "/" + str(active.max_hp)
-  screen.write(hp_string, (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
+  hp_x = start_x
+  hp_y = start_y
+  percentage = active.hp / active.max_hp
+  pygame.draw.rect(screen.display, screen.tileset.HP_RED, (hp_x + 6, hp_y + 6, int(244 * percentage), 36))
+  hp_string = str(active.hp) + "/" + str(active.max_hp)
+  screen.write_centered(hp_string, (hp_x + 128, hp_y + 10), screen.tileset.get_font())
 
-  line += 1
-  screen.write(active.name + "'s Turn", (12, screen.height - line_base - line_height * line), screen.tileset.get_font())
+  mana_x = hp_x
+  mana_y = hp_y + 46
+  if active.mana > 0:
+    percentage = active.mana / active.max_mana
+    pygame.draw.rect(screen.display, screen.tileset.MANA_BLUE, (mana_x + 5, mana_y + 6, int(246 * percentage), 23))
+  mana_string = str(active.mana) + "/" + str(active.max_mana)
+  screen.write_centered(mana_string, (mana_x + 128, mana_y + 6), screen.tileset.get_font(20))
 
-def draw_world(screen, world: World):
+  p_armor_x = mana_x
+  armor_y = mana_y + 32
+  p_armor = active.p_armor
+  rem = active.p_armor_cap - p_armor
+  for i in range(p_armor):
+    screen.blit(screen.tileset.get_ui("armor_physical"), (p_armor_x + 5 + i * 20, armor_y + 4))
+  for i in range(rem):
+    screen.blit(screen.tileset.get_ui("armor_used"), (p_armor_x + 5 + p_armor * 20 + i * 20, armor_y + 4))
+  m_armor_x = mana_x + 128
+  m_armor = active.m_armor
+  rem = active.m_armor_cap - m_armor
+  for i in range(m_armor):
+    screen.blit(screen.tileset.get_ui("armor_magical"), (m_armor_x + 3 + i * 20, armor_y + 4))
+  for i in range(rem):
+    screen.blit(screen.tileset.get_ui("armor_used"), (m_armor_x + 3 + m_armor * 20 + i * 20, armor_y + 4))
+
+  ap_x = p_armor_x
+  ap_y = armor_y + 32
+  for i in range(active.ap):
+    screen.blit(screen.tileset.get_ui("ap_active"), (ap_x + 3 + i * 25, ap_y + 5))
+  for i in range(active.max_ap - active.ap):
+    screen.blit(screen.tileset.get_ui("ap_inactive"), (ap_x + 3 + active.ap * 25 + i * 25, ap_y + 5))
+  screen.write_centered(str(active.free_movement), (ap_x + 238, ap_y + 6), screen.tileset.get_font(20))
+
+  screen.write(active.name + "'s Turn", (12, screen.height - 30), screen.tileset.get_font())
+
+def draw_world(screen: Screen, world: World):
   width, height = world.dimensions()
   creature_locations = world.creature_location_dict()
   for x in range(width):
@@ -48,8 +76,12 @@ def draw_world(screen, world: World):
           p_x, p_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
           screen.blit(creature.icon, (p_x + 16, p_y - 16))
           healthbar = get_healthbar(screen.tileset, creature)
+          for i in range(creature.p_armor):
+            screen.blit(screen.tileset.get_ui("armor_physical_bar"), (p_x + 16 + 4 * i, p_y + 16))
+          for i in range(creature.m_armor):
+            screen.blit(screen.tileset.get_ui("armor_magical_bar"), (p_x + 48 - 4 * (i+1), p_y + 16))
           if healthbar:
-            screen.blit(healthbar, (p_x + 16, p_y + 16))
+            screen.blit(healthbar, (p_x + 16, p_y + 20))
         continue
 
       # These need to be if statements in case its both NW and NE wall (corners)
@@ -103,10 +135,9 @@ def get_healthbar(tileset: TileSet, creature: Creature):
   else:
     return tileset.get_ui("health_quarter")
 
-highlight = pygame.image.load("assets/floor_highlights.png")
-def draw_path_to_mouse(screen, creature, x, y):
+def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   path = creature.get_path_to(x, y)[:creature.get_possible_distance()]
   for tile in path:
     tile_x, tile_y = tile
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)
-    screen.blit(highlight, (iso_x, iso_y))
+    screen.blit(screen.tileset.get_ui("floor_highlight_green"), (iso_x, iso_y))

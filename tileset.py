@@ -13,13 +13,18 @@ class TileSet:
     self.initialize_floors()
     self.initialize_walls()
 
-    # Creatures and ui elements are stored by a tile id and the subsurface
     self.creatures = {}
     self.initialize_creatures()
     self.ui = {}
     self.initialize_ui()
 
-    self.fonts = [pygame.font.SysFont('Comic Sans MS', 30)]
+    # Fonts do not have to be initialized, they are dynamically loaded when needed
+    self.fonts = {}
+
+    self.HP_RED = (172, 50, 50)
+    self.MANA_BLUE = (99, 155, 255)
+    self.PHYSICAL_YELLOW = (251, 242, 54)
+    self.MAGICAL_CYAN = (95, 205, 228)
 
   def get_corner(self, tileset_id):
     return self.corners[tileset_id]
@@ -39,8 +44,10 @@ class TileSet:
   def get_ui(self, image_id):
     return self.ui[image_id]
 
-  def get_font(self):
-    return self.fonts[0] 
+  def get_font(self, size=24):
+    if size not in self.fonts:
+      self.fonts[size] = pygame.font.Font('assets/fonts/DejaVuSans.ttf', size)
+    return self.fonts[size]
 
   def initialize_walls(self):
     walls_full = pygame.image.load("assets/walls.png")
@@ -101,4 +108,23 @@ class TileSet:
     for i in range(4):
       image = health_bars.subsurface((0, i * image_height, image_width, image_height))
       self.ui[health_ids[i]] = image
-      
+    self.ui["armor_physical_bar"] = health_bars.subsurface((0, 24, 3, 4))
+    self.ui["armor_magical_bar"] = health_bars.subsurface((3, 24, 3, 4))
+    
+    tile_highlight = pygame.image.load("assets/ui/floor_highlights.png")
+    self.ui["floor_highlight_green"] = tile_highlight
+
+    player_status = pygame.image.load("assets/ui/player_stats_ui.png")
+    self.ui["player_base_stats"] = player_status
+
+    ui_icons = pygame.image.load("assets/ui/base_ui_icons.png")
+    image_width = 20
+    image_height = 26
+    self.ui["armor_physical"] = ui_icons.subsurface((0, 0, image_width, image_height))
+    self.ui["armor_magical"] = ui_icons.subsurface((image_width, 0, image_width, image_height))
+    self.ui["armor_used"] = ui_icons.subsurface((image_width * 2, 0, image_width, image_height))
+    image_width = 24
+    image_height = 24
+    y = 26
+    self.ui["ap_active"] = ui_icons.subsurface((0, y, image_width, image_height))
+    self.ui["ap_inactive"] = ui_icons.subsurface((image_width, y, image_width, image_height))

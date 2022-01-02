@@ -1,8 +1,14 @@
-import world.fov as fov, math
+import math, random
+import world.fov as fov
 from creatures.pathfinder import Path
 from world.world_builder import World
 
 class Creature:
+  # The absolute max amount of some expendable stats
+  P_ARMOR_MAX = 5
+  M_ARMOR_MAX = 5
+  AP_MAX = 8
+
   def __init__(self, name, icon, faction, world: World):
     self.name = name
     self.icon = icon
@@ -17,10 +23,15 @@ class Creature:
   def set_home_room(self, room):
     self.home_room = room
 
-  def set_stats(self, max_hp, attack):
+  def set_base_stats(self, max_hp, max_mana, p_armor, m_armor):
     self.max_hp = max_hp
     self.hp = max_hp
-    self.attack = attack
+    self.max_mana = max_mana
+    self.mana = max_mana
+    self.p_armor_cap = p_armor
+    self.m_armor_cap = m_armor
+    self.p_armor = p_armor
+    self.m_armor = m_armor
 
   def set_misc_stats(self, max_ap, speed, vision_radius):
     self.max_ap = max_ap
@@ -28,6 +39,12 @@ class Creature:
     self.speed = speed
     self.vision_radius = vision_radius
     self.free_movement = 0  # The remaining moves after moving, so moves arent "wasted"
+  
+  def set_attack_stats(self, attack_min, attack_max, base_damage_type="physical", attack_cost=2):
+    self.attack_min = attack_min
+    self.attack_max = attack_max
+    self.base_damage_type = base_damage_type
+    self.attack_cost = attack_cost
 
   def upkeep(self):
     self.ap = self.max_ap
@@ -90,14 +107,26 @@ class Creature:
   def can_see(self, to_x, to_y):
     return fov.can_see(self.world, self.x, self.y, to_x, to_y, self.vision_radius)
 
+  def take_damage(self, damage, type):
+    if type == "physical":
+      amount = max(0, damage - self.p_armor)
+      self.p_armor = max(0, self.p_armor - damage)
+    elif type == "magical":
+      amount = max(0, damage - self.m_armor)
+      self.m_armor = max(0, self.m_armor - damage)
+    self.hp -= amount
+    if self.hp <= 0:
+      print(self.name + " dies!")
+      self.world.remove_creature(self)
+
   def attack_creature(self, target):
-    if self.ap < 2:
+    if self.ap < self.attack_cost:
       print(self.name + " does not have enough AP to attack!")
       return
-    self.ap -= 2
-    target.hp -= self.attack
-    print(self.name + " attacks " + target.name + " for " + str(self.attack) + " damage!")
-    if target.hp <= 0:
-      print(target.name + " dies!")
-      self.world.remove_creature(target)
-    return
+    self.ap -= self.attack_cost
+
+    # Damage will be weighted towards the average
+    damage = random.randint(self.attack_min, self.attack_max) + random.randint(self.attack_min, self.attack_max)
+    damage = int(damage/2)
+    print(self.name + " attacks " + target.name + " for " + str(damage) + " " + self.base_damage_type + " damage!")
+    target.take_damage(damage, self.base_damage_type)

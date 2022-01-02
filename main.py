@@ -1,4 +1,5 @@
-import pygame, sys, random
+import pygame, sys
+import init
 import world.world_builder as world_builder
 from creatures.creature_factory import CreatureFactory
 from screens.main_graphics import *
@@ -26,9 +27,9 @@ SCREEN_HEIGHT = 800
 # Run the main game loop
 def main(args):
   screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
-  world = create_world(args)
+  world = init.create_world(args)
   creature_factory = CreatureFactory(world, screen.tileset)
-  create_creatures(world, creature_factory)
+  init.create_creatures(world, creature_factory)
   active = world.get_active_creature()
   screen.center_offset_on_creature(active)
 
@@ -36,14 +37,14 @@ def main(args):
   while running:
     screen.display.fill((0,0,0))
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    mouse_x, mouse_y = get_mouse_tile(screen.offset_x, screen.offset_y, mouse_x, mouse_y)
+    tile_x, tile_y = get_mouse_tile(screen.offset_x, screen.offset_y, mouse_x, mouse_y)
     for event in pygame.event.get():
       if event.type == QUIT:
         pygame.quit()
-        sys.exit()
+        sys.exit(0)
       if event.type == MOUSEBUTTONDOWN:
-        c = world.get_creature_at_location(mouse_x, mouse_y)
-        path = active.get_path_to(mouse_x, mouse_y)
+        c = world.get_creature_at_location(tile_x, tile_y)
+        path = active.get_path_to(tile_x, tile_y)
         if c:
           path = path[:-1]
         active.move_along_path(path)
@@ -60,7 +61,7 @@ def main(args):
             # Once we have more functional screens, we will want a game over screen here instead of a force quit
             print("You Lose!")
             pygame.quit()
-            sys.exit()
+            sys.exit(0)
         if event.key == K_ESCAPE:
           running = False
 
@@ -75,7 +76,7 @@ def main(args):
       screen.offset_y += 15
 
     draw_world(screen, world)
-    draw_path_to_mouse(screen, active, mouse_x, mouse_y)
+    draw_path_to_mouse(screen, active, tile_x, tile_y)
     draw_interface(screen, active)
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
@@ -89,67 +90,6 @@ def take_turns(world: world_builder.World):
     active.take_turn()
     if not active.ai:
       return active
-
-def create_world(args):
-  world_width = 30
-  world_height = 40
-  if "--small" in args:
-    world_width = 25
-    world_height = 25
-
-  if "--no_paths" in args:
-    world = world_builder.place_rooms(6, world_width, world_height)
-  elif "--maze" in args:
-    world = world_builder.generate_maze(world_width, world_height)
-  elif "--no_walls" in args:
-    world = world_builder.only_floors(world_width, world_height)
-  else: # Default to --dungeon
-    world = world_builder.generate_dungeon(world_width, world_height, 15)
-
-  if '-v' in args:
-    world.print_world()
-  
-  return world
-
-def create_players(world: world_builder.World, cf: CreatureFactory):
-  if world.start_room:
-    room = world.start_room
-  elif world.rooms:
-    room = random.choice(world.rooms)
-  else:
-    room = None
-
-  if '--solo' in sys.argv:
-    player_num = 1
-  else:
-    player_num = 4
-  for i in range(player_num):
-    if room:
-      x, y = world.get_random_floor_in_room(room)
-    else:
-      x, y = world.get_floor_coordinate()
-    if i == 0:
-      cf.new_edward(x,y)
-    elif i == 1:
-      cf.new_goobert(x,y)
-    elif i == 2:
-      cf.new_wizard(x,y)
-    elif i == 3:
-      cf.new_harold(x,y)
-
-def create_creatures(world: world_builder.World, cf: CreatureFactory):
-  create_players(world, cf)
-  for room in world.rooms:
-    if room == world.start_room:
-      continue
-
-    for _ in range(3):
-      x, y = world.get_random_floor_in_room(room)
-      if random.random() < 0.5:
-        c = cf.new_mushroom(x,y)
-      else:
-        c = cf.new_skeleton(x,y)
-      c.set_home_room(room)
 
 def start():
   args = sys.argv
