@@ -21,6 +21,7 @@ class TileSet:
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
 
+    self.WHITE = (255, 255, 255)
     self.HP_RED = (172, 50, 50)
     self.MANA_BLUE = (99, 155, 255)
     self.PHYSICAL_YELLOW = (251, 242, 54)
@@ -112,7 +113,8 @@ class TileSet:
     self.ui["armor_magical_bar"] = health_bars.subsurface((3, 24, 3, 4))
     
     tile_highlight = pygame.image.load("assets/ui/floor_highlights.png")
-    self.ui["floor_highlight_green"] = tile_highlight
+    self.ui["floor_highlight_green"] = tile_highlight.subsurface((0,0,64,32))
+    self.ui["floor_highlight_red"] = tile_highlight.subsurface((0,32,64,32))
 
     player_status = pygame.image.load("assets/ui/player_stats_ui.png")
     self.ui["player_base_stats"] = player_status
@@ -127,4 +129,5 @@ class TileSet:
     image_height = 24
     y = 26
     self.ui["ap_active"] = ui_icons.subsurface((0, y, image_width, image_height))
-    self.ui["ap_inactive"] = ui_icons.subsurface((image_width, y, image_width, image_height))
+    self.ui["ap_cost"] = ui_icons.subsurface((image_width, y, image_width, image_height))
+    self.ui["ap_inactive"] = ui_icons.subsurface((image_width * 2, y, image_width, image_height))

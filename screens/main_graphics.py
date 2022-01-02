@@ -10,7 +10,7 @@ def initialize_screen(width, height):
   display = pygame.display.set_mode((width, height))
   return Screen(width, height, display, tileset)
 
-def draw_interface(screen: Screen, active: Creature):
+def draw_interface(screen: Screen, active: Creature, path):
   start_x = screen.width - 256
   start_y = 0
   screen.blit(screen.tileset.get_ui("player_base_stats"), (start_x, start_y))
@@ -48,11 +48,20 @@ def draw_interface(screen: Screen, active: Creature):
 
   ap_x = p_armor_x
   ap_y = armor_y + 32
-  for i in range(active.ap):
+  cost, free_movement = active.cost_of_path_with_attacks(path)
+  leftover_ap = active.ap - cost
+  for i in range(leftover_ap):
     screen.blit(screen.tileset.get_ui("ap_active"), (ap_x + 3 + i * 25, ap_y + 5))
+  for i in range(cost):
+    screen.blit(screen.tileset.get_ui("ap_cost"), (ap_x + 3 + leftover_ap * 25 + i * 25, ap_y + 5))
   for i in range(active.max_ap - active.ap):
     screen.blit(screen.tileset.get_ui("ap_inactive"), (ap_x + 3 + active.ap * 25 + i * 25, ap_y + 5))
-  screen.write_centered(str(active.free_movement), (ap_x + 238, ap_y + 6), screen.tileset.get_font(20))
+  
+  if free_movement == active.free_movement:
+    colour = screen.tileset.WHITE
+  else:
+    colour = screen.tileset.HP_RED
+  screen.write_centered(str(free_movement), (ap_x + 238, ap_y + 6), screen.tileset.get_font(20), colour)
 
   screen.write(active.name + "'s Turn", (12, screen.height - 30), screen.tileset.get_font())
 
@@ -137,7 +146,21 @@ def get_healthbar(tileset: TileSet, creature: Creature):
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   path = creature.get_path_to(x, y)[:creature.get_possible_distance()]
+  if len(path) > 0:
+    # If we cannot afford to make an attack at the end of the move, remove the last tile
+    ap_cost, _ = creature.cost_of_path_with_attacks(path)
+    if ap_cost <= creature.ap:
+      c = creature.world.get_creature_at_location(path[-1][0], path[-1][1])
+    else:
+      c = None
+      path = path[:-1]
   for tile in path:
     tile_x, tile_y = tile
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)
-    screen.blit(screen.tileset.get_ui("floor_highlight_green"), (iso_x, iso_y))
+
+    if c:
+      highlight = screen.tileset.get_ui("floor_highlight_red")
+    else:
+      highlight = screen.tileset.get_ui("floor_highlight_green")
+    screen.blit(highlight, (iso_x, iso_y))
+  return path

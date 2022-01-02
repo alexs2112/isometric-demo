@@ -76,8 +76,8 @@ def main(args):
       screen.offset_y += 15
 
     draw_world(screen, world)
-    draw_path_to_mouse(screen, active, tile_x, tile_y)
-    draw_interface(screen, active)
+    path = draw_path_to_mouse(screen, active, tile_x, tile_y)
+    draw_interface(screen, active, path)
     pygame.display.update()
     pygame.time.delay(FRAME_DELAY)
 

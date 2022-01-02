@@ -97,12 +97,34 @@ class Creature:
     else:
       x,y = path[-1]
       self.move_to(x, y)
+    ap_cost, free_movement = self.cost_of_path(path)
+    self.ap -= ap_cost
+    self.free_movement = free_movement
+  
+  def cost_of_path(self, path):
+    distance = len(path)
+    if distance == 0:
+      return (0, self.free_movement)
     remaining_distance = max(0, distance - self.free_movement)
-    self.free_movement = max(0, self.free_movement - distance)
-    self.ap -= math.ceil(remaining_distance / self.speed)
+    leftover_free_movement = max(0, self.free_movement - distance)
+    ap_cost = math.ceil(remaining_distance / self.speed)
     rem = (remaining_distance % self.speed)
     if rem > 0:
-      self.free_movement += self.speed - rem
+      leftover_free_movement += self.speed - rem
+    return (ap_cost, leftover_free_movement)
+
+  def cost_of_path_with_attacks(self, path):
+    if len(path) == 0:
+      return self.cost_of_path(path)
+
+    (x,y) = path[-1]
+    c = self.world.get_creature_at_location(x,y)
+    if c:
+      ap_cost, free_movement = self.cost_of_path(path[:-1])
+      ap_cost += self.attack_cost
+      return (ap_cost, free_movement)
+    else:
+      return self.cost_of_path(path)
   
   def can_see(self, to_x, to_y):
     return fov.can_see(self.world, self.x, self.y, to_x, to_y, self.vision_radius)
