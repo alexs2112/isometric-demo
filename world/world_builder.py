@@ -68,18 +68,13 @@ class World:
     raise Exception("Could not find an empty floor tile in world!")
   
   def get_random_floor_in_room(self, room):
-    x1, y1 = room.p1
-    x2, y2 = room.p2
-
-    attempts = 100
-    while attempts > 0:
-      attempts -= 1
-      x = random.randint(x1, x2)
-      y = random.randint(y1, y2)
+    tiles = room.get_tiles()
+    random.shuffle(tiles)
+    for (x,y) in tiles:
       if self.is_floor(x,y) and not self.get_creature_at_location(x,y):
         return x, y
 
-    raise Exception("Could not find an empty floor tile in world!")
+    raise Exception("Could not find an empty floor tile in room!")
 
   # Some wrapper methods around our field of view
   def update_fov(self, creature):
@@ -109,6 +104,13 @@ class World:
     self.active_index = (self.active_index + 1) % len(self.creatures)
     active = self.get_active_creature()
     return active
+
+  def no_active_enemies(self):
+    # No enemies are actively hunting the players
+    for c in self.creatures:
+      if c.is_active():
+        return False
+    return True
   
   def creature_location_dict(self):
     locations = {}
@@ -120,6 +122,12 @@ class World:
     for c in self.creatures:
       if c.x == x and c.y == y:
         return c
+  
+  def get_room_by_tile(self, x, y):
+    for room in self.rooms:
+      if x >= room.p1[0] and x <= room.p2[0] and y >= room.p1[1] and y <= room.p2[1]:
+        return room
+    return None
   
   # Simply print the world to the terminal
   def print_world(self):
@@ -142,6 +150,23 @@ class Room:
   
   def add_neighbor(self, room):
     self.neighbors.append(room)
+  
+  def get_tiles(self):
+    points = []
+    x1, y1 = self.p1
+    x2, y2 = self.p2
+    for x in range(x1, x2):
+      for y in range(y1, y2):
+        points.append((x,y))
+    return points
+  
+  def is_explored(self, world: World):
+    points = self.get_tiles()
+    for p in points:
+      x, y = p
+      if not world.has_seen(x,y):
+        return False
+    return True
 
 # Fill a world of the specified dimensions with walls and return it
 def make_empty_initial_array(width, height):

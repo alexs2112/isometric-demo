@@ -25,10 +25,14 @@ class FieldOfView(list):
           continue
 
         # If a player can see a floor they can see the walls adjacent to it, so we dont get weird visual errors of "floating" walls
-        # This still kind of happens, figure this out at some point
+        # Activate any new creatures the player has seen
         if creature.can_see(to_x, to_y):
           if world.is_floor(to_x, to_y):
             self[to_x][to_y] = True
+            c = world.get_creature_at_location(to_x, to_y)
+            if c:
+              c.activate()
+              creature.notify("You see a " + c.name)
             if world.is_wall(to_x - 1, to_y):
               self[to_x-1][to_y] = True
             if world.is_wall(to_x, to_y - 1):

@@ -17,6 +17,26 @@ def get_mouse_tile(offset_x, offset_y, mouse_x, mouse_y):
   mouse_x -= 32         # Half the width of a tile
   return get_cartesian_position(mouse_x / 32, mouse_y / 32)
 
+def is_nw_wall(world, x, y):
+  width, _ = world.dimensions()
+  if x >= width - 1 or x < 0:
+    return False
+  return world.is_wall(x,y) and world.is_floor(x+1,y)
+
+def is_ne_wall(world, x, y):
+  _, height = world.dimensions()
+  if y >= height-1 or y < 0:
+    return False
+  return world.is_wall(x,y) and world.is_floor(x,y+1)
+
+def is_outer_corner(world, x, y):
+  width, height = world.dimensions()
+  if y < height - 1 and x < width - 1:
+    if world.is_wall(x,y) and world.is_floor(x+1,y+1):
+      if world.is_wall(x+1,y) and world.is_wall(x,y+1):
+        return True
+  return False
+
 def get_path_between_points(world, sx, sy, dx, dy):
   if world.outside_world(dx,dy) or not (world.is_floor(dx,dy) and world.has_seen(dx,dy)):
     return []

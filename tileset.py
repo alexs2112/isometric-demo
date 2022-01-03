@@ -13,6 +13,13 @@ class TileSet:
     self.initialize_floors()
     self.initialize_walls()
 
+    self.corners_small = []
+    self.ne_walls_small = []
+    self.nw_walls_small = []
+    self.floors_small = []
+    self.initialize_walls_small()
+    self.initialize_floors_small()
+
     self.creatures = {}
     self.initialize_creatures()
     self.ui = {}
@@ -38,6 +45,18 @@ class TileSet:
 
   def get_nw_wall(self, tileset_id):
     return self.nw_walls[tileset_id]
+  
+  def get_corner_small(self, tileset_id):
+    return self.corners_small[tileset_id]
+
+  def get_floor_small(self, tileset_id):
+    return self.floors_small[tileset_id]
+
+  def get_ne_wall_small(self, tileset_id):
+    return self.ne_walls_small[tileset_id]
+
+  def get_nw_wall_small(self, tileset_id):
+    return self.nw_walls_small[tileset_id]
   
   def get_creature(self, image_id):
     return self.creatures[image_id] 
@@ -85,6 +104,25 @@ class TileSet:
       floor = floors_full.subsurface((0, image_height * i, image_width, image_height))
       self.floors.append(floor)
 
+  def initialize_walls_small(self):
+    corner_width = 8
+    corner_height = 24
+    for t in self.corners:
+      self.corners_small.append(pygame.transform.scale(t, (corner_width, corner_height)))
+
+    wall_width = 20
+    wall_height = 30
+    for t in self.ne_walls:
+      self.ne_walls_small.append(pygame.transform.scale(t, (wall_width, wall_height)))
+    for t in self.nw_walls:
+      self.nw_walls_small.append(pygame.transform.scale(t, (wall_width, wall_height)))
+    
+  def initialize_floors_small(self):
+    image_width = 32
+    image_height = 20
+    for t in self.floors:
+      self.floors_small.append(pygame.transform.scale(t, (image_width, image_height)))
+
   def initialize_creatures(self):
     creatures_full = pygame.image.load("assets/creatures.png")
     image_width = 32
@@ -131,3 +169,8 @@ class TileSet:
     self.ui["ap_active"] = ui_icons.subsurface((0, y, image_width, image_height))
     self.ui["ap_cost"] = ui_icons.subsurface((image_width, y, image_width, image_height))
     self.ui["ap_inactive"] = ui_icons.subsurface((image_width * 2, y, image_width, image_height))
+
+    map_icons = pygame.image.load("assets/ui/map_icons.png")
+    self.ui["map_player_dot"] = map_icons.subsurface((0,0,24,8))
+    self.ui["map_enemy_dot"] = map_icons.subsurface((0,8,24,8))
+    self.ui["map_floor_orange"] = map_icons.subsurface((0,16,32,16))

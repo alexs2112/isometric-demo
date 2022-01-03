@@ -6,8 +6,12 @@ class AI:
   def __init__(self, creature: Creature):
     self.creature = creature
     self.move_to = None       # The tile this creature is actively moving to
+    self.active = False       # If the creature is actively hunting a player
     # We could also point self.world = self.creature.world here, but it could be useful to have world as a param in other methods?
   
+  def activate(self):
+    self.active = True
+
   def take_turn(self, world: World):
     return
   
@@ -47,20 +51,24 @@ class AI:
 
 # Does nothing each turn
 class Plant(AI):
-  def take_turn(self, world: World):
+  def activate(self):
+    # This is a plant, it cannot be activated
     return
 
 # Simple turn logic:
 # - If we can see a player, move as close as possible and try to attack it if we have AP
 # - If we can't see a player, move to where we last saw the player
 # - If we can't and haven't seen a player, move back home
+# If we can see or are pursuing a player, we are active
 class Basic(AI):
   def take_turn(self, world: World):
     if self.move_to and self.creature.x == self.move_to[0] and self.creature.y == self.move_to[1]:
+      self.active = False
       self.move_to = None
 
     p: Creature = self.get_closest_player(world)
     if p:
+      self.activate()
       self.move_to = (p.x, p.y)
     elif not self.move_to:
       self.move_to = self.get_home_tile(world)

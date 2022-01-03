@@ -16,12 +16,16 @@ class Creature:
     self.world = world
     self.ai = None
     self.home_room = None
+    self.messages = None
 
   def set_ai(self, ai):
     self.ai = ai
 
   def set_home_room(self, room):
     self.home_room = room
+  
+  def set_messages(self, messages):
+    self.messages = messages
 
   def set_base_stats(self, max_hp, max_mana, p_armor, m_armor):
     self.max_hp = max_hp
@@ -49,6 +53,12 @@ class Creature:
   def upkeep(self):
     self.ap = self.max_ap
     self.free_movement = 0
+  
+  def rest(self):
+    self.upkeep()
+    self.m_armor = self.m_armor_cap
+    self.p_armor = self.p_armor_cap
+    self.notify(self.name + " is feeling refreshed!")
 
   def take_turn(self):
     self.upkeep()
@@ -60,6 +70,16 @@ class Creature:
       return True
     else:
       return False
+
+  # If this creature is actively hunting a player
+  def is_active(self):
+    if self.ai:
+      return self.ai.active
+    return False
+
+  def activate(self):
+    if self.ai:
+      self.ai.activate()
 
   def can_enter(self, x, y):
     if self.world.is_floor(x, y) and not self.world.get_creature_at_location(x,y):
@@ -129,6 +149,17 @@ class Creature:
   def can_see(self, to_x, to_y):
     return fov.can_see(self.world, self.x, self.y, to_x, to_y, self.vision_radius)
 
+  def notify(self, message):
+    if self.messages != None:
+      print(message)
+      self.messages.append(message)
+    
+  def notify_player(self, message):
+    for p in self.world.players:
+      if p.can_see(self.x, self.y):
+        p.notify(message)
+        break
+
   def take_damage(self, damage, type):
     if type == "physical":
       amount = max(0, damage - self.p_armor)
@@ -138,17 +169,23 @@ class Creature:
       self.m_armor = max(0, self.m_armor - damage)
     self.hp -= amount
     if self.hp <= 0:
-      print(self.name + " dies!")
+      self.notify_player(self.name + " dies!")
       self.world.remove_creature(self)
 
   def attack_creature(self, target):
+    if self == target:
+      if self.is_player():
+        self.notify("Are you sure you want to attack yourself?")
+        return
+
     if self.ap < self.attack_cost:
-      print(self.name + " does not have enough AP to attack!")
+      self.notify(self.name + " does not have enough AP to attack!")
       return
     self.ap -= self.attack_cost
 
     # Damage will be weighted towards the average
     damage = random.randint(self.attack_min, self.attack_max) + random.randint(self.attack_min, self.attack_max)
     damage = int(damage/2)
-    print(self.name + " attacks " + target.name + " for " + str(damage) + " " + self.base_damage_type + " damage!")
+    self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + self.base_damage_type + " damage!")
+    target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + self.base_damage_type + " damage!")
     target.take_damage(damage, self.base_damage_type)
