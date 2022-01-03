@@ -5,10 +5,10 @@ A simple prototype to learn the basics of an isometric viewpoint for a dungeon c
 `-h` for options, and `[h]` in game to view the controls
 
 Game Start
-![start](https://imgur.com/IZpNvZD)
+![start](https://i.imgur.com/IZpNvZD.png)
 
 Combat with skeletons
-![combat](https://imgur.com/EhMYExh)
+![combat](https://i.imgur.com/EhMYExh.png)
 
 Map Screen to fast travel and rest
-![map](https://imgur.com/ME1SnEU)
+![map](https://i.imgur.com/ME1SnEU.png)
