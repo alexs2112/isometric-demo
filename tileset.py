@@ -147,8 +147,8 @@ class TileSet:
     for i in range(4):
       image = health_bars.subsurface((0, i * image_height, image_width, image_height))
       self.ui[health_ids[i]] = image
-    self.ui["armor_physical_bar"] = health_bars.subsurface((0, 24, 3, 4))
-    self.ui["armor_magical_bar"] = health_bars.subsurface((3, 24, 3, 4))
+    self.ui["armor_physical_bar"] = health_bars.subsurface((0, 24, 4, 6))
+    self.ui["armor_magical_bar"] = health_bars.subsurface((4, 24, 4, 6))
     
     tile_highlight = pygame.image.load("assets/ui/floor_highlights.png")
     self.ui["floor_highlight_green"] = tile_highlight.subsurface((0,0,64,32))

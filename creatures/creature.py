@@ -5,8 +5,8 @@ from world.world_builder import World
 
 class Creature:
   # The absolute max amount of some expendable stats
-  P_ARMOR_MAX = 5
-  M_ARMOR_MAX = 5
+  P_ARMOR_MAX = 6
+  M_ARMOR_MAX = 6
   AP_MAX = 8
 
   def __init__(self, name, icon, faction, world: World):
@@ -180,7 +180,8 @@ class Creature:
       self.notify("Are you sure you want to attack yourself?")
       return
 
-    if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
+    # Can set this 1 to be a range stat or something
+    if abs(self.x - target.x) > 1 or abs(self.y - target.y) > 1:
       self.notify("The " + target.name + " is out of range!")
       return
 

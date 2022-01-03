@@ -94,13 +94,7 @@ def draw_world(screen: Screen, world: World):
           creature = creature_locations[(x,y)]
           p_x, p_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
           screen.blit(creature.icon, (p_x + 16, p_y - 16))
-          healthbar = get_healthbar(screen.tileset, creature)
-          for i in range(creature.p_armor):
-            screen.blit(screen.tileset.get_ui("armor_physical_bar"), (p_x + 16 + 4 * i, p_y + 16))
-          for i in range(creature.m_armor):
-            screen.blit(screen.tileset.get_ui("armor_magical_bar"), (p_x + 48 - 4 * (i+1), p_y + 16))
-          if healthbar:
-            screen.blit(healthbar, (p_x + 16, p_y + 20))
+          draw_healthbar(screen, creature, p_x, p_y)
       else:
         # These need to be if statements in case its both NW and NE wall (corners)
         nw_wall = is_nw_wall(world, x, y)
@@ -131,6 +125,29 @@ def get_healthbar(tileset: TileSet, creature: Creature):
     return tileset.get_ui("health_half")
   else:
     return tileset.get_ui("health_quarter")
+
+def draw_healthbar(screen: Screen, creature: Creature, x, y):
+  healthbar = get_healthbar(screen.tileset, creature)
+  p_arm = screen.tileset.get_ui("armor_physical_bar")
+  m_arm = screen.tileset.get_ui("armor_magical_bar")
+  ax = x + 16  
+  ay = y + 14
+  for i in range(creature.p_armor):
+    screen.blit(p_arm, (ax + 5 * i, ay))
+
+  # Start layering the p_armor and m_armor
+  if creature.p_armor + creature.m_armor > 6:
+    ay -= 6
+  
+  # Otherwise show p_armor to the left and m_armor to the right
+  else:
+    ax += 34 - 5 * creature.m_armor
+    
+  for i in range(creature.m_armor):
+    screen.blit(m_arm, (ax + 5 * i, ay))
+
+  if healthbar:
+    screen.blit(healthbar, (x + 16, y + 20))
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   path = creature.get_path_to(x, y)[:creature.get_possible_distance()]
