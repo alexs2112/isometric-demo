@@ -6,6 +6,7 @@ FLOOR_TILESETS = 5
 
 # Load all relevant images and assets at the start and store them here so that we can quickly access them without
 # reloading images all the time
+# Using Dungeon Crawl Stone Soup tiles for creatures and items: https://crawl.develz.org/
 class TileSet:
   def __init__(self):
     self.corners = []
@@ -24,6 +25,8 @@ class TileSet:
 
     self.creatures = {}
     self.initialize_creatures()
+    self.item_icons = {}
+    self.initialize_items()
     self.ui = {}
     self.initialize_ui()
 
@@ -35,6 +38,7 @@ class TileSet:
     self.MANA_BLUE = (99, 155, 255)
     self.PHYSICAL_YELLOW = (251, 242, 54)
     self.MAGICAL_CYAN = (95, 205, 228)
+    self.EQUIPPED_GREEN = (106, 190, 48)
 
   def get_corner(self, tileset_id):
     return self.corners[tileset_id]
@@ -62,6 +66,9 @@ class TileSet:
   
   def get_creature(self, image_id):
     return self.creatures[image_id] 
+  
+  def get_item(self, item_name):
+    return self.item_icons[item_name]
 
   def get_ui(self, image_id):
     return self.ui[image_id]
@@ -140,7 +147,25 @@ class TileSet:
       y = int(i / 10) * image_height
       image = creatures_full.subsurface((x, y, image_width, image_height))
       self.creatures[image_ids[i]] = image
+
+  def initialize_items(self):
+    from items.item_factory import get_item_image_ids
+    items_full = pygame.image.load("assets/item_icons.png")
+    image_width = 32
+    image_height = 32
+
+    image_ids = get_item_image_ids()
     
+    y = -image_height # Default to -32 since it will add 32 for the first item
+    for type in image_ids:
+      x = 0
+      for i in range(len(type)):
+        x = (i % 10) * image_width
+        if (i % 10) == 0:
+          y += image_height
+        image = items_full.subsurface((x, y, image_width, image_height))
+        self.item_icons[type[i]] = image
+      
   def initialize_ui(self):
     health_bars = pygame.image.load("assets/ui/health_bars.png")
     image_width = 32

@@ -104,9 +104,12 @@ class MapScreen(Subscreen):
           else:
             return None
         elif event.key == K_r:
-          for p in self.world.players:
-            p.rest()
-          return None
+          if self.world.no_active_enemies():
+            for p in self.world.players:
+              p.rest()
+              return None
+          else:
+            self.message = "Cannot rest, there are enemies nearby!"
       if event.type == MOUSEBUTTONDOWN:
         self.message = ""
         mouse_x, mouse_y = pygame.mouse.get_pos()

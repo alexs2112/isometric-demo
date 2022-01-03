@@ -48,6 +48,7 @@ def create_players(world: world_builder.World, cf: CreatureFactory, messages):
       c = cf.new_wizard(x,y)
     elif i == 3:
       c = cf.new_harold(x,y)
+    c.rest()
     c.set_home_room(room)
     c.set_messages(messages)
 

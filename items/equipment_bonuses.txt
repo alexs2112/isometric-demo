@@ -1,0 +1,7 @@
+For reference:
+ATK_MIN
+ATK_MAX
+ATK_COST
+P_ARMOR
+M_ARMOR
+SPEED

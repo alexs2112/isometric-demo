@@ -1,5 +1,9 @@
 import pygame, sys
 import init
+from items.item_factory import ItemFactory
+from screens.help_screen import HelpScreen
+from screens.inventory_screen import InventoryScreen
+from screens.stats_screen import StatsScreen
 from screens.subscreen import GameOverScreen, StartScreen
 from screens.map_screen import MapScreen
 import world.world_builder as world_builder
@@ -15,6 +19,9 @@ from pygame.locals import (
     K_SPACE,
     K_RETURN,
     K_m,
+    K_i,
+    K_s,
+    K_h,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT
@@ -32,7 +39,8 @@ def main(args):
   screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
   world = init.create_world(args)
   messages = [] # Keep track of all the notifications each turn
-  creature_factory = CreatureFactory(world, screen.tileset)
+  item_factory = ItemFactory(world, screen.tileset)
+  creature_factory = CreatureFactory(world, screen.tileset, item_factory)
   init.create_creatures(world, creature_factory, messages)
   active = world.get_active_creature()
   screen.center_offset_on_creature(active)
@@ -78,6 +86,12 @@ def main(args):
           elif event.key == K_m:
             messages.clear()
             subscreen = MapScreen(world, screen, active)
+          elif event.key == K_i:
+            subscreen = InventoryScreen(world.players)
+          elif event.key == K_s:
+            subscreen = StatsScreen(world.players)
+          elif event.key == K_h:
+            subscreen = HelpScreen()
 
       # Not sure if we need to be able to scroll anymore
       keys = pygame.key.get_pressed()
@@ -132,13 +146,7 @@ def print_help():
     --no_paths
     --no_walls
     
-  Controls:
-   - Arrow keys to scroll the screen
-   - Spacebar to center screen on active player
-   - Enter to end turn
-   - Left click to move and attack
-   - M to show the map view to travel and rest
-   - Escape to exit""")
+  Press [h] in game to view the controls""")
   sys.exit(0)
 
 if __name__ == "__main__":

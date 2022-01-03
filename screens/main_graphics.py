@@ -143,14 +143,14 @@ def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, s
   p_armor_x = mana_x
   armor_y = mana_y + 32
   p_armor = creature.p_armor
-  rem = creature.p_armor_cap - p_armor
+  rem = creature.get_p_armor_cap() - p_armor
   for i in range(p_armor):
     screen.blit(screen.tileset.get_ui("armor_physical"), (p_armor_x + 5 + i * 20, armor_y + 4))
   for i in range(rem):
     screen.blit(screen.tileset.get_ui("armor_used"), (p_armor_x + 5 + p_armor * 20 + i * 20, armor_y + 4))
   m_armor_x = mana_x + 128
   m_armor = creature.m_armor
-  rem = creature.m_armor_cap - m_armor
+  rem = creature.get_m_armor_cap() - m_armor
   for i in range(m_armor):
     screen.blit(screen.tileset.get_ui("armor_magical"), (m_armor_x + 3 + i * 20, armor_y + 4))
   for i in range(rem):

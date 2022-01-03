@@ -1,8 +1,17 @@
-Not comprehensive, what is actively being worked on
-
 Roadmap:
- - Items and inventory
- - Update README with more up to date images and player stats
+ - Better equipment and consumables spawning in the dungeon and on enemies
+ - Character overhaul, different character models that show their equipped equipment
+ - Combat overhaul, spells, effects and ranged attacks
+ - Dungeon features, such as doors, barrels, random stuff sitting around
+ - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
+ - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
+ - Dungeon overhaul, multiple floors with a surface to talk to NPCs
+ - Quests and more of a surface world to explore
 
 Side work:
  - Have FOV for each individual character, darkening outside. Make this efficient
+ - More enemies and different AIs
+ - Prettier subscreens and UI
+
+Bugs:
+ - For some reason an enemy will just skip their turn, not sure why. It seems to happen when they are fully surrounded

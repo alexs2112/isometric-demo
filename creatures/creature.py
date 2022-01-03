@@ -1,4 +1,7 @@
 import math, random
+from items.equipment_list import EquipmentList
+from items.inventory import Inventory
+from items.item import Equipment
 import world.fov as fov
 from creatures.pathfinder import Path
 from world.world_builder import World
@@ -17,6 +20,8 @@ class Creature:
     self.ai = None
     self.home_room = None
     self.messages = None
+    self.inventory = Inventory()
+    self.equipment = EquipmentList()
 
   def set_ai(self, ai):
     self.ai = ai
@@ -50,14 +55,65 @@ class Creature:
     self.base_damage_type = base_damage_type
     self.attack_cost = attack_cost
 
+  def get_speed(self):
+    return self.speed + self.equipment.get_bonus("SPEED")
+
+  def get_attack_min(self):
+    return self.attack_min + self.equipment.get_bonus("ATK_MIN")
+  
+  def get_attack_max(self):
+    return self.attack_max + self.equipment.get_bonus("ATK_MAX")
+  
+  def get_attack_cost(self):
+    return self.attack_cost + self.equipment.get_bonus("ATK_COST")
+
+  def get_p_armor_cap(self):
+    return min(self.p_armor_cap + self.equipment.get_bonus("P_ARMOR"), self.P_ARMOR_MAX)
+  
+  def get_m_armor_cap(self):
+    return min(self.m_armor_cap + self.equipment.get_bonus("M_ARMOR"), self.M_ARMOR_MAX)
+
+  def pickup_item(self, item, quantity=1):
+    s = self.name + " picks up "
+    if not item.unique and quantity == 1:
+      s += " a "
+    s += item.name
+    self.notify(s)
+    self.inventory.add_item(item, quantity)
+
+  def remove_item(self, item, quantity=1):
+    remaining = self.inventory.remove_item(item, quantity)
+    if item.is_equipment() and self.equipment.is_equipped(item):
+      if remaining <= 0:
+        self.unequip(item)
+  
+  def unequip(self, item):
+    self.equipment.remove(item)
+
+  def equip(self, item):
+    if self.inventory.get_quantity(item) > 0:
+      if item.is_equipment():
+        self.equipment.equip(item)
+      else:
+        raise ValueError("Trying to equip a non-equipment")
+
+  def add_and_equip(self, item):
+    self.inventory.add_item(item)
+    self.equip(item)
+
+  def is_equipped(self, item):
+    if not item.is_equipment:
+      return False
+    return self.equipment.is_equipped(item)
+
   def upkeep(self):
     self.ap = self.max_ap
     self.free_movement = 0
   
   def rest(self):
     self.upkeep()
-    self.m_armor = self.m_armor_cap
-    self.p_armor = self.p_armor_cap
+    self.m_armor = self.get_m_armor_cap()
+    self.p_armor = self.get_p_armor_cap()
     self.notify(self.name + " is feeling refreshed!")
 
   def take_turn(self):
@@ -96,7 +152,7 @@ class Creature:
       self.y = y
 
   def get_possible_distance(self):
-    return self.speed * self.ap + self.free_movement
+    return self.get_speed() * self.ap + self.free_movement
 
   def get_path_to(self, dx, dy):
     if self.world.outside_world(dx,dy) or not (self.world.is_floor(dx,dy) and self.world.has_seen(dx,dy)):
@@ -127,10 +183,10 @@ class Creature:
       return (0, self.free_movement)
     remaining_distance = max(0, distance - self.free_movement)
     leftover_free_movement = max(0, self.free_movement - distance)
-    ap_cost = math.ceil(remaining_distance / self.speed)
-    rem = (remaining_distance % self.speed)
+    ap_cost = math.ceil(remaining_distance / self.get_speed())
+    rem = (remaining_distance % self.get_speed())
     if rem > 0:
-      leftover_free_movement += self.speed - rem
+      leftover_free_movement += self.get_speed() - rem
     return (ap_cost, leftover_free_movement)
 
   def cost_of_path_with_attacks(self, path):
@@ -141,7 +197,7 @@ class Creature:
     c = self.world.get_creature_at_location(x,y)
     if c:
       ap_cost, free_movement = self.cost_of_path(path[:-1])
-      ap_cost += self.attack_cost
+      ap_cost += self.get_attack_cost()
       return (ap_cost, free_movement)
     else:
       return self.cost_of_path(path)
@@ -185,14 +241,20 @@ class Creature:
       self.notify("The " + target.name + " is out of range!")
       return
 
-    if self.ap < self.attack_cost:
+    if self.ap < self.get_attack_cost():
       self.notify(self.name + " does not have enough AP to attack!")
       return
-    self.ap -= self.attack_cost
+    self.ap -= self.get_attack_cost()
 
-    # Damage will be weighted towards the average
-    damage = random.randint(self.attack_min, self.attack_max) + random.randint(self.attack_min, self.attack_max)
-    damage = int(damage/2)
-    self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + self.base_damage_type + " damage!")
-    target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + self.base_damage_type + " damage!")
-    target.take_damage(damage, self.base_damage_type)
+    # Damage will be weighted towards the average, biased to be rounded up because of .5s
+    atk_min = self.get_attack_min()
+    atk_max = self.get_attack_max()
+    damage = random.randint(atk_min, atk_max) + random.randint(atk_min, atk_max)
+    damage = round(damage/2)
+    if self.equipment.slot("Main"):
+      damage_type = self.equipment.slot("Main").damage_type
+    else:
+      damage_type = self.base_damage_type
+    self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage!")
+    target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage!")
+    target.take_damage(damage, damage_type)

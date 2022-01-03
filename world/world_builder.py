@@ -3,6 +3,7 @@ import world.maze_gen as maze_gen
 import world.dungeon_gen as dungeon_gen
 from world.tile import Tile
 from world.fov import FieldOfView
+from items.inventory import Inventory
 FLOOR = 0
 WALL = 1
 
@@ -18,6 +19,7 @@ class World:
     self.rooms = []
     self.start_room = None
     self.end_room = None
+    self.items = {}     # A hash of location: inventory
 
   def set_rooms(self, rooms):
     self.rooms = rooms
@@ -128,7 +130,18 @@ class World:
       if x >= room.p1[0] and x <= room.p2[0] and y >= room.p1[1] and y <= room.p2[1]:
         return room
     return None
-  
+
+  def add_item(self, item, point, quantity=1):
+    if point not in self.items:
+      self.items[point] = Inventory()
+    self.items[point].add_item(item, quantity)
+
+  def remove_item(self, item, point, quantity=1):
+    if point in self.items:
+      self.items[point].remove_item(item, quantity)
+      if self.items[point] == {}:
+        self.items.pop(point)    
+
   # Simply print the world to the terminal
   def print_world(self):
     for y in range(self.height):
