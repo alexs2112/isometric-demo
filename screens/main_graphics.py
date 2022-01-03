@@ -11,57 +11,25 @@ def initialize_screen(width, height):
   return Screen(width, height, display, tileset)
 
 def draw_interface(screen: Screen, active: Creature, path):
-  start_x = screen.width - 256
-  start_y = 0
-  screen.blit(screen.tileset.get_ui("player_base_stats"), (start_x, start_y))
+  x, y = screen.width - 256, 0
+  x, y = draw_player_name_box(screen, active, x, y)
+  x, y = draw_player_health_mana_armor(screen, active, x, y)
 
-  hp_x = start_x
-  hp_y = start_y
-  percentage = active.hp / active.max_hp
-  pygame.draw.rect(screen.display, screen.tileset.HP_RED, (hp_x + 6, hp_y + 6, int(244 * percentage), 36))
-  hp_string = str(active.hp) + "/" + str(active.max_hp)
-  screen.write_centered(hp_string, (hp_x + 128, hp_y + 10), screen.tileset.get_font())
-
-  mana_x = hp_x
-  mana_y = hp_y + 46
-  if active.mana > 0:
-    percentage = active.mana / active.max_mana
-    pygame.draw.rect(screen.display, screen.tileset.MANA_BLUE, (mana_x + 5, mana_y + 6, int(246 * percentage), 23))
-  mana_string = str(active.mana) + "/" + str(active.max_mana)
-  screen.write_centered(mana_string, (mana_x + 128, mana_y + 6), screen.tileset.get_font(20))
-
-  p_armor_x = mana_x
-  armor_y = mana_y + 32
-  p_armor = active.p_armor
-  rem = active.p_armor_cap - p_armor
-  for i in range(p_armor):
-    screen.blit(screen.tileset.get_ui("armor_physical"), (p_armor_x + 5 + i * 20, armor_y + 4))
-  for i in range(rem):
-    screen.blit(screen.tileset.get_ui("armor_used"), (p_armor_x + 5 + p_armor * 20 + i * 20, armor_y + 4))
-  m_armor_x = mana_x + 128
-  m_armor = active.m_armor
-  rem = active.m_armor_cap - m_armor
-  for i in range(m_armor):
-    screen.blit(screen.tileset.get_ui("armor_magical"), (m_armor_x + 3 + i * 20, armor_y + 4))
-  for i in range(rem):
-    screen.blit(screen.tileset.get_ui("armor_used"), (m_armor_x + 3 + m_armor * 20 + i * 20, armor_y + 4))
-
-  ap_x = p_armor_x
-  ap_y = armor_y + 32
+  screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
   cost, free_movement = active.cost_of_path_with_attacks(path)
   leftover_ap = active.ap - cost
   for i in range(leftover_ap):
-    screen.blit(screen.tileset.get_ui("ap_active"), (ap_x + 3 + i * 25, ap_y + 5))
+    screen.blit(screen.tileset.get_ui("ap_active"), (x + 3 + i * 25, y + 4))
   for i in range(cost):
-    screen.blit(screen.tileset.get_ui("ap_cost"), (ap_x + 3 + leftover_ap * 25 + i * 25, ap_y + 5))
+    screen.blit(screen.tileset.get_ui("ap_cost"), (x + 3 + leftover_ap * 25 + i * 25, y + 4))
   for i in range(active.max_ap - active.ap):
-    screen.blit(screen.tileset.get_ui("ap_inactive"), (ap_x + 3 + active.ap * 25 + i * 25, ap_y + 5))
+    screen.blit(screen.tileset.get_ui("ap_inactive"), (x + 3 + active.ap * 25 + i * 25, y + 4))
   
   if free_movement == active.free_movement:
     colour = screen.tileset.WHITE
   else:
     colour = screen.tileset.HP_RED
-  screen.write_centered(str(free_movement), (ap_x + 238, ap_y + 6), screen.tileset.get_font(20), colour)
+  screen.write_centered(str(free_movement), (x + 238, y + 4), screen.tileset.get_font(20), colour)
 
   screen.write(active.name + "'s Turn", (12, 2), screen.tileset.get_font())
   if active.ap == 0 and active.free_movement == 0:
@@ -148,6 +116,48 @@ def draw_healthbar(screen: Screen, creature: Creature, x, y):
 
   if healthbar:
     screen.blit(healthbar, (x + 16, y + 20))
+
+def draw_player_name_box(screen: Screen, creature: Creature, x, y):
+  screen.blit(screen.tileset.get_ui("player_name"), (x + 7, y))
+  screen.write_centered(creature.name, (x + 128, y + 5), screen.tileset.get_font(20))
+  return (x, y + 32)
+
+def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, start_y):
+  screen.blit(screen.tileset.get_ui("player_health_and_armor"), (start_x, start_y))
+
+  hp_x = start_x
+  hp_y = start_y
+  percentage = creature.hp / creature.max_hp
+  pygame.draw.rect(screen.display, screen.tileset.HP_RED, (hp_x + 5, hp_y + 5, int(246 * percentage), 23))
+  hp_string = str(creature.hp) + "/" + str(creature.max_hp)
+  screen.write_centered(hp_string, (hp_x + 128, hp_y + 6), screen.tileset.get_font(20))
+
+  mana_x = hp_x
+  mana_y = hp_y + 31
+  if creature.mana > 0:
+    percentage = creature.mana / creature.max_mana
+    pygame.draw.rect(screen.display, screen.tileset.MANA_BLUE, (mana_x + 5, mana_y + 6, int(246 * percentage), 23))
+  mana_string = str(creature.mana) + "/" + str(creature.max_mana)
+  screen.write_centered(mana_string, (mana_x + 128, mana_y + 6), screen.tileset.get_font(20))
+
+  p_armor_x = mana_x
+  armor_y = mana_y + 32
+  p_armor = creature.p_armor
+  rem = creature.p_armor_cap - p_armor
+  for i in range(p_armor):
+    screen.blit(screen.tileset.get_ui("armor_physical"), (p_armor_x + 5 + i * 20, armor_y + 4))
+  for i in range(rem):
+    screen.blit(screen.tileset.get_ui("armor_used"), (p_armor_x + 5 + p_armor * 20 + i * 20, armor_y + 4))
+  m_armor_x = mana_x + 128
+  m_armor = creature.m_armor
+  rem = creature.m_armor_cap - m_armor
+  for i in range(m_armor):
+    screen.blit(screen.tileset.get_ui("armor_magical"), (m_armor_x + 3 + i * 20, armor_y + 4))
+  for i in range(rem):
+    screen.blit(screen.tileset.get_ui("armor_used"), (m_armor_x + 3 + m_armor * 20 + i * 20, armor_y + 4))
+  
+  # Return the bottom left coordinate of this UI element so we can stack more underneath it
+  return (p_armor_x, armor_y + 32)
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   path = creature.get_path_to(x, y)[:creature.get_possible_distance()]

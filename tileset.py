@@ -4,6 +4,8 @@ import pygame
 WALL_TILESETS = 6
 FLOOR_TILESETS = 5
 
+# Load all relevant images and assets at the start and store them here so that we can quickly access them without
+# reloading images all the time
 class TileSet:
   def __init__(self):
     self.corners = []
@@ -155,7 +157,9 @@ class TileSet:
     self.ui["floor_highlight_red"] = tile_highlight.subsurface((0,32,64,32))
 
     player_status = pygame.image.load("assets/ui/player_stats_ui.png")
-    self.ui["player_base_stats"] = player_status
+    self.ui["player_name"] = player_status.subsurface((7,0,242,32))
+    self.ui["player_health_and_armor"] = player_status.subsurface((0,32,256,97))
+    self.ui["player_action_points"] = player_status.subsurface((0,128,256,33))  # There is overlap by 1 px here
 
     ui_icons = pygame.image.load("assets/ui/base_ui_icons.png")
     image_width = 20

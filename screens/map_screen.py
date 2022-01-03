@@ -1,7 +1,7 @@
 import pygame
 from screens.subscreen import Subscreen
 from screens.screen import Screen
-from screens.main_graphics import is_ne_wall, is_nw_wall, is_outer_corner
+from screens.main_graphics import draw_player_name_box, draw_player_health_mana_armor
 from world.world_builder import Room, World
 from creatures.creature import Creature
 from helpers import get_tile_position, get_cartesian_position
@@ -26,6 +26,26 @@ class MapScreen(Subscreen):
     self.map_offset_x, self.map_offset_y = self.center_map_offset(screen, active)
 
   def draw(self, screen: Screen):
+    self.draw_world(screen)
+    if self.clicked_room:
+      self.highlight_room(screen, self.clicked_room)
+
+    x, y = screen.width - 256, 24
+    for p in self.world.players:
+      x, y = draw_player_name_box(screen, p, x, y)
+      x, y = draw_player_health_mana_armor(screen, p, x, y)
+      y += 24
+    
+    screen.write_centered("Press [r] to rest", (x + 128, y), screen.tileset.get_font())
+
+    if self.message:
+      screen.write_centered(self.message, (screen.width / 2, screen.height - 64), screen.tileset.get_font())
+    screen.write_centered("Double click a room to travel there", (screen.width / 2, screen.height - 32), screen.tileset.get_font())
+  
+  def center_map_offset(self, screen, creature):
+    return get_tile_position((screen.width / 2), (screen.height / 2), creature.x * 16, creature.y * 16)
+
+  def draw_world(self, screen: Screen):
     width, height = self.world.dimensions()
     creature_locations = self.world.creature_location_dict()
     for x in range(width):
@@ -64,15 +84,6 @@ class MapScreen(Subscreen):
             corner_x, corner_y = get_tile_position(self.map_offset_x, self.map_offset_y, x * 16 + 2, y * 16 - 10)
             screen.blit(screen.tileset.get_corner_small(tileset_id), (corner_x, corner_y))
         """
-    if self.clicked_room:
-      self.highlight_room(screen, self.clicked_room)
-
-    if self.message:
-      screen.write_centered(self.message, (screen.width / 2, screen.height - 48), screen.tileset.get_font())
-    screen.write("Press [r] to rest", (12, screen.height - 32), screen.tileset.get_font())
-  
-  def center_map_offset(self, screen, creature):
-    return get_tile_position((screen.width / 2), (screen.height / 2), creature.x * 16, creature.y * 16)
   
   def highlight_room(self, screen: Screen, room: Room):
     tiles = room.get_tiles()
@@ -141,3 +152,4 @@ class MapScreen(Subscreen):
     for p in self.world.players:
       x, y = self.world.get_random_floor_in_room(room)
       p.move_to(x,y)
+      p.upkeep()

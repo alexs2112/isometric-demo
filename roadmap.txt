@@ -1,0 +1,8 @@
+Not comprehensive, what is actively being worked on
+
+Roadmap:
+ - Items and inventory
+ - Update README with more up to date images and player stats
+
+Side work:
+ - Have FOV for each individual character, darkening outside. Make this efficient
