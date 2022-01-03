@@ -148,6 +148,9 @@ class Creature:
   
   def can_see(self, to_x, to_y):
     return fov.can_see(self.world, self.x, self.y, to_x, to_y, self.vision_radius)
+  
+  def has_seen(self, to_x, to_y):
+    return self.world.has_seen(to_x, to_y)
 
   def notify(self, message):
     if self.messages != None:
@@ -173,10 +176,13 @@ class Creature:
       self.world.remove_creature(self)
 
   def attack_creature(self, target):
-    if self == target:
-      if self.is_player():
-        self.notify("Are you sure you want to attack yourself?")
-        return
+    if self == target and self.is_player():
+      self.notify("Are you sure you want to attack yourself?")
+      return
+
+    if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
+      self.notify("The " + target.name + " is out of range!")
+      return
 
     if self.ap < self.attack_cost:
       self.notify(self.name + " does not have enough AP to attack!")

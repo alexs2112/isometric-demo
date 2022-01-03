@@ -45,7 +45,7 @@ class Pathfinder:
         return self.create_path(start, closest)
       else:
         self.check_neighbours(creature, end, closest)
-    return self.create_path(start, closest)
+    return []
   
   def get_closest_point(self, end):
     closest = self.open[0]
@@ -56,8 +56,9 @@ class Pathfinder:
   
   def check_neighbours(self, creature, end, closest):
     for neighbour in self.get_neighbours(closest):
-      if neighbour in self.closed or \
-        not creature.can_enter(neighbour[0], neighbour[1]) and neighbour != end:
+      if neighbour in self.closed \
+        or not creature.has_seen(neighbour[0], neighbour[1]) \
+        or not creature.can_enter(neighbour[0], neighbour[1]) and neighbour != end:
         continue
       
       if neighbour in self.open:
