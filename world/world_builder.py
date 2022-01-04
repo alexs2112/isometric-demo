@@ -131,6 +131,12 @@ class World:
         return room
     return None
 
+  def get_inventory(self, x, y):
+    if (x,y) in self.items:
+      return self.items[(x,y)]
+    else:
+      return None
+
   def add_item(self, item, point, quantity=1):
     if point not in self.items:
       self.items[point] = Inventory()

@@ -31,7 +31,7 @@ class FieldOfView(list):
             self[to_x][to_y] = True
             c = world.get_creature_at_location(to_x, to_y)
             if c:
-              c.activate()
+              c.activate(creature)
               creature.notify("You see a " + c.name)
             if world.is_wall(to_x - 1, to_y):
               self[to_x-1][to_y] = True

@@ -37,3 +37,6 @@ class Inventory:
     
   def get_items(self):
     return self.items.items()
+
+  def number_of_different_items(self):
+    return len(self.items.keys())

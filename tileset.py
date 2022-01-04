@@ -29,6 +29,8 @@ class TileSet:
     self.initialize_items()
     self.ui = {}
     self.initialize_ui()
+    self.misc = {}
+    self.initialize_misc()
 
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
@@ -39,6 +41,7 @@ class TileSet:
     self.PHYSICAL_YELLOW = (251, 242, 54)
     self.MAGICAL_CYAN = (95, 205, 228)
     self.EQUIPPED_GREEN = (106, 190, 48)
+    self.DARK_GREY = (34, 32, 52)
 
   def get_corner(self, tileset_id):
     return self.corners[tileset_id]
@@ -69,6 +72,9 @@ class TileSet:
   
   def get_item(self, item_name):
     return self.item_icons[item_name]
+
+  def get_misc(self, image_id):
+    return self.misc[image_id]
 
   def get_ui(self, image_id):
     return self.ui[image_id]
@@ -165,6 +171,10 @@ class TileSet:
           y += image_height
         image = items_full.subsurface((x, y, image_width, image_height))
         self.item_icons[type[i]] = image
+  
+  def initialize_misc(self):
+    base = pygame.image.load("assets/misc.png")
+    self.misc["satchel"] = base.subsurface((0,0,32,32))
       
   def initialize_ui(self):
     health_bars = pygame.image.load("assets/ui/health_bars.png")
@@ -202,4 +212,5 @@ class TileSet:
     map_icons = pygame.image.load("assets/ui/map_icons.png")
     self.ui["map_player_dot"] = map_icons.subsurface((0,0,24,8))
     self.ui["map_enemy_dot"] = map_icons.subsurface((0,8,24,8))
+    self.ui["map_items_dot"] = map_icons.subsurface((24,0,24,8))
     self.ui["map_floor_orange"] = map_icons.subsurface((0,16,32,16))

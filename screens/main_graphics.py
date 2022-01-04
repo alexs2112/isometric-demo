@@ -57,10 +57,15 @@ def draw_world(screen: Screen, world: World):
       tileset_id = world.tile(x,y).tileset_id
 
       if world.is_floor(x,y):
-        screen.blit(screen.tileset.get_floor(tileset_id), (get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)))
+        p_x, p_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
+        screen.blit(screen.tileset.get_floor(tileset_id), (p_x, p_y))
+        
+        items = world.get_inventory(x,y)
+        if items:
+          screen.blit(screen.tileset.get_misc("satchel"), (p_x + 16, p_y - 4))
+
         if (x,y) in creature_locations:
           creature = creature_locations[(x,y)]
-          p_x, p_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
           screen.blit(creature.icon, (p_x + 16, p_y - 16))
           draw_healthbar(screen, creature, p_x, p_y)
       else:
@@ -179,3 +184,46 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
       highlight = screen.tileset.get_ui("floor_highlight_green")
     screen.blit(highlight, (iso_x, iso_y))
   return path
+
+def show_mouse_tooltips(screen: Screen, world: World, mouse_x, mouse_y, tile_x, tile_y):
+  if world.outside_world(tile_x, tile_y) or not world.has_seen(tile_x, tile_y):
+    return
+  lines = []
+  
+  # Showing creature names in tooltips gets cluttered quickly
+  # c = world.get_creature_at_location(tile_x, tile_y)
+  # if c:
+  #   lines.append(c.name)
+  
+  i = world.get_inventory(tile_x, tile_y)
+  if i:
+    c = i.number_of_different_items()
+    if c > 3:
+      lines.append(str(c) + " different items...")
+    for item, quantity in i.get_items():
+      s = ""
+      if quantity > 1:
+        s += str(quantity) + " "
+      s += item.name
+      if quantity > 1:
+        s += "'s"
+      lines.append(s)
+
+  font = screen.tileset.get_font(16)
+  if lines:
+    line_height = 18
+    line_width = 0
+    for line in lines:
+      new_width, _ = font.size(line)
+      if new_width > line_width:
+        line_width = new_width
+    x = mouse_x
+    y = mouse_y - line_height * len(lines)
+    i = 0
+    for line in lines:
+      pygame.draw.rect(screen.display, screen.tileset.DARK_GREY, (x, y + i * line_height, line_width + 4, line_height))
+      screen.write(line, (x+2, y + i * line_height), font)
+
+
+
+

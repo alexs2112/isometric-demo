@@ -107,6 +107,7 @@ def main(args):
       draw_world(screen, world)
       path = draw_path_to_mouse(screen, active, tile_x, tile_y)
       draw_interface(screen, active, path)
+      show_mouse_tooltips(screen, world, mouse_x, mouse_y, tile_x, tile_y)
       display_messages(screen, messages)
 
     pygame.display.update()

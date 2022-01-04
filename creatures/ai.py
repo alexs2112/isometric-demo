@@ -85,5 +85,10 @@ class Basic(AI):
       if abs(self.creature.x - p.x) <= 1 and abs(self.creature.y - p.y) <= 1:
         self.creature.attack_creature(p)
 
-    
+  def activate(self, creature=None):
+      super().activate()
+
+      if creature:
+        self.move_to = (creature.x, creature.y)
+      
 

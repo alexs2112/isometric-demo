@@ -67,6 +67,8 @@ class MapScreen(Subscreen):
             else:
               icon = screen.tileset.get_ui("map_enemy_dot")
             screen.blit(icon, (sx + 4, sy + 4))
+          elif self.world.get_inventory(x,y):
+            screen.blit(screen.tileset.get_ui("map_items_dot"), (sx + 4, sy + 4))
         """
         # For now going to see how this goes without displaying the walls
         else:

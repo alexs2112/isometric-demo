@@ -1,5 +1,10 @@
-Roadmap:
+Active Work:
+ - Ability to pick up items off the ground by standing near a tile and clicking it
+   - Maybe also the ability to pick up from the map screen
+ - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Better equipment and consumables spawning in the dungeon and on enemies
+
+Unordered Roadmap:
  - Character overhaul, different character models that show their equipped equipment
  - Combat overhaul, spells, effects and ranged attacks
  - Dungeon features, such as doors, barrels, random stuff sitting around

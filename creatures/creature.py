@@ -133,9 +133,9 @@ class Creature:
       return self.ai.active
     return False
 
-  def activate(self):
+  def activate(self, creature=None):
     if self.ai:
-      self.ai.activate()
+      self.ai.activate(creature)
 
   def can_enter(self, x, y):
     if self.world.is_floor(x, y) and not self.world.get_creature_at_location(x,y):
@@ -228,12 +228,17 @@ class Creature:
       self.m_armor = max(0, self.m_armor - damage)
     self.hp -= amount
     if self.hp <= 0:
-      self.notify_player(self.name + " dies!")
-      self.world.remove_creature(self)
+      self.die()
+  
+  def die(self):
+    self.notify_player(self.name + " dies!")
+    for item, quantity in self.inventory.get_items():
+      self.world.add_item(item, (self.x, self.y), quantity)
+    self.world.remove_creature(self)
 
   def attack_creature(self, target):
-    if self == target and self.is_player():
-      self.notify("Are you sure you want to attack yourself?")
+    if self.is_player() and target.is_player():
+      self.notify("Are you sure you want to attack a party member?")
       return
 
     # Can set this 1 to be a range stat or something
