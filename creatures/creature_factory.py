@@ -1,3 +1,4 @@
+import random
 import creatures.ai as ai
 from creatures.creature import Creature
 from items.item_factory import ItemFactory
@@ -84,6 +85,18 @@ class CreatureFactory:
     creature.set_base_stats(max_hp=8, max_mana=0, p_armor=1, m_armor=1)
     creature.set_misc_stats(max_ap=3, speed=2, vision_radius=5)
     creature.set_attack_stats(attack_min=2, attack_max=3)
+    if random.random() < 0.2:
+      # Armed skeletons will hit like a truck since its just adding directly to attack_min and max
+      # This will be fixed when I fix weapons
+      if random.random() < 0.5:
+        creature.add_and_equip(self.items.dagger())
+      else:
+        creature.add_and_equip(self.items.short_sword())
+    if random.random() < 0.5:
+      if random.random() < 0.5:
+        creature.add_and_equip(self.items.wizard_hat())
+      else:
+        creature.add_and_equip(self.items.leather_armor())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature

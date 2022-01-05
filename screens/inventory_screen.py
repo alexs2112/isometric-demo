@@ -70,7 +70,7 @@ class InventoryScreen(Subscreen):
             self.picking_up = False
           else:
             # We want to remove this inventory from the world if it is empty when we are done
-            if self.inventory.number_of_different_items() == 0:
+            if self.inventory and self.inventory.number_of_different_items() == 0:
               self.players[0].world.remove_inventory(self.inventory)
             return None
         elif event.key == K_DOWN:
@@ -98,6 +98,7 @@ class InventoryScreen(Subscreen):
             self.inventory.remove_item(i, q)
             p.add_item(i, q)
             self.picking_up = False
+            self.set_min_max_indices()
             if self.inventory.number_of_different_items() > 0:
               self.selected_index = max(self.min_index, self.selected_index - 1)
             else:

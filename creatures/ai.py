@@ -1,3 +1,4 @@
+import random
 from world.world_builder import World
 from creatures.creature import Creature
 
@@ -25,6 +26,7 @@ class AI:
       if p.x >= x - r and p.x <= x + r and p.y >= y - r and p.y <= y + r:
         if self.creature.can_see(p.x, p.y):
           players.append(p)
+    random.shuffle(players)
     return players
   
   def get_closest_player(self, world: World):
@@ -34,7 +36,9 @@ class AI:
     
     paths = []
     for p in players:
-      paths.append(self.creature.get_path_to(p.x, p.y))
+      p = self.creature.get_path_to(p.x, p.y)
+      if p:
+        paths.append(p)
     
     length = 100
     shortest_i = -1

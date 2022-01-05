@@ -1,8 +1,8 @@
 Active Work:
- - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Better equipment and consumables spawning in the dungeon and on enemies
 
 Unordered Roadmap:
+ - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Character overhaul, different character models that show their equipped equipment
  - Combat overhaul, spells, effects and ranged attacks
  - Dungeon features, such as doors, barrels, random stuff sitting around
@@ -12,14 +12,19 @@ Unordered Roadmap:
  - Quests and more of a surface world to explore
 
 Side work:
- - Have FOV for each individual character, darkening outside. Make this efficient
+ - Have FOV for each individual character, darkening outside
    - Store a "current" fov in the FOV update, each time FOV.update is called we just clear current and then recalculate each tile 
      a player can see
+   - Not super efficient but its not bad since we only control like 4 guys
  - More enemies and different AIs
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
+ - Fix how weapons work, right now it just directly adds to a creatures base damage
+   - Change base damage to some unarmed stat, then calculate attack based on equipped weapon OR unarmed
 
 Bugs:
  - For some reason an enemy will just skip their turn, not sure why. It seems to happen when they are fully surrounded
    - I think they are trying to pathfind to an unreachable player somehow
+   - This should be fixed? Leaving this bug here until I've confirmed it doesn't happen anymore
+     - It was because the path to an unreachable enemy would be [], which is indeed the shortest length path when choosing who to attack
