@@ -88,13 +88,21 @@ class CreatureFactory:
     if random.random() < 0.2:
       # Armed skeletons will hit like a truck since its just adding directly to attack_min and max
       # This will be fixed when I fix weapons
-      if random.random() < 0.5:
+      i = random.random()
+      if i < 0.3:
         creature.add_and_equip(self.items.dagger())
+      elif i > 0.9:
+        creature.add_and_equip(self.items.hand_axe())
       else:
         creature.add_and_equip(self.items.short_sword())
     if random.random() < 0.5:
-      if random.random() < 0.5:
+      i = random.random()
+      if i < 0.25:
         creature.add_and_equip(self.items.wizard_hat())
+      elif i < 0.5:
+        creature.add_and_equip(self.items.cloak())
+      elif i > 0.75:
+        creature.add_and_equip(self.items.basic_helm())
       else:
         creature.add_and_equip(self.items.leather_armor())
     creature.move_to(x, y)

@@ -13,19 +13,17 @@ class TileSet:
     self.ne_walls = []
     self.nw_walls = []
     self.floors = []
-    self.initialize_floors()
-    self.initialize_walls()
-
     self.corners_small = []
     self.ne_walls_small = []
     self.nw_walls_small = []
     self.floors_small = []
-    self.initialize_walls_small()
-    self.initialize_floors_small()
+    self.initialize_floors()
+    self.initialize_walls()
 
     self.creatures = {}
     self.initialize_creatures()
     self.item_icons = {}
+    self.item_icons_large = {}
     self.initialize_items()
     self.ui = {}
     self.initialize_ui()
@@ -43,35 +41,34 @@ class TileSet:
     self.EQUIPPED_GREEN = (106, 190, 48)
     self.DARK_GREY = (34, 32, 52)
 
-  def get_corner(self, tileset_id):
+  def get_corner(self, tileset_id, small=False):
+    if small:
+      return self.corners_small[tileset_id]
     return self.corners[tileset_id]
 
-  def get_floor(self, tileset_id):
+  def get_floor(self, tileset_id, small=False):
+    if small:
+      return self.floors_small[tileset_id]
     return self.floors[tileset_id]
 
-  def get_ne_wall(self, tileset_id):
+  def get_ne_wall(self, tileset_id, small=False):
+    if small:
+      return self.ne_walls_small[tileset_id]
     return self.ne_walls[tileset_id]
 
-  def get_nw_wall(self, tileset_id):
+  def get_nw_wall(self, tileset_id, small=False):
+    if small:
+      return self.nw_walls_small[tileset_id]
     return self.nw_walls[tileset_id]
-  
-  def get_corner_small(self, tileset_id):
-    return self.corners_small[tileset_id]
-
-  def get_floor_small(self, tileset_id):
-    return self.floors_small[tileset_id]
-
-  def get_ne_wall_small(self, tileset_id):
-    return self.ne_walls_small[tileset_id]
-
-  def get_nw_wall_small(self, tileset_id):
-    return self.nw_walls_small[tileset_id]
   
   def get_creature(self, image_id):
     return self.creatures[image_id] 
   
   def get_item(self, item_name):
     return self.item_icons[item_name]
+  
+  def get_item_large(self, item_name):
+    return self.item_icons_large[item_name]
 
   def get_misc(self, image_id):
     return self.misc[image_id]
@@ -91,6 +88,8 @@ class TileSet:
     offset_x_ne = 0
     offset_x_nw = image_width
     offset_y = 64
+    small_width = 20
+    small_height = 30
     for i in range(WALL_TILESETS):
       ym = i % 6
       xm = int(i / 6) * 96  # Width of both walls + corner
@@ -98,11 +97,15 @@ class TileSet:
       nw = walls_full.subsurface((offset_x_nw + xm, offset_y * ym, image_width, image_height))
       self.ne_walls.append(ne)
       self.nw_walls.append(nw)
+      self.ne_walls_small.append(pygame.transform.scale(ne, (small_width, small_height)))
+      self.nw_walls_small.append(pygame.transform.scale(nw, (small_width, small_height)))
     
     offset_x = 80
     offset_y = 64
     image_width = 16
     image_height = 48
+    small_width = 8
+    small_width = 24
     for i in range(WALL_TILESETS):
       ym = i % 6
       xm = int(i / 6) * 96
@@ -114,29 +117,13 @@ class TileSet:
     floors_full = pygame.image.load("assets/floors.png")
     image_width = 64
     image_height = 40
+    small_width = 32
+    small_height = 20
 
     for i in range(FLOOR_TILESETS):
       floor = floors_full.subsurface((0, image_height * i, image_width, image_height))
       self.floors.append(floor)
-
-  def initialize_walls_small(self):
-    corner_width = 8
-    corner_height = 24
-    for t in self.corners:
-      self.corners_small.append(pygame.transform.scale(t, (corner_width, corner_height)))
-
-    wall_width = 20
-    wall_height = 30
-    for t in self.ne_walls:
-      self.ne_walls_small.append(pygame.transform.scale(t, (wall_width, wall_height)))
-    for t in self.nw_walls:
-      self.nw_walls_small.append(pygame.transform.scale(t, (wall_width, wall_height)))
-    
-  def initialize_floors_small(self):
-    image_width = 32
-    image_height = 20
-    for t in self.floors:
-      self.floors_small.append(pygame.transform.scale(t, (image_width, image_height)))
+      self.floors_small.append(pygame.transform.scale(floor, (small_width, small_height)))
 
   def initialize_creatures(self):
     creatures_full = pygame.image.load("assets/creatures.png")
@@ -170,7 +157,9 @@ class TileSet:
         if (i % 10) == 0:
           y += image_height
         image = items_full.subsurface((x, y, image_width, image_height))
+
         self.item_icons[type[i]] = image
+        self.item_icons_large[type[i]] = pygame.transform.scale(image, (64,64))
   
   def initialize_misc(self):
     base = pygame.image.load("assets/misc.png")

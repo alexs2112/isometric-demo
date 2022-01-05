@@ -26,6 +26,9 @@ class InventoryScreen(Subscreen):
     self.player_index = 0
 
     self.set_min_max_indices()
+
+    self.cache_item = None
+    self.cache_item_desc = []
   
   def draw(self, screen: Screen):
     line_height = 22
@@ -48,8 +51,32 @@ class InventoryScreen(Subscreen):
         y += line_height
       p_index += 1
 
+    i = self.get_current_item()
+    if i != self.cache_item:
+      self.cache_item = i
+      if i:
+        self.cache_item_desc = screen.split_text_to_list(i.description, 400, font)
+        
+        if i.is_equipment():
+          self.cache_item_desc.append("")
+          for b, v in i.all_bonuses():
+            self.cache_item_desc.append(b + " : " + str(v))
+        
+      else:
+        self.cache_item_desc = []
+    if self.cache_item:
+      x = 500
+      y = 12
+      screen.blit(screen.tileset.get_item_large(self.cache_item.name), (x,y))
+      y += 22
+      screen.write(self.cache_item.name, (x+70,y), font)
+      y += 20
+      y += line_height
+      x += 12
+      y = screen.write_list(self.cache_item_desc, (x, y), font)
+
     if self.inventory:
-      x = 800
+      x = 1000
       y = 12
       line_index = 0
       screen.write("Picking Up:", (x, y), font)
@@ -133,6 +160,9 @@ class InventoryScreen(Subscreen):
           if item_index == self.selected_index:
             return item
           item_index += 1
+    else:
+      i, _ = self.inventory.get_item_at_index(self.selected_index)
+      return i
 
   def set_min_max_indices(self):
     self.min_index = 0

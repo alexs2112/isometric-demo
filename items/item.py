@@ -6,9 +6,14 @@ class Item:
     # If the item can be stacked in inventory or not
     # Unique items are all individual objects, non-unique items are all pointers to the same object
     self.unique = unique
+
+    self.description = "This item doesn't have a description yet"
   
   def is_equipment(self):
     return False
+
+  def set_description(self, desc):
+    self.description = desc
 
 class Equipment(Item):
   def __init__(self, name, icon, slot):
@@ -30,6 +35,9 @@ class Equipment(Item):
     if name in self.bonuses:
       return self.bonuses[name]
     return 0
+  
+  def all_bonuses(self):
+    return list(self.bonuses.items())
   
   def is_equipment(self):
       return True

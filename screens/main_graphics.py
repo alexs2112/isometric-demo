@@ -122,9 +122,10 @@ def draw_healthbar(screen: Screen, creature: Creature, x, y):
   if healthbar:
     screen.blit(healthbar, (x + 16, y + 20))
   
-  if not creature.is_active():
-    ay -= 10
-    screen.blit(screen.tileset.get_ui("inactive_icon"), (x + 16, ay))
+  # For debugging a creatures active state
+  # if not creature.is_active():
+  #   ay -= 10
+  #   screen.blit(screen.tileset.get_ui("inactive_icon"), (x + 16, ay))
 
 def draw_player_name_box(screen: Screen, creature: Creature, x, y):
   screen.blit(screen.tileset.get_ui("player_name"), (x + 7, y))

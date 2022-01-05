@@ -32,3 +32,29 @@ class Screen:
     (x,y) = coords
     x -= width / 2
     self.write(text, (x,y), font, colour)
+  
+  def split_text_to_list(self, text, width, font):
+    # Take a string and split it into a list of strings, where each list element is no wider than width
+    # This is to cache the text to write it afterwards so we don't recalculate it every time
+    words = text.split(' ')
+    output = []
+    current = words[0]
+    for word in words[1:]:
+      new_word = " " + word
+      if font.size(current + new_word)[0] > width:
+        output.append(current)
+        current = word
+      else:
+        current += new_word
+    output.append(current)
+    return output
+  
+  def write_list(self, text_list, coords, font, colour=(255,255,255)):
+    x, y = coords
+    if not text_list:
+      return y
+    _, height = font.size(text_list[0])
+    for line in text_list:
+      self.write(line, (x,y), font, colour)
+      y += height
+    return y

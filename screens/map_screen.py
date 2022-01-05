@@ -59,7 +59,7 @@ class MapScreen(Subscreen):
         tileset_id = self.world.tile(x,y).tileset_id
         if self.world.is_floor(x,y):
           sx, sy = get_tile_position(self.map_offset_x, self.map_offset_y, x * 16, y * 16)
-          screen.blit(screen.tileset.get_floor_small(tileset_id), (sx, sy))
+          screen.blit(screen.tileset.get_floor(tileset_id, True), (sx, sy))
           if (x,y) in creature_locations:
             c = creature_locations[(x,y)]
             if c.is_player():
@@ -109,7 +109,7 @@ class MapScreen(Subscreen):
           if self.world.no_active_enemies():
             for p in self.world.players:
               p.rest()
-              return None
+            return None
           else:
             self.message = "Cannot rest, there are enemies nearby!"
       if event.type == MOUSEBUTTONDOWN:
