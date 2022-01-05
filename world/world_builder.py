@@ -146,7 +146,13 @@ class World:
     if point in self.items:
       self.items[point].remove_item(item, quantity)
       if self.items[point] == {}:
-        self.items.pop(point)    
+        self.items.pop(point)  
+
+  def remove_inventory(self, inventory):
+    for p, i in self.items.items():
+      if i == inventory:
+        self.items.pop(p)
+        return
 
   # Simply print the world to the terminal
   def print_world(self):

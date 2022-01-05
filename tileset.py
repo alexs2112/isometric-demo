@@ -177,19 +177,21 @@ class TileSet:
     self.misc["satchel"] = base.subsurface((0,0,32,32))
       
   def initialize_ui(self):
-    health_bars = pygame.image.load("assets/ui/health_bars.png")
+    main_icons = pygame.image.load("assets/ui/main_icons.png")
     image_width = 32
     image_height = 6
     health_ids = ["health_full", "health_most", "health_half", "health_quarter"]
     for i in range(4):
-      image = health_bars.subsurface((0, i * image_height, image_width, image_height))
+      image = main_icons.subsurface((0, i * image_height, image_width, image_height))
       self.ui[health_ids[i]] = image
-    self.ui["armor_physical_bar"] = health_bars.subsurface((0, 24, 4, 6))
-    self.ui["armor_magical_bar"] = health_bars.subsurface((4, 24, 4, 6))
+    self.ui["armor_physical_bar"] = main_icons.subsurface((0, 24, 4, 6))
+    self.ui["armor_magical_bar"] = main_icons.subsurface((4, 24, 4, 6))
+    self.ui["inactive_icon"] = main_icons.subsurface((8, 24, 8, 8))
     
     tile_highlight = pygame.image.load("assets/ui/floor_highlights.png")
     self.ui["floor_highlight_green"] = tile_highlight.subsurface((0,0,64,32))
     self.ui["floor_highlight_red"] = tile_highlight.subsurface((0,32,64,32))
+    self.ui["floor_highlight_yellow"] = tile_highlight.subsurface((0,64,64,32))
 
     player_status = pygame.image.load("assets/ui/player_stats_ui.png")
     self.ui["player_name"] = player_status.subsurface((7,0,242,32))

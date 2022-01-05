@@ -9,8 +9,11 @@ class AI:
     self.active = False       # If the creature is actively hunting a player
     # We could also point self.world = self.creature.world here, but it could be useful to have world as a param in other methods?
   
-  def activate(self):
+  def activate(self, creature=None):
     self.active = True
+
+  def is_active(self):
+    return self.active
 
   def take_turn(self, world: World):
     return
@@ -51,7 +54,7 @@ class AI:
 
 # Does nothing each turn
 class Plant(AI):
-  def activate(self):
+  def activate(self, creature=None):
     # This is a plant, it cannot be activated
     return
 
@@ -68,8 +71,7 @@ class Basic(AI):
 
     p: Creature = self.get_closest_player(world)
     if p:
-      self.activate()
-      self.move_to = (p.x, p.y)
+      self.activate(p)
     elif not self.move_to:
       self.move_to = self.get_home_tile(world)
 
@@ -86,9 +88,9 @@ class Basic(AI):
         self.creature.attack_creature(p)
 
   def activate(self, creature=None):
-      super().activate()
+    super().activate()
 
-      if creature:
-        self.move_to = (creature.x, creature.y)
+    if creature:
+      self.move_to = (creature.x, creature.y)
       
 

@@ -73,12 +73,7 @@ class Creature:
   def get_m_armor_cap(self):
     return min(self.m_armor_cap + self.equipment.get_bonus("M_ARMOR"), self.M_ARMOR_MAX)
 
-  def pickup_item(self, item, quantity=1):
-    s = self.name + " picks up "
-    if not item.unique and quantity == 1:
-      s += " a "
-    s += item.name
-    self.notify(s)
+  def add_item(self, item, quantity=1):
     self.inventory.add_item(item, quantity)
 
   def remove_item(self, item, quantity=1):
@@ -130,7 +125,7 @@ class Creature:
   # If this creature is actively hunting a player
   def is_active(self):
     if self.ai:
-      return self.ai.active
+      return self.ai.is_active()
     return False
 
   def activate(self, creature=None):

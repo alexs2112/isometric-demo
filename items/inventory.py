@@ -36,7 +36,14 @@ class Inventory:
       return 0
     
   def get_items(self):
-    return self.items.items()
+    return list(self.items.items())
 
   def number_of_different_items(self):
     return len(self.items.keys())
+
+  def get_item_at_index(self, index):
+    i = 0
+    for item, quantity in self.get_items():
+      if i == index:
+        return item, quantity
+    return (None, 0)

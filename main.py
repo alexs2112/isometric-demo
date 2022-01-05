@@ -1,5 +1,6 @@
 import pygame, sys
 import init
+from items.inventory import Inventory
 from items.item_factory import ItemFactory
 from screens.help_screen import HelpScreen
 from screens.inventory_screen import InventoryScreen
@@ -18,10 +19,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m,
-    K_i,
-    K_s,
-    K_h,
+    K_m, K_i, K_s, K_h, K_g,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT
@@ -64,14 +62,28 @@ def main(args):
         if event.type == QUIT:
           pygame.quit()
           sys.exit(0)
+
         if event.type == MOUSEBUTTONDOWN:
           c = world.get_creature_at_location(tile_x, tile_y)
+          
+          if world.no_active_enemies():
+            i = world.get_inventory(tile_x, tile_y)
+          else:
+            i = None
+
           path = active.get_path_to(tile_x, tile_y)
-          if c:
+          if c or i:
             path = path[:-1]
           active.move_along_path(path)
           if c:
             active.attack_creature(c)
+          elif i:
+            if abs(active.x - tile_x) <= 1 and abs(active.y - tile_y) <= 1:
+              if world.no_active_enemies():
+                subscreen = InventoryScreen(world.players, i)
+              else:
+                active.notify("There are active enemies!")
+
         if event.type == KEYDOWN:
           if event.key == K_SPACE:
             screen.center_offset_on_creature(active)
@@ -92,6 +104,10 @@ def main(args):
             subscreen = StatsScreen(world.players)
           elif event.key == K_h:
             subscreen = HelpScreen()
+          elif event.key == K_g:
+            i = Inventory()
+            i.add_item(item_factory.wizard_hat())
+            subscreen = InventoryScreen(world.players, i)
 
       # Not sure if we need to be able to scroll anymore
       keys = pygame.key.get_pressed()

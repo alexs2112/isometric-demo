@@ -121,6 +121,10 @@ def draw_healthbar(screen: Screen, creature: Creature, x, y):
 
   if healthbar:
     screen.blit(healthbar, (x + 16, y + 20))
+  
+  if not creature.is_active():
+    ay -= 10
+    screen.blit(screen.tileset.get_ui("inactive_icon"), (x + 16, ay))
 
 def draw_player_name_box(screen: Screen, creature: Creature, x, y):
   screen.blit(screen.tileset.get_ui("player_name"), (x + 7, y))
@@ -174,14 +178,19 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
     else:
       c = None
       path = path[:-1]
+  else:
+    return path
+  
+  if c:
+    highlight = screen.tileset.get_ui("floor_highlight_red")
+  elif creature.world.get_inventory(x, y) and creature.world.no_active_enemies():
+    highlight = screen.tileset.get_ui("floor_highlight_yellow")
+  else:
+    highlight = screen.tileset.get_ui("floor_highlight_green")
+
   for tile in path:
     tile_x, tile_y = tile
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)
-
-    if c:
-      highlight = screen.tileset.get_ui("floor_highlight_red")
-    else:
-      highlight = screen.tileset.get_ui("floor_highlight_green")
     screen.blit(highlight, (iso_x, iso_y))
   return path
 
@@ -206,7 +215,7 @@ def show_mouse_tooltips(screen: Screen, world: World, mouse_x, mouse_y, tile_x, 
         s += str(quantity) + " "
       s += item.name
       if quantity > 1:
-        s += "'s"
+        s += "s"
       lines.append(s)
 
   font = screen.tileset.get_font(16)
@@ -223,7 +232,4 @@ def show_mouse_tooltips(screen: Screen, world: World, mouse_x, mouse_y, tile_x, 
     for line in lines:
       pygame.draw.rect(screen.display, screen.tileset.DARK_GREY, (x, y + i * line_height, line_width + 4, line_height))
       screen.write(line, (x+2, y + i * line_height), font)
-
-
-
-
+      i += 1

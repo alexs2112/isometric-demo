@@ -1,6 +1,4 @@
 Active Work:
- - Ability to pick up items off the ground by standing near a tile and clicking it
-   - Maybe also the ability to pick up from the map screen
  - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Better equipment and consumables spawning in the dungeon and on enemies
 
@@ -15,8 +13,13 @@ Unordered Roadmap:
 
 Side work:
  - Have FOV for each individual character, darkening outside. Make this efficient
+   - Store a "current" fov in the FOV update, each time FOV.update is called we just clear current and then recalculate each tile 
+     a player can see
  - More enemies and different AIs
  - Prettier subscreens and UI
+ - Mousing over things changes the cursor (attacking and grabbing items)
+ - Pick up items from the map screen
 
 Bugs:
  - For some reason an enemy will just skip their turn, not sure why. It seems to happen when they are fully surrounded
+   - I think they are trying to pathfind to an unreachable player somehow

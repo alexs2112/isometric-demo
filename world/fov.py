@@ -32,7 +32,11 @@ class FieldOfView(list):
             c = world.get_creature_at_location(to_x, to_y)
             if c:
               c.activate(creature)
-              creature.notify("You see a " + c.name)
+              s = "You see a " + c.name
+              w = c.equipment.slot("Main")
+              if w:
+                s += " wielding a " + w.name
+              creature.notify(s)
             if world.is_wall(to_x - 1, to_y):
               self[to_x-1][to_y] = True
             if world.is_wall(to_x, to_y - 1):
