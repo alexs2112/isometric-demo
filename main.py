@@ -40,6 +40,7 @@ def main(args):
   item_factory = ItemFactory(world, screen.tileset)
   creature_factory = CreatureFactory(world, screen.tileset, item_factory)
   init.create_creatures(world, creature_factory, messages)
+  init.create_items(world, item_factory)
   active = world.get_active_creature()
   screen.center_offset_on_creature(active)
   subscreen = StartScreen()

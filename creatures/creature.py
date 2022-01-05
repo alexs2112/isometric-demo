@@ -41,6 +41,7 @@ class Creature:
     self.m_armor_cap = m_armor
     self.p_armor = p_armor
     self.m_armor = m_armor
+    self.set_unarmed_stats()
 
   def set_misc_stats(self, max_ap, speed, vision_radius):
     self.max_ap = max_ap
@@ -49,23 +50,46 @@ class Creature:
     self.vision_radius = vision_radius
     self.free_movement = 0  # The remaining moves after moving, so moves arent "wasted"
   
-  def set_attack_stats(self, attack_min, attack_max, base_damage_type="physical", attack_cost=2):
-    self.attack_min = attack_min
-    self.attack_max = attack_max
-    self.base_damage_type = base_damage_type
-    self.attack_cost = attack_cost
+  def set_unarmed_stats(self, min=0, max=1, type="physical", cost=2):
+    self.unarmed_min = min
+    self.unarmed_max = max
+    self.unarmed_type = type
+    self.unarmed_cost = cost
 
   def get_speed(self):
     return self.speed + self.equipment.get_bonus("SPEED")
 
   def get_attack_min(self):
-    return self.attack_min + self.equipment.get_bonus("ATK_MIN")
+    i = self.get_main_hand()
+    if i:
+      if i.is_weapon():
+        return i.attack_min
+    
+    return self.unarmed_min + self.equipment.get_bonus("UNARMED_DAMAGE")
   
   def get_attack_max(self):
-    return self.attack_max + self.equipment.get_bonus("ATK_MAX")
+    i = self.get_main_hand()
+    if i:
+      if i.is_weapon():
+        return i.attack_max
+    
+    return self.unarmed_max + self.equipment.get_bonus("UNARMED_DAMAGE")
   
   def get_attack_cost(self):
-    return self.attack_cost + self.equipment.get_bonus("ATK_COST")
+    i = self.get_main_hand()
+    if i:
+      if i.is_weapon():
+        return i.cost
+    
+    return self.unarmed_cost
+  
+  def get_damage_type(self):
+    i = self.get_main_hand()
+    if i:
+      if i.is_weapon():
+        return i.damage_type
+    
+    return self.unarmed_type
 
   def get_p_armor_cap(self):
     return min(self.p_armor_cap + self.equipment.get_bonus("P_ARMOR"), self.P_ARMOR_MAX)
@@ -95,6 +119,9 @@ class Creature:
   def add_and_equip(self, item):
     self.inventory.add_item(item)
     self.equip(item)
+
+  def get_main_hand(self):
+    return self.equipment.slot("Main")
 
   def is_equipped(self, item):
     if not item.is_equipment:
@@ -251,10 +278,13 @@ class Creature:
     atk_max = self.get_attack_max()
     damage = random.randint(atk_min, atk_max) + random.randint(atk_min, atk_max)
     damage = round(damage/2)
-    if self.equipment.slot("Main"):
-      damage_type = self.equipment.slot("Main").damage_type
+    damage_type = self.get_damage_type()
+
+    w = self.get_main_hand()
+    if w and w.is_weapon():
+      s = w.name
     else:
-      damage_type = self.base_damage_type
-    self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage!")
-    target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage!")
+      s = "Unarmed"
+    self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
+    target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
     target.take_damage(damage, damage_type)

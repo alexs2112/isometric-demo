@@ -83,8 +83,6 @@ def draw_world(screen: Screen, world: World):
         if nw_wall and ne_wall:
           corner_x, corner_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32 + 4, y * 32 - 20)
           screen.blit(screen.tileset.get_corner(tileset_id), (corner_x, corner_y))
-        # We probably want to handle corners on the left and right so that it looks like a corner when only one wall is shown
-        # This might be a massive pain in the ass to how we are drawing walls, maybe redo it
 
         if not world.can_see(x,y):
           screen.blit(screen.tileset.get_ui("wall_highlight_dark"), (sx, sy - 16))

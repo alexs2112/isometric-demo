@@ -11,6 +11,9 @@ class Item:
   
   def is_equipment(self):
     return False
+  
+  def is_weapon(self):
+    return False
 
   def set_description(self, desc):
     self.description = desc
@@ -24,9 +27,6 @@ class Equipment(Item):
     # bonus type by key
     # Example: { "p_armor" : 1 } to add an additional 1 to the p_armor cap
     self.bonuses = {}
-
-    # In case we are attacking with this item and we need to check the damage type
-    self.damage_type = "physical"
   
   def set_bonus(self, name, value):
     self.bonuses[name] = value
@@ -40,4 +40,22 @@ class Equipment(Item):
     return list(self.bonuses.items())
   
   def is_equipment(self):
-      return True
+    return True
+
+class Weapon(Equipment):
+  def __init__(self, name, icon):
+    super().__init__(name, icon, "Main")  # For now weapons can only be equipped in the main hand
+    self.set_stats(0,1)
+  
+  def set_stats(self, attack_min, attack_max, damage_type="physical", range=1, cost=2):
+    self.attack_min = attack_min
+    self.attack_max = attack_max
+    self.damage_type = damage_type
+    self.range = range
+    self.cost = cost
+  
+  def is_weapon(self):
+    return True
+
+  def weapon_string(self):
+    return str(self.attack_min) + "-" + str(self.attack_max) + " " + self.damage_type + " damage. " + "[RANGE=" + str(self.range) + "] [COST=" + str(self.cost) + "]"

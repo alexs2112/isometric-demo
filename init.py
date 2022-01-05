@@ -1,4 +1,5 @@
 import random, sys
+from items.item_factory import ItemFactory
 import world.world_builder as world_builder
 from creatures.creature_factory import CreatureFactory
 
@@ -65,3 +66,9 @@ def create_creatures(world: world_builder.World, cf: CreatureFactory, messages):
       else:
         c = cf.new_skeleton(x,y)
       c.set_home_room(room)
+
+def create_items(world: world_builder.World, f: ItemFactory):
+  for _ in range(10):
+    x, y = world.get_floor_coordinate()
+    world.add_item(f.get_random_item(), (x,y))
+  

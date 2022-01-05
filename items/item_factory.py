@@ -1,5 +1,6 @@
+import random
 from world.world_builder import World
-from items.item import Equipment
+from items.item import Item, Equipment, Weapon
 from tileset import TileSet
 
 def get_item_image_ids():
@@ -31,6 +32,19 @@ class ItemFactory:
 
     # Store all non-unique items in a hash, like the tileset
     self.cache = {}
+
+  def get_random_item(self):
+    i = random.randint(0,9)
+    if i == 0: return self.robe()
+    elif i == 1: return self.leather_armor()
+    elif i == 2: return self.wizard_hat()
+    elif i == 3: return self.basic_helm()
+    elif i == 4: return self.shoes()
+    elif i == 5: return self.gloves()
+    elif i == 6: return self.cloak()
+    elif i == 7: return self.dagger()
+    elif i == 8: return self.short_sword()
+    elif i == 9: return self.hand_axe()
   
   def robe(self):
     name = "Robe"
@@ -87,8 +101,8 @@ class ItemFactory:
     if name in self.cache:
       return self.cache[name]
     item = Equipment(name, self.tileset.get_item(name), "Hands")
-    item.set_bonus("P_ARMOR", 1)
-    item.set_description("Temp: A simple pair of gloves.")
+    item.set_bonus("UNARMED_DAMAGE", 1)
+    item.set_description("A pair of weighted gloves, they add a bit of extra force to your punches.")
     self.cache[name] = item
     return item
   
@@ -106,10 +120,8 @@ class ItemFactory:
     name = "Dagger"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Main")
-    item.set_bonus("ATK_MIN", 1)
-    item.set_bonus("ATK_MAX", 1)
-    item.set_bonus("ATK_COST", -1)
+    item = Weapon(name, self.tileset.get_item(name))
+    item.set_stats(attack_min=1, attack_max=2, cost=1)
     item.set_description("Temp: A double-edged fighting knife with a sharp point that makes for quick slashes.")
     self.cache[name] = item
     return item
@@ -118,9 +130,8 @@ class ItemFactory:
     name = "Short Sword"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Main")
-    item.set_bonus("ATK_MIN", 2)
-    item.set_bonus("ATK_MAX", 2)
+    item = Weapon(name, self.tileset.get_item(name))
+    item.set_stats(attack_min=3, attack_max=4)
     item.set_description("Temp: A small, double-edged blade with a short grip.")
     self.cache[name] = item
     return item
@@ -129,9 +140,8 @@ class ItemFactory:
     name = "Hand Axe"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Main")
-    item.set_bonus("ATK_MIN", 2)
-    item.set_bonus("ATK_MAX", 3)
+    item = Weapon(name, self.tileset.get_item(name))
+    item.set_stats(attack_min=3, attack_max=5)
     item.set_description("A small axe, just as useful for hacking down enemies as breaking down wood.")
     self.cache[name] = item
     return item

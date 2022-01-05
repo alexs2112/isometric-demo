@@ -8,14 +8,10 @@ class Inventory:
     self.items = {}
   
   def add_item(self, item: Item, quantity=1):
-    if item.unique:
-      # Quantity should never be more than 1 for unique items
-      self.items[item] = quantity
+    if item in self.items:
+      self.items[item] += quantity
     else:
-      if item in self.items:
-        self.items[item] += quantity
-      else:
-        self.items[item] = quantity
+      self.items[item] = quantity
 
   def remove_item(self, item: Item, quantity=1):
     if item in self.items:

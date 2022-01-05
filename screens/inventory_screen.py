@@ -51,30 +51,6 @@ class InventoryScreen(Subscreen):
         y += line_height
       p_index += 1
 
-    i = self.get_current_item()
-    if i != self.cache_item:
-      self.cache_item = i
-      if i:
-        self.cache_item_desc = screen.split_text_to_list(i.description, 400, font)
-        
-        if i.is_equipment():
-          self.cache_item_desc.append("")
-          for b, v in i.all_bonuses():
-            self.cache_item_desc.append(b + " : " + str(v))
-        
-      else:
-        self.cache_item_desc = []
-    if self.cache_item:
-      x = 500
-      y = 12
-      screen.blit(screen.tileset.get_item_large(self.cache_item.name), (x,y))
-      y += 22
-      screen.write(self.cache_item.name, (x+70,y), font)
-      y += 20
-      y += line_height
-      x += 12
-      y = screen.write_list(self.cache_item_desc, (x, y), font)
-
     if self.inventory:
       x = 1000
       y = 12
@@ -87,6 +63,32 @@ class InventoryScreen(Subscreen):
         screen.write(s, (x + 12, y), screen.tileset.get_font(20), color)
         line_index += 1
         y += line_height
+
+    i = self.get_current_item()
+    if i != self.cache_item:
+      self.cache_item = i
+      if i:
+        self.cache_item_desc = screen.split_text_to_list(i.description, 400, font)
+        
+        if i.is_equipment():
+          self.cache_item_desc.append("")
+          for b, v in i.all_bonuses():
+            self.cache_item_desc.append(b + " : " + str(v))
+          
+          if i.is_weapon():
+            self.cache_item_desc.append(i.weapon_string())
+      else:
+        self.cache_item_desc = []
+    if self.cache_item:
+      x = 500
+      y = 12
+      screen.blit(screen.tileset.get_item_large(self.cache_item.name), (x,y))
+      y += 22
+      screen.write(self.cache_item.name, (x+70,y), font)
+      x += 12
+      y += 20
+      y += line_height
+      y = screen.write_list(self.cache_item_desc, (x, y), font)
 
   def respond_to_events(self, events):
     super().respond_to_events(events)

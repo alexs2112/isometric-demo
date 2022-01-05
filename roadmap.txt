@@ -16,8 +16,6 @@ Side work:
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
- - Fix how weapons work, right now it just directly adds to a creatures base damage
-   - Change base damage to some unarmed stat, then calculate attack based on equipped weapon OR unarmed
  - Ranged Weapons:
    - Draw a line (like a line line) from you to target if they are in range to show that they will be shot rather than
      moved towards and attacked
