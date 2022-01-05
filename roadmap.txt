@@ -18,7 +18,12 @@ Side work:
  - Pick up items from the map screen
  - Fix how weapons work, right now it just directly adds to a creatures base damage
    - Change base damage to some unarmed stat, then calculate attack based on equipped weapon OR unarmed
- - Have FOV for each individual character, darkening outside
-   - Store a "current" fov in the FOV update, each time FOV.update is called we just clear current and then recalculate each tile 
-     a player can see
-   - Not super efficient but its not bad since we only control like 4 guys
+ - Ranged Weapons:
+   - Draw a line (like a line line) from you to target if they are in range to show that they will be shot rather than
+     moved towards and attacked
+   - When we shoot maybe return a projectile_path line, if there is one in main then just display the projectile on each tile
+     of the path with a quick sleep in between to "animate" their movement
+      - This has to be done quickly since the player will have no control while the projectile is moving, and slow would look weird
+        anyway
+   - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
+      - Default quiver has no ammunition cost because that sucks in an rpg

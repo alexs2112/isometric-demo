@@ -177,10 +177,12 @@ class TileSet:
     self.ui["armor_magical_bar"] = main_icons.subsurface((4, 24, 4, 6))
     self.ui["inactive_icon"] = main_icons.subsurface((8, 24, 8, 8))
     
-    tile_highlight = pygame.image.load("assets/ui/floor_highlights.png")
+    tile_highlight = pygame.image.load("assets/ui/tile_highlights.png")
     self.ui["floor_highlight_green"] = tile_highlight.subsurface((0,0,64,32))
     self.ui["floor_highlight_red"] = tile_highlight.subsurface((0,32,64,32))
     self.ui["floor_highlight_yellow"] = tile_highlight.subsurface((0,64,64,32))
+    self.ui["floor_highlight_dark"] = tile_highlight.subsurface((64,0,64,32))
+    self.ui["wall_highlight_dark"] = tile_highlight.subsurface((64,32,64,48))
 
     player_status = pygame.image.load("assets/ui/player_stats_ui.png")
     self.ui["player_name"] = player_status.subsurface((7,0,242,32))

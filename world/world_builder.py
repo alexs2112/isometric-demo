@@ -84,6 +84,9 @@ class World:
   
   def has_seen(self, x, y):
     return self.fov.contains(x,y)
+  
+  def can_see(self, x, y):
+    return self.fov.can_see(x,y)
 
   def add_creature(self, creature):
     self.creatures.append(creature)

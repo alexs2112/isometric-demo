@@ -55,36 +55,39 @@ def draw_world(screen: Screen, world: World):
         continue
 
       tileset_id = world.tile(x,y).tileset_id
-
       if world.is_floor(x,y):
-        p_x, p_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
-        screen.blit(screen.tileset.get_floor(tileset_id), (p_x, p_y))
+        screen.blit(screen.tileset.get_floor(tileset_id), (sx, sy))
         
         items = world.get_inventory(x,y)
         if items:
-          screen.blit(screen.tileset.get_misc("satchel"), (p_x + 16, p_y - 4))
+          screen.blit(screen.tileset.get_misc("satchel"), (sx + 16, sy - 4))
 
-        if (x,y) in creature_locations:
-          creature = creature_locations[(x,y)]
-          screen.blit(creature.icon, (p_x + 16, p_y - 16))
-          draw_healthbar(screen, creature, p_x, p_y)
+        if world.can_see(x,y):
+          if (x,y) in creature_locations:
+            creature = creature_locations[(x,y)]
+            screen.blit(creature.icon, (sx + 16, sy - 16))
+            draw_healthbar(screen, creature, sx, sy)
+        else:
+          screen.blit(screen.tileset.get_ui("floor_highlight_dark"), (sx, sy))
       else:
         # These need to be if statements in case its both NW and NE wall (corners)
         nw_wall = is_nw_wall(world, x, y)
         ne_wall = is_ne_wall(world, x, y)
-        iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
         if is_outer_corner(world, x, y):
           corner_x, corner_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32 + 4, y * 32 - 20)
           screen.blit(screen.tileset.get_corner(tileset_id), (corner_x, corner_y))
         if nw_wall:
-          screen.blit(screen.tileset.get_nw_wall(tileset_id), (iso_x + 32 - 8, iso_y - 16 - 4))
+          screen.blit(screen.tileset.get_nw_wall(tileset_id), (sx + 32 - 8, sy - 16 - 4))
         if ne_wall:
-          screen.blit(screen.tileset.get_ne_wall(tileset_id), (iso_x, iso_y - 16 - 4))
+          screen.blit(screen.tileset.get_ne_wall(tileset_id), (sx, sy - 16 - 4))
         if nw_wall and ne_wall:
           corner_x, corner_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32 + 4, y * 32 - 20)
           screen.blit(screen.tileset.get_corner(tileset_id), (corner_x, corner_y))
         # We probably want to handle corners on the left and right so that it looks like a corner when only one wall is shown
         # This might be a massive pain in the ass to how we are drawing walls, maybe redo it
+
+        if not world.can_see(x,y):
+          screen.blit(screen.tileset.get_ui("wall_highlight_dark"), (sx, sy - 16))
 
 def get_healthbar(tileset: TileSet, creature: Creature):
   quarter = creature.max_hp / 4
