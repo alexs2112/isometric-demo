@@ -2,26 +2,37 @@ Active Work:
 
 Unordered Roadmap:
  - Movement should be free and the rest of the party should follow the active player when there are no active enemies
- - Item overhaul, consumables, spawning in dungeon, more equipment
  - Character overhaul, different character models that show their equipped equipment
  - Combat overhaul, spells, effects and ranged attacks
+    - More equipment once we have ways to make them interesting and unique
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Dungeon overhaul, multiple floors with a surface to talk to NPCs
  - Quests and more of a surface world to explore
+ - More mouse controls, everything should be controllable by mouse, including many buttons around the screen and redoing
+   most subscreens
 
 Side work:
  - More enemies and different AIs
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
+ - Inventory screen optimizations
+   - Allow the inventory screen to take multiple inventories as a param
+     - Looting rooms with multiple inventories
+     - Dropping items from multiple creatures at once
+   - Also allow you to pick up and move around a specific number of things, not just the max every time
  - Ranged Weapons:
    - Draw a line (like a line line) from you to target if they are in range to show that they will be shot rather than
      moved towards and attacked
    - When we shoot maybe return a projectile_path line, if there is one in main then just display the projectile on each tile
      of the path with a quick sleep in between to "animate" their movement
-      - This has to be done quickly since the player will have no control while the projectile is moving, and slow would look weird
-        anyway
+     - This has to be done quickly since the player will have no control while the projectile is moving, and slow would look weird
+       anyway
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
+
+Known Bugs:
+ - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
+   - Picking it up crashes the game

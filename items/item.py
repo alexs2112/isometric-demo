@@ -15,6 +15,9 @@ class Item:
   def is_weapon(self):
     return False
 
+  def is_consumable(self):
+    return False
+
   def set_description(self, desc):
     self.description = desc
 
@@ -59,3 +62,17 @@ class Weapon(Equipment):
 
   def weapon_string(self):
     return str(self.attack_min) + "-" + str(self.attack_max) + " " + self.damage_type + " damage. " + "[RANGE=" + str(self.range) + "] [COST=" + str(self.cost) + "]"
+
+class Potion(Item):
+  def __init__(self, name, icon):
+    super().__init__(name, icon)
+  
+  def set_effect(self, method):
+    self.effect = method
+
+  def consume(self, creature):
+    creature.notify_player(creature.name + " drinks the " + self.name)
+    self.effect(creature)
+
+  def is_consumable(self):
+      return True

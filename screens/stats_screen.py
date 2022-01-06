@@ -21,8 +21,8 @@ class StatsScreen(Subscreen):
     for c in self.party:
       screen.write(c.name, (12, y), screen.tileset.get_font(20))
       y += line_height
-      screen.write("HP: " + str(c.hp) + "/" + str(c.max_hp), (x0, y), screen.tileset.get_font(20))
-      screen.write("Mana: " + str(c.mana) + "/" + str(c.max_mana), (x1, y), screen.tileset.get_font(20))
+      screen.write("HP: " + str(c.hp) + "/" + str(c.get_max_hp()), (x0, y), screen.tileset.get_font(20))
+      screen.write("Mana: " + str(c.mana) + "/" + str(c.get_max_mana()), (x1, y), screen.tileset.get_font(20))
       y += line_height
       screen.write("Physical Armor: " + str(c.p_armor) + "/" + str(c.get_p_armor_cap()), (x0, y), screen.tileset.get_font(20))
       screen.write("Magical Armor: " + str(c.m_armor) + "/" + str(c.get_m_armor_cap()), (x1, y), screen.tileset.get_font(20))

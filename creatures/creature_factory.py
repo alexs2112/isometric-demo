@@ -47,6 +47,7 @@ class CreatureFactory:
     creature.move_to(x, y)
     creature.set_unarmed_stats(min=3, max=5, type="magical")
     creature.add_and_equip(self.items.wizard_hat())
+    creature.add_item(self.items.potion_minor_healing())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature

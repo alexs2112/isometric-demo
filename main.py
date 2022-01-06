@@ -19,7 +19,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m, K_i, K_s, K_h, K_g,
+    K_m, K_i, K_s, K_h, K_g, K_q,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT
@@ -109,6 +109,9 @@ def main(args):
             i = Inventory()
             i.add_item(item_factory.wizard_hat())
             subscreen = InventoryScreen(world.players, i)
+          elif event.key == K_q:
+            potion = item_factory.potion_minor_healing()
+            potion.consume(active)
 
       # Not sure if we need to be able to scroll anymore
       keys = pygame.key.get_pressed()

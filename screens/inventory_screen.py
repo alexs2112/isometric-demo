@@ -7,6 +7,7 @@ from pygame.locals import (
   K_RIGHT,
   K_LEFT,
   K_RETURN,
+  K_d,
   K_ESCAPE
 )
 
@@ -52,7 +53,7 @@ class InventoryScreen(Subscreen):
       p_index += 1
 
     if self.inventory:
-      x = 1000
+      x = 900
       y = 12
       line_index = 0
       screen.write("Picking Up:", (x, y), font)
@@ -64,23 +65,10 @@ class InventoryScreen(Subscreen):
         line_index += 1
         y += line_height
 
-    i = self.get_current_item()
-    if i != self.cache_item:
-      self.cache_item = i
-      if i:
-        self.cache_item_desc = screen.split_text_to_list(i.description, 400, font)
-        
-        if i.is_equipment():
-          self.cache_item_desc.append("")
-          for b, v in i.all_bonuses():
-            self.cache_item_desc.append(b + " : " + str(v))
-          
-          if i.is_weapon():
-            self.cache_item_desc.append(i.weapon_string())
-      else:
-        self.cache_item_desc = []
+    i, _ = self.get_current_item()
+    self.set_cache_item(screen, font, i)
     if self.cache_item:
-      x = 500
+      x = 420
       y = 12
       screen.blit(screen.tileset.get_item_large(self.cache_item.name), (x,y))
       y += 22
@@ -106,7 +94,10 @@ class InventoryScreen(Subscreen):
           if self.picking_up:
             self.player_index = min(len(self.players) - 1, self.player_index + 1)
           else:
-            self.selected_index = min(self.max_index, self.selected_index + 1)
+            if self.column == 0:
+              self.selected_index = min(self.max_index, self.selected_index + 1)
+            else:
+              self.selected_index = min(self.max_index_pickup, self.selected_index + 1)
         elif event.key == K_UP:
           if self.picking_up:
             self.player_index = max(0, self.player_index - 1)
@@ -120,7 +111,17 @@ class InventoryScreen(Subscreen):
           if self.inventory:
             self.column = 0
             self.selected_index = min(self.max_index, self.selected_index)
+        elif event.key == K_d:  # Drop
+          p = self.get_current_selected_player()
+          i, q = self.get_current_item()
+          p.remove_item(i, q)
+          p.world.add_item(i, (p.x, p.y), q)
+          self.inventory = p.world.get_inventory(p.x, p.y)
+          self.set_min_max_indices()
+          self.selected_index = max(0, self.selected_index - 1)
         elif event.key == K_RETURN:
+          self.cache_item = None
+          self.cache_item_desc = []
           if self.picking_up:
             p = self.players[self.player_index]
             i, q = self.inventory.get_item_at_index(self.selected_index)
@@ -135,12 +136,18 @@ class InventoryScreen(Subscreen):
               self.selected_index = min(self.max_index, self.selected_index)
           elif self.column == 0:
             p = self.get_current_selected_player()
-            i = self.get_current_item()
-            if i and i.is_equipment():
+            i, _ = self.get_current_item()
+            if not i:
+              return self
+            if i.is_equipment():
               if p.is_equipped(i):
                 p.unequip(i)
               else:
                 p.equip(i)
+            elif i.is_consumable():
+              p.remove_item(i)
+              i.consume(p)
+              return None     # After drinking a potion, immediately return to the main screen
           else:
             # Mark an item for pickup, then get the player to pick it up
             self.picking_up = True
@@ -158,15 +165,16 @@ class InventoryScreen(Subscreen):
     item_index = 0
     if self.column == 0:
       for p in self.players:
-        for item, _ in p.inventory.get_items():
+        for item, quantity in p.inventory.get_items():
           if item_index == self.selected_index:
-            return item
+            return item, quantity
           item_index += 1
     else:
-      i, _ = self.inventory.get_item_at_index(self.selected_index)
-      return i
+      i, q = self.inventory.get_item_at_index(self.selected_index)
+      return i, q
 
   def set_min_max_indices(self):
+    # Reset the indices whenever an item is moved between a player and the inventory
     self.min_index = 0
     self.max_index = -1
     for p in self.players:
@@ -175,7 +183,6 @@ class InventoryScreen(Subscreen):
     self.max_index_pickup = -1
     if self.inventory:
       self.max_index_pickup = self.inventory.number_of_different_items() - 1
-
 
   def get_item_string(self, item, quantity, creature=None):
     s = ""
@@ -196,3 +203,37 @@ class InventoryScreen(Subscreen):
     else:
       color = screen.tileset.WHITE
     return color
+
+  def set_cache_item(self, screen, font, i):
+    if i != self.cache_item:
+      self.cache_item = i
+      if i:
+        self.cache_item_desc = screen.split_text_to_list(i.description, 400, font)
+        
+        if i.is_equipment():
+          self.cache_item_desc.append("")
+          for b, v in i.all_bonuses():
+            self.cache_item_desc.append(b + " : " + str(v))
+          
+          if i.is_weapon():
+            self.cache_item_desc.append(i.weapon_string())
+
+        self.cache_item_desc += [""] + self.get_item_options(i)
+      else:
+        self.cache_item_desc = []
+
+  def get_item_options(self, item):
+    options = []
+    if self.column == 1:
+      options.append("[ENTER]: Pick Up")
+    else:
+      if item.is_equipment():
+        creature = self.get_current_selected_player()
+        if creature.is_equipped(item):
+          options.append("[ENTER]: Unequip")
+        else:
+          options.append("[ENTER]: Equip")
+      if item.is_consumable():
+        options.append("[ENTER]: Quaff")
+      options.append("[D]: Drop")
+    return options

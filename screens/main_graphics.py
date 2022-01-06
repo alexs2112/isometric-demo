@@ -88,8 +88,8 @@ def draw_world(screen: Screen, world: World):
           screen.blit(screen.tileset.get_ui("wall_highlight_dark"), (sx, sy - 16))
 
 def get_healthbar(tileset: TileSet, creature: Creature):
-  quarter = creature.max_hp / 4
-  if creature.hp == creature.max_hp:
+  quarter = creature.get_max_hp() / 4
+  if creature.hp == creature.get_max_hp():
     return None
   elif creature.hp > 3 * quarter:
     return tileset.get_ui("health_full")
@@ -138,17 +138,17 @@ def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, s
 
   hp_x = start_x
   hp_y = start_y
-  percentage = creature.hp / creature.max_hp
+  percentage = creature.hp / creature.get_max_hp()
   pygame.draw.rect(screen.display, screen.tileset.HP_RED, (hp_x + 5, hp_y + 5, int(246 * percentage), 23))
-  hp_string = str(creature.hp) + "/" + str(creature.max_hp)
+  hp_string = str(creature.hp) + "/" + str(creature.get_max_hp())
   screen.write_centered(hp_string, (hp_x + 128, hp_y + 6), screen.tileset.get_font(20))
 
   mana_x = hp_x
   mana_y = hp_y + 31
   if creature.mana > 0:
-    percentage = creature.mana / creature.max_mana
+    percentage = creature.mana / creature.get_max_mana()
     pygame.draw.rect(screen.display, screen.tileset.MANA_BLUE, (mana_x + 5, mana_y + 6, int(246 * percentage), 23))
-  mana_string = str(creature.mana) + "/" + str(creature.max_mana)
+  mana_string = str(creature.mana) + "/" + str(creature.get_max_mana())
   screen.write_centered(mana_string, (mana_x + 128, mana_y + 6), screen.tileset.get_font(20))
 
   p_armor_x = mana_x

@@ -14,7 +14,7 @@ class EquipmentList:
 
       # Trinkets
       "Ring" : None,   # Eventually let creatures equip up to two rings
-      "Amulet" : None,
+      # Eventually add amulets if we want, but Im not sure how to make them unique from rings yet
 
       # Main Hand + Off Hand
       "Main" : None,

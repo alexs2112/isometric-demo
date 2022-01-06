@@ -1,6 +1,7 @@
 import random
 from world.world_builder import World
-from items.item import Item, Equipment, Weapon
+from items.item import Item, Equipment, Weapon, Potion
+from creatures.creature import Creature
 from tileset import TileSet
 
 def get_item_image_ids():
@@ -17,11 +18,12 @@ def get_item_image_ids():
     # Cloak
     ["Cloak"],
     # Rings
-    [""],
-    # Amulet
-    [""],
+    ["Ring of Magic Resistance", "Ring of Mana", "Ring of Health"],
     # Weapons
-    ["Dagger", "Short Sword", "Hand Axe"]
+    ["Dagger", "Short Sword", "Hand Axe"],
+
+    # Potions
+    ["Potion of Minor Healing"]
   ]
   return image_ids
 
@@ -34,7 +36,7 @@ class ItemFactory:
     self.cache = {}
 
   def get_random_item(self):
-    i = random.randint(0,9)
+    i = random.randint(0,12)
     if i == 0: return self.robe()
     elif i == 1: return self.leather_armor()
     elif i == 2: return self.wizard_hat()
@@ -45,6 +47,9 @@ class ItemFactory:
     elif i == 7: return self.dagger()
     elif i == 8: return self.short_sword()
     elif i == 9: return self.hand_axe()
+    elif i == 10: return self.ring_magic_resist()
+    elif i == 11: return self.ring_health()
+    elif i == 12: return self.potion_minor_healing()
   
   def robe(self):
     name = "Robe"
@@ -116,6 +121,36 @@ class ItemFactory:
     self.cache[name] = item
     return item
 
+  def ring_magic_resist(self):
+    name = "Ring of Magic Resistance"
+    if name in self.cache:
+      return self.cache[name]
+    item = Equipment(name, self.tileset.get_item(name), "Ring")
+    item.set_bonus("M_ARMOR", 1)
+    item.set_description("A metal band charged with arcane forces that help to shield from magical effects.")
+    self.cache[name] = item
+    return item
+
+  def ring_mana(self):
+    name = "Ring of Mana"
+    if name in self.cache:
+      return self.cache[name]
+    item = Equipment(name, self.tileset.get_item(name), "Ring")
+    item.set_bonus("MAX_MANA", 3)
+    item.set_description("A ring that one can store magical essence in, drawing from it when needed in the future.")
+    self.cache[name] = item
+    return item
+  
+  def ring_health(self):
+    name = "Ring of Health"
+    if name in self.cache:
+      return self.cache[name]
+    item = Equipment(name, self.tileset.get_item(name), "Ring")
+    item.set_bonus("MAX_HP", 2)
+    item.set_description("A ring that one can store their life force in, drawing from it when needed in the future.")
+    self.cache[name] = item
+    return item
+
   def dagger(self):
     name = "Dagger"
     if name in self.cache:
@@ -143,5 +178,17 @@ class ItemFactory:
     item = Weapon(name, self.tileset.get_item(name))
     item.set_stats(attack_min=3, attack_max=5)
     item.set_description("A small axe, just as useful for hacking down enemies as breaking down wood.")
+    self.cache[name] = item
+    return item
+
+  def potion_minor_healing(self):
+    name = "Potion of Minor Healing"
+    if name in self.cache:
+      return self.cache[name]
+    item = Potion(name, self.tileset.get_item(name))
+    item.set_description("Temp:	A magical healing elixir which causes wounds to close and heal almost instantly.")
+    def effect(creature: Creature):
+      creature.heal(random.randint(3, 8))
+    item.set_effect(effect)
     self.cache[name] = item
     return item

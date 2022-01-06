@@ -56,6 +56,12 @@ class Creature:
     self.unarmed_type = type
     self.unarmed_cost = cost
 
+  def get_max_hp(self):
+    return self.max_hp + self.equipment.get_bonus("MAX_HP")
+
+  def get_max_mana(self):
+    return self.max_mana + self.equipment.get_bonus("MAX_MANA")
+
   def get_speed(self):
     return self.speed + self.equipment.get_bonus("SPEED")
 
@@ -124,7 +130,7 @@ class Creature:
     return self.equipment.slot("Main")
 
   def is_equipped(self, item):
-    if not item.is_equipment:
+    if not item.is_equipment():
       return False
     return self.equipment.is_equipped(item)
 
@@ -240,6 +246,10 @@ class Creature:
       if p.can_see(self.x, self.y):
         p.notify(message)
         break
+
+  def heal(self, amount):
+    self.hp = min(self.get_max_hp(), self.hp + random.randint(3, 8))
+    self.notify_player(self.name + " heals " + str(amount) + " HP!")
 
   def take_damage(self, damage, type):
     if type == "physical":
