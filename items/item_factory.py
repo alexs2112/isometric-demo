@@ -34,7 +34,7 @@ def get_item_image_ids():
   return image_ids
 
 class ItemFactory:
-  def __init__(self, world: World, tileset: TileSet):
+  def __init__(self, world: World, tileset: TileSet, effect: EffectFactory):
     self.world = world
     self.tileset = tileset
 
@@ -42,14 +42,14 @@ class ItemFactory:
     self.cache = {}
 
     # To make file less huge and verbose, break each item type into its own factory
-    self.effect = EffectFactory()
+    self.effect = effect
     self.equipment = EquipmentFactory(tileset)
     self.trinket = TrinketFactory(tileset)
     self.weapon = WeaponFactory(tileset)
     self.potion = PotionFactory(tileset, self.effect)
 
   def get_random_item(self):
-    i = random.randint(0,13)
+    i = random.randint(0,12)
     if i == 0: return self.equipment.robe()
     elif i == 1: return self.equipment.leather_armor()
     elif i == 2: return self.equipment.wizard_hat()

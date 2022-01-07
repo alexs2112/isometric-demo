@@ -22,6 +22,7 @@ class Creature:
     self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
+    self.spells = []
     self.abilities = []
     self.loaded_ability = None
 
@@ -137,7 +138,8 @@ class Creature:
     return self.equipment.is_equipped(item)
 
   def add_effect(self, effect):
-    effect.apply(self)
+    if effect:
+      effect.apply(self)
 
   def upkeep(self):
     self.loaded_ability = None
@@ -308,11 +310,18 @@ class Creature:
     target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
     target.take_damage(damage, damage_type)
 
+  # Spells are a subclass of abilties
   def get_abilities(self):
     return self.abilities
 
   def add_ability(self, ability):
     self.abilities.append(ability)
+
+  def get_spells(self):
+    return self.spells
+  
+  def add_spell(self, spell):
+    self.spells.append(spell)
 
   def load_ability(self, ability):
     self.loaded_ability = ability

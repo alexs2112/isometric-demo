@@ -16,7 +16,12 @@ def draw_interface(screen: Screen, active: Creature, path):
   x, y = draw_player_health_mana_armor(screen, active, x, y)
 
   screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
-  cost, free_movement = active.cost_of_path_with_attacks(path)
+
+  if active.loaded_ability:
+    cost = active.loaded_ability.ap_cost
+    free_movement = active.free_movement
+  else:
+    cost, free_movement = active.cost_of_path_with_attacks(path)
   leftover_ap = active.ap - cost
   for i in range(leftover_ap):
     screen.blit(screen.tileset.get_ui("ap_active"), (x + 3 + i * 25, y + 4))
@@ -195,6 +200,19 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)
     screen.blit(highlight, (iso_x, iso_y))
   return path
+
+def highlight_ability_target(screen: Screen, creature: Creature, tile_x, tile_y):
+  tiles = creature.loaded_ability.get_target_tiles(creature.x, creature.y, tile_x, tile_y)
+  creatures = creature.world.creature_location_dict()
+  for x,y in tiles:
+    if creature.world.is_floor(x,y):
+      if (x,y) in creatures:
+        highlight = screen.tileset.get_ui("floor_highlight_red")
+      else:
+        highlight = screen.tileset.get_ui("floor_highlight_blue")
+      iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
+      screen.blit(highlight, (iso_x, iso_y))
+  return tiles
 
 def show_mouse_tooltips(screen: Screen, world: World, mouse_x, mouse_y, tile_x, tile_y):
   if world.outside_world(tile_x, tile_y) or not world.has_seen(tile_x, tile_y):

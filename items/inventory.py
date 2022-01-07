@@ -8,6 +8,9 @@ class Inventory:
     self.items = {}
   
   def add_item(self, item: Item, quantity=1):
+    if item == None:
+      print("ERROR: Trying to add None to an inventory")
+      return
     if item in self.items:
       self.items[item] += quantity
     else:
