@@ -17,8 +17,8 @@ class CreatureFactory:
     creature = Creature(name, icon, "Player", self.world)
     creature.set_base_stats(max_hp=10, max_mana=2, p_armor=1, m_armor=1)
     creature.set_misc_stats(max_ap=3, speed=3, vision_radius=5)
-    creature.add_and_equip(self.items.short_sword())
-    creature.add_and_equip(self.items.leather_armor())
+    creature.add_and_equip(self.items.weapon.short_sword())
+    creature.add_and_equip(self.items.equipment.leather_armor())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     self.world.update_fov(creature)
@@ -32,8 +32,8 @@ class CreatureFactory:
     creature.set_misc_stats(max_ap=3, speed=3, vision_radius=5)
     creature.set_unarmed_stats(min=2, max=3, cost=1)
     creature.move_to(x, y)
-    creature.add_and_equip(self.items.cloak())
-    creature.add_and_equip(self.items.shoes())
+    creature.add_and_equip(self.items.equipment.cloak())
+    creature.add_and_equip(self.items.equipment.shoes())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -46,8 +46,8 @@ class CreatureFactory:
     creature.set_misc_stats(max_ap=3, speed=3, vision_radius=5)
     creature.move_to(x, y)
     creature.set_unarmed_stats(min=3, max=5, type="magical")
-    creature.add_and_equip(self.items.wizard_hat())
-    creature.add_item(self.items.potion_minor_healing())
+    creature.add_and_equip(self.items.equipment.wizard_hat())
+    creature.add_item(self.items.potion.potion_minor_healing())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -59,8 +59,8 @@ class CreatureFactory:
     creature.set_base_stats(max_hp=15, max_mana=0, p_armor=2, m_armor=1)
     creature.set_misc_stats(max_ap=2, speed=3, vision_radius=5)
     creature.move_to(x, y)
-    creature.add_and_equip(self.items.hand_axe())
-    creature.add_and_equip(self.items.leather_armor())
+    creature.add_and_equip(self.items.weapon.hand_axe())
+    creature.add_and_equip(self.items.equipment.leather_armor())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -87,21 +87,21 @@ class CreatureFactory:
     if random.random() < 0.2:
       i = random.random()
       if i < 0.3:
-        creature.add_and_equip(self.items.dagger())
+        creature.add_and_equip(self.items.weapon.dagger())
       elif i > 0.9:
-        creature.add_and_equip(self.items.hand_axe())
+        creature.add_and_equip(self.items.weapon.hand_axe())
       else:
-        creature.add_and_equip(self.items.short_sword())
+        creature.add_and_equip(self.items.weapon.short_sword())
     if random.random() < 0.5:
       i = random.random()
       if i < 0.25:
-        creature.add_and_equip(self.items.wizard_hat())
+        creature.add_and_equip(self.items.equipment.wizard_hat())
       elif i < 0.5:
-        creature.add_and_equip(self.items.cloak())
+        creature.add_and_equip(self.items.equipment.cloak())
       elif i > 0.75:
-        creature.add_and_equip(self.items.basic_helm())
+        creature.add_and_equip(self.items.equipment.basic_helm())
       else:
-        creature.add_and_equip(self.items.leather_armor())
+        creature.add_and_equip(self.items.equipment.leather_armor())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature

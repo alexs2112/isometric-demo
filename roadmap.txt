@@ -3,7 +3,7 @@ Active Work:
 Unordered Roadmap:
  - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Character overhaul, different character models that show their equipped equipment
- - Combat overhaul, spells, effects and ranged attacks
+ - Combat overhaul, spells, and ranged attacks
     - More equipment once we have ways to make them interesting and unique
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon

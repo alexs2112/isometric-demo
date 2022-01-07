@@ -67,12 +67,12 @@ class Potion(Item):
   def __init__(self, name, icon):
     super().__init__(name, icon)
   
-  def set_effect(self, method):
-    self.effect = method
+  def set_effect(self, effect):
+    self.effect = effect
 
   def consume(self, creature):
     creature.notify_player(creature.name + " drinks the " + self.name)
-    self.effect(creature)
+    creature.add_effect(self.effect)
 
   def is_consumable(self):
       return True

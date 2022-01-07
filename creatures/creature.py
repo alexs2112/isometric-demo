@@ -20,6 +20,7 @@ class Creature:
     self.ai = None
     self.home_room = None
     self.messages = None
+    self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
 
@@ -134,9 +135,15 @@ class Creature:
       return False
     return self.equipment.is_equipped(item)
 
+  def add_effect(self, effect):
+    effect.apply(self)
+
   def upkeep(self):
     self.ap = self.max_ap
     self.free_movement = 0
+
+    for e in self.effects:
+      e.update(self)
   
   def rest(self):
     self.upkeep()
