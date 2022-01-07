@@ -2,6 +2,7 @@ import random
 from abilities.effect import Effect
 from abilities.effect_factory import EffectFactory
 from items.equipment_factory import EquipmentFactory
+from items.trinket_factory import TrinketFactory
 from items.weapon_factory import WeaponFactory
 from items.potion_factory import PotionFactory
 from world.world_builder import World
@@ -43,6 +44,7 @@ class ItemFactory:
     # To make file less huge and verbose, break each item type into its own factory
     self.effect = EffectFactory()
     self.equipment = EquipmentFactory(tileset)
+    self.trinket = TrinketFactory(tileset)
     self.weapon = WeaponFactory(tileset)
     self.potion = PotionFactory(tileset, self.effect)
 
@@ -58,7 +60,7 @@ class ItemFactory:
     elif i == 7: return self.weapon.dagger()
     elif i == 8: return self.weapon.short_sword()
     elif i == 9: return self.weapon.hand_axe()
-    elif i == 10: return self.equipment.ring_magic_resist()
-    elif i == 11: return self.equipment.ring_health()
+    elif i == 10: return self.trinket.ring_magic_resist()
+    elif i == 11: return self.trinket.ring_health()
     elif i == 12: return self.potion.potion_minor_healing()
     elif i == 12: return self.potion.potion_regeneration()

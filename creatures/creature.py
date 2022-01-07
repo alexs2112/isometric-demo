@@ -1,7 +1,6 @@
 import math, random
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
-from items.item import Equipment
 import world.fov as fov
 from creatures.pathfinder import Path
 from world.world_builder import World
@@ -23,6 +22,8 @@ class Creature:
     self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
+    self.abilities = []
+    self.loaded_ability = None
 
   def set_ai(self, ai):
     self.ai = ai
@@ -139,6 +140,7 @@ class Creature:
     effect.apply(self)
 
   def upkeep(self):
+    self.loaded_ability = None
     self.ap = self.max_ap
     self.free_movement = 0
 
@@ -305,3 +307,12 @@ class Creature:
     self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
     target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
     target.take_damage(damage, damage_type)
+
+  def get_abilities(self):
+    return self.abilities
+
+  def add_ability(self, ability):
+    self.abilities.append(ability)
+
+  def load_ability(self, ability):
+    self.loaded_ability = ability

@@ -1,10 +1,19 @@
 Active Work:
+ - Abilities and spells
+   - Spell is a subclass of ability
+   - Selecting an ability or spell from a subscreen will "load" it in a creatures "loaded_ability"
+   - If a creature has a loaded ability then we can figure out what to do in main
+   - Clear the loaded_ability in a creatures upkeep
+ - Target class to keep track of how spells and abilities target things
+   - Method get_points(start, end) that returns all points the target hits as a list
+   - Subclasses that modify get_points() to return different styles of points
 
 Unordered Roadmap:
  - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Character overhaul, different character models that show their equipped equipment
- - Combat overhaul, spells, and ranged attacks
+ - Combat overhaul
     - More equipment once we have ways to make them interesting and unique
+ - Ranged attacks
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
