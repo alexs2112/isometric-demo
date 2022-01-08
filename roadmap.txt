@@ -1,9 +1,8 @@
 Active Work:
- - Abilities and spells
-   - Spell is a subclass of ability
-   - Selecting an ability or spell from a subscreen will "load" it in a creatures "loaded_ability"
-   - If a creature has a loaded ability then we can figure out what to do in main
-   - Clear the loaded_ability in a creatures upkeep
+ - Spells
+   - Selecting an ability or spell from a subscreen will "load" it in a creatures "loaded_spell"
+   - If a creature has a loaded spell then we can figure out what to do in main
+   - Clear the loaded_spell in a creatures upkeep
  - Target class to keep track of how spells and abilities target things
    - Method get_points(start, end) that returns all points the target hits as a list
    - Subclasses that modify get_points() to return different styles of points

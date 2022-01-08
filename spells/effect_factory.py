@@ -1,6 +1,6 @@
-from abilities.effect import Effect
+from spells.effect import Effect
 from creatures.creature import Creature
-import abilities.effect_functions as func
+import spells.effect_functions as func
 
 class EffectFactory:
   def __init__(self):

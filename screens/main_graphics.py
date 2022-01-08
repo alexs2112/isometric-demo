@@ -17,8 +17,8 @@ def draw_interface(screen: Screen, active: Creature, path):
 
   screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
 
-  if active.loaded_ability:
-    cost = active.loaded_ability.ap_cost
+  if active.loaded_spell:
+    cost = active.loaded_spell.ap_cost
     free_movement = active.free_movement
   else:
     cost, free_movement = active.cost_of_path_with_attacks(path)
@@ -202,7 +202,7 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   return path
 
 def highlight_ability_target(screen: Screen, creature: Creature, tile_x, tile_y):
-  tiles = creature.loaded_ability.get_target_tiles(creature.x, creature.y, tile_x, tile_y)
+  tiles = creature.loaded_spell.get_target_tiles(creature.x, creature.y, tile_x, tile_y)
   creatures = creature.world.creature_location_dict()
   for x,y in tiles:
     if creature.world.is_floor(x,y):

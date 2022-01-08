@@ -1,9 +1,9 @@
 import pygame, sys
-from abilities.effect_factory import EffectFactory
-from abilities.spell_factory import SpellFactory
 import init
 from items.inventory import Inventory
 from items.item_factory import ItemFactory
+from spells.effect_factory import EffectFactory
+from spells.spell_factory import SpellFactory
 from screens.help_screen import HelpScreen
 from screens.inventory_screen import InventoryScreen
 from screens.stats_screen import StatsScreen
@@ -75,8 +75,8 @@ class Game:
             c = self.world.get_creature_at_location(tile_x, tile_y)
             i = self.world.get_inventory(tile_x, tile_y)
             path = active.get_path_to(tile_x, tile_y)
-            if active.loaded_ability:
-              self.activate_ability(active, tile_x, tile_y)
+            if active.loaded_spell:
+              self.cast_loaded_spell(active, tile_x, tile_y)
             elif c:
               self.move_and_attack(active, c, path)
             elif i and self.world.no_active_enemies():
@@ -94,8 +94,8 @@ class Game:
               else:
                 self.subscreen = GameOverScreen()
             elif event.key == K_ESCAPE:
-              if active.loaded_ability:
-                active.loaded_ability = None
+              if active.loaded_spell:
+                active.loaded_spell = None
               else:
                 # Preferably open a game menu here instead of just ending the game lol
                 running = False
@@ -116,7 +116,7 @@ class Game:
               potion = self.item_factory.potion_minor_healing()
               potion.consume(active)
             elif event.key == K_b:
-              active.load_ability(self.spell_factory.flame_lash())
+              active.load_spell(self.spell_factory.flame_lash())
 
         # Not sure if we need to be able to scroll anymore
         keys = pygame.key.get_pressed()
@@ -130,7 +130,7 @@ class Game:
           self.screen.offset_y += 15
 
         draw_world(self.screen, self.world)
-        if active.loaded_ability:
+        if active.loaded_spell:
           highlight_ability_target(self.screen, active, tile_x, tile_y)
           path = None
         else:
@@ -167,20 +167,19 @@ class Game:
       else:
         active.notify("There are active enemies!")
   
-  def activate_ability(self, active: Creature, tile_x, tile_y):
-    tiles = active.loaded_ability.get_target_tiles(active.x, active.y, tile_x, tile_y)
+  def cast_loaded_spell(self, active: Creature, tile_x, tile_y):
+    tiles = active.loaded_spell.get_target_tiles(active.x, active.y, tile_x, tile_y)
     creatures = self.world.creature_location_dict()
-    if active.loaded_ability.is_spell():
-      targets = []
-      for t in tiles:
-        if t in creatures:
-          c = creatures[t]
-          if not active.loaded_ability.friendly_fire:
-            if c.faction == active.faction:
-              continue
-          targets.append(creatures[t])
-      active.loaded_ability.cast(active, targets)
-    active.loaded_ability = None
+    targets = []
+    for t in tiles:
+      if t in creatures:
+        c = creatures[t]
+        if not active.loaded_spell.friendly_fire:
+          if c.faction == active.faction:
+            continue
+        targets.append(creatures[t])
+    active.loaded_spell.cast(active, targets)
+    active.loaded_spell = None
 
 def start():
   args = sys.argv

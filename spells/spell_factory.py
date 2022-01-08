@@ -1,6 +1,6 @@
-from abilities.ability import Spell
-from abilities.effect_factory import EffectFactory
-from abilities.target import LineTarget
+from spells.spell import Spell
+from spells.effect_factory import EffectFactory
+from spells.target import LineTarget
 
 class SpellFactory:
   def __init__(self, effect_factory: EffectFactory):

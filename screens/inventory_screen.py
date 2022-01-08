@@ -234,6 +234,6 @@ class InventoryScreen(Subscreen):
         else:
           options.append("[ENTER]: Equip")
       if item.is_consumable():
-        options.append("[ENTER]: Quaff")
+        options.append("[ENTER]: Use")
       options.append("[D]: Drop")
     return options

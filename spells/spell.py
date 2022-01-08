@@ -1,14 +1,18 @@
-from abilities.effect import Effect
-from abilities.target import Target
+from spells.effect import Effect
+from spells.target import Target
 from creatures.creature import Creature
 
-class Ability:
-  def __init__(self, name, cost, cooldown):
+class Spell:
+  def __init__(self, name, ap_cost, mana_cost, cooldown):
     self.name = name
-    self.ap_cost = cost
+    self.ap_cost = ap_cost
     self.cooldown = cooldown
     self.downtime = 0
     self.target_type = Target(0)
+    self.mana_cost = mana_cost
+    self.caster_effect = None
+    self.target_effect = None
+    self.friendly_fire = False
 
   def set_target_type(self, target_type: Target):
     self.target_type = target_type
@@ -18,25 +22,6 @@ class Ability:
 
   def get_target_type(self):
     return self.target_type
-
-  def is_spell(self):
-    return False
-
-  def clone(self):
-    new = Ability(self.name, self.ap_cost, self.cooldown)
-    new.set_target_type(self.get_target_type())
-    return new
-
-class Spell(Ability):
-  def __init__(self, name, ap_cost, mana_cost, cooldown):
-    super().__init__(name, ap_cost, cooldown)
-    self.mana_cost = mana_cost
-    self.caster_effect = None
-    self.target_effect = None
-    self.friendly_fire = False
-
-  def is_spell(self):
-    return True
 
   def set_caster_effect(self, effect: Effect):
     self.caster_effect = effect

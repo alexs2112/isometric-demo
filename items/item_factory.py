@@ -1,6 +1,6 @@
 import random
-from abilities.effect import Effect
-from abilities.effect_factory import EffectFactory
+from spells.effect import Effect
+from spells.effect_factory import EffectFactory
 from items.equipment_factory import EquipmentFactory
 from items.trinket_factory import TrinketFactory
 from items.weapon_factory import WeaponFactory
