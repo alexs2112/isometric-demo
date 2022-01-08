@@ -6,38 +6,42 @@ class Effect:
   def __init__(self, name, duration):
     self.name = name
     self.duration = duration
-    self.start = None
-    self.end = None
-    self.tick = None
+    self.start = []
+    self.end = []
+    self.tick = []
   
-  def set_start(self, func):
-    self.start = func
+  def add_start(self, func):
+    self.start.append(func)
   
-  def set_end(self, func):
-    self.end = func
+  def add_end(self, func):
+    self.end.append(func)
   
-  def set_tick(self, func):
-    self.tick = func
+  def add_tick(self, func):
+    self.tick.append(func)
   
   def clone(self):
     new = Effect(self.name, self.duration)
-    new.set_start(self.start)
-    new.set_end(self.end)
-    new.set_tick(self.tick)
+    new.start = self.start
+    new.end = self.end
+    new.tick = self.tick
     return new
 
   def apply(self, creature: Creature):
     c = self.clone()
     if self.duration > 0:
       creature.effects.append(c)
-    self.start(self, creature)
+    
+    for f in self.start:
+      f(self, creature)
 
   def update(self, creature: Creature):
-    self.tick(self, creature)
+    for f in self.tick:
+      f(self, creature)
     self.duration -= 1
     if self.duration <= 0:
       self.remove(creature)
 
   def remove(self, creature: Creature):
-    self.end(self, creature)
+    for f in self.end:
+      f(self, creature)
     creature.effects.remove(self)

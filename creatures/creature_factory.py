@@ -48,6 +48,7 @@ class CreatureFactory:
     creature.set_unarmed_stats(min=3, max=5, type="magical")
     creature.add_and_equip(self.items.equipment.wizard_hat())
     creature.add_item(self.items.potion.potion_minor_healing())
+    creature.add_item(self.items.tomes.tome_of_embers())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature

@@ -19,7 +19,8 @@ class HelpScreen(Subscreen):
       "[h] to view this menu",
       "[m] to show the map view to travel and rest",
       "[i] to show the inventories of your party members",
-      "[s] to show the stats of your party members",
+      "[p] to show the stats of your party members",
+      "[s] to select a spell to cast if the active player knows any",
       "Escape to close this menu",
     ]:
       if line:

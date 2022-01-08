@@ -145,8 +145,9 @@ class InventoryScreen(Subscreen):
               else:
                 p.equip(i)
             elif i.is_consumable():
-              p.remove_item(i)
-              i.consume(p)
+              worked = i.consume(p)
+              if worked:
+                p.remove_item(i)
               return None     # After drinking a potion, immediately return to the main screen
           else:
             # Mark an item for pickup, then get the player to pick it up

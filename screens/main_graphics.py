@@ -10,15 +10,26 @@ def initialize_screen(width, height):
   display = pygame.display.set_mode((width, height))
   return Screen(width, height, display, tileset)
 
-def draw_interface(screen: Screen, active: Creature, path):
+def write_active_player(screen: Screen, active: Creature):
+  x = 12
+  y = 2
+  screen.write(active.name + "'s Turn", (x, y), screen.tileset.get_font())
+  if active.ap == 0 and active.free_movement == 0:
+    y += 26
+    screen.write("Out of AP, press Enter to end turn", (x, y), screen.tileset.get_font())
+  if active.loaded_spell:
+    y += 26
+    screen.write("Casting " + active.loaded_spell.name, (x, y), screen.tileset.get_font())
+
+def draw_player_stats(screen: Screen, active: Creature, path=[], spell=None):
   x, y = screen.width - 256, 0
   x, y = draw_player_name_box(screen, active, x, y)
   x, y = draw_player_health_mana_armor(screen, active, x, y)
 
   screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
 
-  if active.loaded_spell:
-    cost = active.loaded_spell.ap_cost
+  if spell:
+    cost = spell.ap_cost
     free_movement = active.free_movement
   else:
     cost, free_movement = active.cost_of_path_with_attacks(path)
@@ -35,10 +46,6 @@ def draw_interface(screen: Screen, active: Creature, path):
   else:
     colour = screen.tileset.HP_RED
   screen.write_centered(str(free_movement), (x + 238, y + 4), screen.tileset.get_font(20), colour)
-
-  screen.write(active.name + "'s Turn", (12, 2), screen.tileset.get_font())
-  if active.ap == 0 and active.free_movement == 0:
-    screen.write("Out of AP, press Enter to end turn", (12, 28), screen.tileset.get_font())
 
 def display_messages(screen: Screen, messages):
   y = screen.height - 30
@@ -207,6 +214,9 @@ def highlight_ability_target(screen: Screen, creature: Creature, tile_x, tile_y)
   for x,y in tiles:
     if creature.world.is_floor(x,y):
       if (x,y) in creatures:
+        if not creature.loaded_spell.friendly_fire:
+          if creatures[(x,y)].faction == creature.faction:
+            continue
         highlight = screen.tileset.get_ui("floor_highlight_red")
       else:
         highlight = screen.tileset.get_ui("floor_highlight_blue")

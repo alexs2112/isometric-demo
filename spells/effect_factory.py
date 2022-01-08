@@ -11,7 +11,7 @@ class EffectFactory:
     if name in self.cache:
       return self.cache[name]
     effect = Effect(name, 0)
-    effect.set_start(func.get_heal_function(0.35))
+    effect.add_start(func.get_heal_function(0.35))
     self.cache[name] = effect
     return effect
 
@@ -20,9 +20,9 @@ class EffectFactory:
     if name in self.cache:
       return self.cache[name]
     effect = Effect(name, 8)
-    effect.set_start(lambda _, creature : creature.notify_player(creature.name + " begins to regenerate!"))
-    effect.set_tick(func.get_heal_function(0.1))
-    effect.set_end(lambda _, creature : creature.notify_player(creature.name + " stops regenerating."))
+    effect.add_start(lambda _, creature : creature.notify_player(creature.name + " begins to regenerate!"))
+    effect.add_tick(func.get_heal_function(0.1))
+    effect.add_end(lambda _, creature : creature.notify_player(creature.name + " stops regenerating."))
     self.cache[name] = effect
     return effect
   
@@ -31,8 +31,9 @@ class EffectFactory:
     if name in self.cache:
       return self.cache[name]
     effect = Effect(name, 4)
-    effect.set_start(lambda _, creature : creature.notify_player(creature.name + " catches fire!"))
-    effect.set_tick(func.get_damage_function(1, 1, "magical", "Burning"))
-    effect.set_end(lambda _, creature : creature.notify_player(creature.name + " puts out the flames."))
+    effect.add_start(lambda _, creature : creature.notify_player(creature.name + " catches fire!"))
+    effect.add_start(func.get_damage_function(1, 2, "magical", "Burning"))
+    effect.add_tick(func.get_damage_function(1, 1, "magical", "Burning"))
+    effect.add_end(lambda _, creature : creature.notify_player(creature.name + " puts out the flames."))
     self.cache[name] = effect
     return effect

@@ -29,6 +29,13 @@ class Spell:
   def set_target_effect(self, effect: Effect):
     self.target_effect = effect
 
+  def is_castable(self, caster: Creature):
+    if self.ap_cost > caster.ap or \
+       self.mana_cost > caster.mana or \
+       self.downtime > 0:
+       return False
+    return True
+
   def cast(self, caster: Creature, target_list):
     if self.ap_cost > caster.ap:
       caster.notify(caster.name + " does not have enough action points to cast " + self.name + ".")

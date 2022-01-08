@@ -39,6 +39,7 @@ class TileSet:
     self.PHYSICAL_YELLOW = (251, 242, 54)
     self.MAGICAL_CYAN = (95, 205, 228)
     self.EQUIPPED_GREEN = (106, 190, 48)
+    self.ORANGE = (223, 113, 38)
     self.DARK_GREY = (34, 32, 52)
 
   def get_corner(self, tileset_id, small=False):

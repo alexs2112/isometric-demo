@@ -76,16 +76,21 @@ class Potion(Item):
   def consume(self, creature):
     creature.notify_player(creature.name + " drinks the " + self.name)
     creature.add_effect(self.effect)
+    return True
 
 class Tome(Item):
-  def __init__(self, name, icon):
+  def __init__(self, name, icon, spell):
     super().__init__(name, icon)
-  
-  def set_effect(self, effect):
-    self.effect = effect
+    self.spell = spell
 
   def is_consumable(self):
     return True
 
   def consume(self, creature):
-    creature.add_spell
+    if creature.knows_spell(self.spell.name):
+      creature.notify(creature.name + " already knows " + self.spell.name + ".")
+      return False
+    else:
+      creature.notify_player(creature.name + " absorbs the magical knowledge of " + self.name + "!")
+      creature.add_spell(self.spell.clone())
+      return True

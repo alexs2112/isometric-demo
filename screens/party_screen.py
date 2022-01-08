@@ -1,12 +1,11 @@
 from screens.screen import Screen
 from screens.subscreen import Subscreen
-from creatures.creature import Creature
 from pygame.locals import (
   KEYDOWN,
   K_ESCAPE
 )
 
-class StatsScreen(Subscreen):
+class PartyScreen(Subscreen):
   def __init__(self, party):
     self.party = party
 

@@ -2,11 +2,12 @@ import pygame, sys
 import init
 from items.inventory import Inventory
 from items.item_factory import ItemFactory
+from screens.spell_screen import SpellScreen
 from spells.effect_factory import EffectFactory
 from spells.spell_factory import SpellFactory
 from screens.help_screen import HelpScreen
 from screens.inventory_screen import InventoryScreen
-from screens.stats_screen import StatsScreen
+from screens.party_screen import PartyScreen
 from screens.subscreen import GameOverScreen, StartScreen
 from screens.map_screen import MapScreen
 import world.world_builder as world_builder
@@ -21,7 +22,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m, K_i, K_s, K_h, K_g, K_q, K_b,
+    K_m, K_i, K_s, K_h, K_g, K_p,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT
@@ -42,7 +43,7 @@ class Game:
     self.messages = [] # Keep track of all the notifications each turn
     self.effect_factory = EffectFactory()
     self.spell_factory = SpellFactory(self.effect_factory)
-    self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory)
+    self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.spell_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
     init.create_creatures(self.world, self.creature_factory, self.messages)
     init.create_items(self.world, self.item_factory)
@@ -104,19 +105,19 @@ class Game:
               self.subscreen = MapScreen(self.world, self.screen, active)
             elif event.key == K_i:
               self.subscreen = InventoryScreen(self.world.players)
-            elif event.key == K_s:
-              self.subscreen = StatsScreen(self.world.players)
+            elif event.key == K_p:
+              self.subscreen = PartyScreen(self.world.players)
             elif event.key == K_h:
               self.subscreen = HelpScreen()
             elif event.key == K_g:
               i = Inventory()
               i.add_item(self.item_factory.wizard_hat())
               self.subscreen = InventoryScreen(self.world.players, i)
-            elif event.key == K_q:
-              potion = self.item_factory.potion_minor_healing()
-              potion.consume(active)
-            elif event.key == K_b:
-              active.load_spell(self.spell_factory.flame_lash())
+            elif event.key == K_s:
+              if active.get_spells():
+                self.subscreen = SpellScreen(active)
+              else:
+                active.notify(active.name + " has no spells to cast.")
 
         # Not sure if we need to be able to scroll anymore
         keys = pygame.key.get_pressed()
@@ -135,9 +136,10 @@ class Game:
           path = None
         else:
           path = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
-        draw_interface(self.screen, active, path)
+        draw_player_stats(self.screen, active, path, active.loaded_spell)
         show_mouse_tooltips(self.screen, self.world, mouse_x, mouse_y, tile_x, tile_y)
         display_messages(self.screen, self.messages)
+        write_active_player(self.screen, active)
 
       pygame.display.update()
       pygame.time.delay(FRAME_DELAY)
@@ -169,6 +171,8 @@ class Game:
   
   def cast_loaded_spell(self, active: Creature, tile_x, tile_y):
     tiles = active.loaded_spell.get_target_tiles(active.x, active.y, tile_x, tile_y)
+    if not tiles:
+      return
     creatures = self.world.creature_location_dict()
     targets = []
     for t in tiles:

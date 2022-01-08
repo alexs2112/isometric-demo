@@ -1,17 +1,12 @@
 Active Work:
- - Spells
-   - Selecting an ability or spell from a subscreen will "load" it in a creatures "loaded_spell"
-   - If a creature has a loaded spell then we can figure out what to do in main
-   - Clear the loaded_spell in a creatures upkeep
- - Target class to keep track of how spells and abilities target things
-   - Method get_points(start, end) that returns all points the target hits as a list
-   - Subclasses that modify get_points() to return different styles of points
 
 Unordered Roadmap:
  - Movement should be free and the rest of the party should follow the active player when there are no active enemies
  - Character overhaul, different character models that show their equipped equipment
  - Combat overhaul
     - More equipment once we have ways to make them interesting and unique
+    - RPG skilling system
+    - A way to deal less damage while making things still interesting (since we are kind of capped on armor)
  - Ranged attacks
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
@@ -40,6 +35,12 @@ Side work:
        anyway
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
+ - Spellbook Icons:
+   - I think we should do one book icon for each magic school/type/whatever, then have the spell icon in the bottom corner of the
+     book icon
+ - Spells with cooldowns, this is mostly ignored for now
+ - "Animate" movement, add a short delay between each tile of movement, redrawing the screen each time. But only if the creature
+   is on screen
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details

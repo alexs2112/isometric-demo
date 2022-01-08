@@ -1,4 +1,4 @@
-import math, random
+import math, random, time
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
 import world.fov as fov
@@ -152,6 +152,7 @@ class Creature:
     self.upkeep()
     self.m_armor = self.get_m_armor_cap()
     self.p_armor = self.get_p_armor_cap()
+    self.mana = self.get_max_mana()
     self.notify(self.name + " is feeling refreshed!")
 
   def take_turn(self):
@@ -317,3 +318,9 @@ class Creature:
 
   def load_spell(self, spell):
     self.loaded_spell = spell
+
+  def knows_spell(self, spell_name):
+    for s in self.spells:
+      if s.name == spell_name:
+        return True
+    return False

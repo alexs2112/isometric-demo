@@ -6,6 +6,8 @@ class Target:
     self.range = range
 
   def get_points(self, sx, sy, dx, dy):
+    if abs(sx - sy) > self.range or abs(dx - dy) > self.range:
+      return []
     return [(dx,dy)]
 
 class LineTarget(Target):

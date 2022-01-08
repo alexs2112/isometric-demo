@@ -1,10 +1,12 @@
 import random
+from items.tome_factory import TomeFactory
 from spells.effect import Effect
 from spells.effect_factory import EffectFactory
 from items.equipment_factory import EquipmentFactory
 from items.trinket_factory import TrinketFactory
 from items.weapon_factory import WeaponFactory
 from items.potion_factory import PotionFactory
+from spells.spell_factory import SpellFactory
 from world.world_builder import World
 from items.item import Equipment, Weapon, Potion
 from creatures.creature import Creature
@@ -29,12 +31,15 @@ def get_item_image_ids():
     ["Dagger", "Short Sword", "Hand Axe"],
 
     # Potions
-    ["Potion of Minor Healing", "Potion of Regeneration"]
+    ["Potion of Minor Healing", "Potion of Regeneration"],
+
+    # Spell Tomes
+    ["Tome of Embers"]
   ]
   return image_ids
 
 class ItemFactory:
-  def __init__(self, world: World, tileset: TileSet, effect: EffectFactory):
+  def __init__(self, world: World, tileset: TileSet, effect: EffectFactory, spell: SpellFactory):
     self.world = world
     self.tileset = tileset
 
@@ -43,24 +48,34 @@ class ItemFactory:
 
     # To make file less huge and verbose, break each item type into its own factory
     self.effect = effect
+    self.spells = spell
     self.equipment = EquipmentFactory(tileset)
     self.trinket = TrinketFactory(tileset)
     self.weapon = WeaponFactory(tileset)
     self.potion = PotionFactory(tileset, self.effect)
+    self.tomes = TomeFactory(tileset, spell)
 
+    self.item_functions = [
+      self.equipment.robe,
+      self.equipment.leather_armor,
+      self.equipment.wizard_hat,
+      self.equipment.basic_helm,
+      self.equipment.shoes,
+      self.equipment.gloves,
+      self.equipment.cloak,
+      self.weapon.dagger,
+      self.weapon.short_sword,
+      self.weapon.hand_axe,
+      self.trinket.ring_magic_resist,
+      self.trinket.ring_health,
+      self.trinket.ring_mana,
+      self.potion.potion_minor_healing,
+      self.potion.potion_regeneration,
+      self.tomes.tome_of_embers,
+      self.tomes.tome_of_flame_lash
+    ]
+
+  # Temporary, just return a random item out of all the available items
   def get_random_item(self):
-    i = random.randint(0,12)
-    if i == 0: return self.equipment.robe()
-    elif i == 1: return self.equipment.leather_armor()
-    elif i == 2: return self.equipment.wizard_hat()
-    elif i == 3: return self.equipment.basic_helm()
-    elif i == 4: return self.equipment.shoes()
-    elif i == 5: return self.equipment.gloves()
-    elif i == 6: return self.equipment.cloak()
-    elif i == 7: return self.weapon.dagger()
-    elif i == 8: return self.weapon.short_sword()
-    elif i == 9: return self.weapon.hand_axe()
-    elif i == 10: return self.trinket.ring_magic_resist()
-    elif i == 11: return self.trinket.ring_health()
-    elif i == 12: return self.potion.potion_minor_healing()
-    elif i == 12: return self.potion.potion_regeneration()
+    f = random.choice(self.item_functions)
+    return f()
