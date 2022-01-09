@@ -1,9 +1,4 @@
 Active Work:
- - Movement should be free and the rest of the party should follow the active player when there are no active enemies
-   - Click a player to swap control to them
-   - Build a combat queue of turns that resets at the start of each combat? This might be broken, maybe keep track of combat
-     "time" that caps at a point before resetting
- - Also just fix active enemies
 
 Unordered Roadmap:
  - Character overhaul, different character models that show their equipped equipment
@@ -47,4 +42,5 @@ Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
    - Picking it up crashes the game (might not happen anymore)
    - It is possibly (likely) an indexing problem with the inventory screen
+ - Party movement is a little broken, mostly works
    

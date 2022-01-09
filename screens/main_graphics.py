@@ -195,7 +195,7 @@ def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, s
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   # If we are not in combat and we mouse over an inventory, highlight it in yellow
-  if creature.world.in_combat():
+  if not creature.world.in_combat():
     i = creature.world.get_inventory(x,y)
     if i:
       iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)

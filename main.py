@@ -109,8 +109,11 @@ class Game:
               elif i:
                 self.loot_inventory_at(tile_x, tile_y)
               else:
+                start = active.x, active.y
                 path = active.get_path_to(tile_x, tile_y)
                 active.move_along_path(path)
+                end = active.x, active.y
+                self.move_party(active, start, end)
             
               # At the end of a turn, if a combat has started during that turn reset active
               if self.world.in_combat():
@@ -213,6 +216,45 @@ class Game:
 
   def loot_inventory_at(self, tile_x, tile_y):
     self.subscreen = InventoryScreen(self.world.players, self.world.get_inventory(tile_x, tile_y))
+
+  def move_party(self, active, start, end):
+    # If we arent in combat, we want the party to all follow the active player
+    # Draw a 3x3 rectangle behind the player and randomly select tiles in there for the others to be in
+    sx, sy = start
+    dx, dy = end
+
+    dif_x = dx - sx
+    dif_y = dy - sy
+
+    cx, cy = 0, 0 # The center of the rect for the party to be in
+    if dif_x < 0: cx = 1
+    elif dif_x > 0: cx = -1
+    if dif_y < 0: cy = 1
+    elif dif_y > 0: cy = -1
+
+    if abs(dif_x) == abs(dif_y):
+      cx *= 2
+      cy *= 2
+    elif abs(dif_x) > abs(dif_y):
+      cx *= 2
+    elif abs(dif_x) < abs(dif_y):
+      cy *= 2
+
+    tiles = []
+    for x in range(dx + cx - 1, dx + cx + 2):
+      for y in range(dy + cy - 1, dy + cy + 2):
+        tiles.append((x,y))
+    print(tiles)
+
+    for c in self.world.players:
+      if c == active or (c.x, c.y) in tiles:
+        continue
+      try:
+        px, py = self.world.get_random_floor_from_set(tiles)
+        c.x, c.y = px, py
+      except:
+        # Just dont move the creature if we can't find a valid tile
+        pass
 
 def start():
   args = sys.argv

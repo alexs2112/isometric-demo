@@ -72,12 +72,16 @@ class World:
   
   def get_random_floor_in_room(self, room):
     tiles = room.get_tiles()
+    return self.get_random_floor_from_set(tiles)
+
+  def get_random_floor_from_set(self, tiles):
     random.shuffle(tiles)
     for (x,y) in tiles:
       if self.is_floor(x,y) and not self.get_creature_at_location(x,y):
         return x, y
 
-    raise Exception("Could not find an empty floor tile in room!")
+    raise Exception("Could not find an empty floor tile in set!")
+
 
   # Some wrapper methods around our field of view
   def update_fov(self, creature):
