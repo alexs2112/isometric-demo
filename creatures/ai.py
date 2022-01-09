@@ -77,10 +77,10 @@ class Basic(AI):
     if p:
       self.activate(p)
     elif not self.move_to:
+      self.active = False
       self.move_to = self.get_home_tile(world)
-
-    if not self.move_to:
-      return
+      if not self.move_to:
+        return
 
     path = self.creature.get_path_to(self.move_to[0], self.move_to[1])
     if world.get_creature_at_location(self.move_to[0], self.move_to[1]):
@@ -88,7 +88,7 @@ class Basic(AI):
     self.creature.move_along_path(path)
 
     if p:
-      if abs(self.creature.x - p.x) <= 1 and abs(self.creature.y - p.y) <= 1:
+      if abs(self.creature.x - p.x) <= self.creature.get_attack_range() and abs(self.creature.y - p.y) <= self.creature.get_attack_range():
         self.creature.attack_creature(p)
 
   def activate(self, creature=None):

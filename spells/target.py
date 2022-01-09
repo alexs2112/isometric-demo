@@ -6,7 +6,7 @@ class Target:
     self.range = range
 
   def get_points(self, sx, sy, dx, dy):
-    if abs(sx - sy) > self.range or abs(dx - dy) > self.range:
+    if abs(sx - dx) > self.range or abs(sy - dy) > self.range:
       return []
     return [(dx,dy)]
 

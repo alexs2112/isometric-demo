@@ -41,18 +41,9 @@ class FieldOfView(list):
           continue
 
         # If a player can see a floor they can see the walls adjacent to it, so we dont get weird visual errors of "floating" walls
-        # Activate any new creatures the player has seen
         if creature.can_see(to_x, to_y):
           if world.is_floor(to_x, to_y):
             self[to_x][to_y] = True
-            c = world.get_creature_at_location(to_x, to_y)
-            if c:
-              c.activate(creature)
-              s = "You see a " + c.name
-              w = c.equipment.slot("Main")
-              if w:
-                s += " wielding a " + w.name
-              creature.notify(s)
             if world.is_wall(to_x - 1, to_y):
               self[to_x-1][to_y] = True
             if world.is_wall(to_x, to_y - 1):
@@ -76,6 +67,16 @@ class FieldOfView(list):
       
         if creature.can_see(to_x, to_y):
           self.current[to_x][to_y] = True
+
+          # For now, activate each non-active creature you can see
+          c = creature.world.get_creature_at_location(to_x, to_y)
+          if c and c.can_be_activated() and not c.is_active():
+            c.activate(creature)
+            s = "You see a " + c.name
+            w = c.equipment.slot("Main")
+            if w:
+              s += " wielding a " + w.name
+            creature.notify(s)
   
   def print(self):
     for y in range(self.height):

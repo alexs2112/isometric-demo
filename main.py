@@ -80,7 +80,11 @@ class Game:
             # If we click a creature in range:
             elif self.world.get_creature_at_location(tile_x, tile_y):
               _, target = active.get_attack_line(tile_x, tile_y)
-              self.attack_target(active, target)
+              if target and active.ap >= active.get_attack_cost():
+                self.attack_target(active, target)
+              else:
+                path = active.get_path_to(tile_x, tile_y)
+                active.move_along_path(path[:-1])
 
             # If we click an inventory and there are no active enemies
             elif self.world.get_inventory(tile_x, tile_y) and self.world.no_active_enemies():
@@ -181,8 +185,8 @@ class Game:
     active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):
-    self.subscreen = InventoryScreen(self.players, self.world.get_inventory(tile_x, tile_y))
-    
+    self.subscreen = InventoryScreen(self.world.players, self.world.get_inventory(tile_x, tile_y))
+
 def start():
   args = sys.argv
   if "--help" in args or "-h" in args:

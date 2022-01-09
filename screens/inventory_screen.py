@@ -86,9 +86,7 @@ class InventoryScreen(Subscreen):
           if self.picking_up:
             self.picking_up = False
           else:
-            # We want to remove this inventory from the world if it is empty when we are done
-            if self.inventory and self.inventory.number_of_different_items() == 0:
-              self.players[0].world.remove_inventory(self.inventory)
+            self.cleanup()
             return None
         elif event.key == K_DOWN:
           if self.picking_up:
@@ -148,6 +146,7 @@ class InventoryScreen(Subscreen):
               worked = i.consume(p)
               if worked:
                 p.remove_item(i)
+              self.cleanup()
               return None     # After drinking a potion, immediately return to the main screen
           else:
             # Mark an item for pickup, then get the player to pick it up
@@ -238,3 +237,8 @@ class InventoryScreen(Subscreen):
         options.append("[ENTER]: Use")
       options.append("[D]: Drop")
     return options
+
+  # Call this before returning None
+  def cleanup(self):
+    if self.inventory and self.inventory.number_of_different_items() == 0:
+      self.players[0].world.remove_inventory(self.inventory)

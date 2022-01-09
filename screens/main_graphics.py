@@ -20,6 +20,9 @@ def write_active_player(screen: Screen, active: Creature):
   if active.loaded_spell:
     y += 26
     screen.write("Casting " + active.loaded_spell.name, (x, y), screen.tileset.get_font())
+  
+  if not active.world.no_active_enemies():
+    screen.write_centered("Combat!", (screen.width/2, 2), screen.tileset.get_font(), screen.tileset.HP_RED)
 
 def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creature = None):
   x, y = screen.width - 256, 0
@@ -139,9 +142,9 @@ def draw_healthbar(screen: Screen, creature: Creature, x, y):
     screen.blit(healthbar, (x + 16, y + 20))
   
   # For debugging a creatures active state
-  # if not creature.is_active():
-  #   ay -= 10
-  #   screen.blit(screen.tileset.get_ui("inactive_icon"), (x + 16, ay))
+  if not creature.is_active() and creature.can_be_activated():
+    ay -= 10
+    screen.blit(screen.tileset.get_ui("inactive_icon"), (x + 16, ay))
 
 def draw_player_name_box(screen: Screen, creature: Creature, x, y):
   screen.blit(screen.tileset.get_ui("player_name"), (x + 7, y))

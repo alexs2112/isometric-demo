@@ -181,6 +181,9 @@ class Creature:
     if self.ai:
       return self.ai.is_active()
     return False
+  
+  def can_be_activated(self):
+    return self.faction not in ["Player", "Plant"]
 
   def activate(self, creature=None):
     if self.ai:
@@ -199,6 +202,8 @@ class Creature:
     if self.world.is_floor(x, y):
       self.x = x
       self.y = y
+      if self.is_player():
+        self.world.update_fov(self)
 
   def get_possible_distance(self):
     return self.get_speed() * self.ap + self.free_movement
@@ -218,7 +223,6 @@ class Creature:
     if self.is_player():
       for (x,y) in path:
         self.move_to(x, y)
-        self.world.update_fov(self)
     else:
       x,y = path[-1]
       self.move_to(x, y)

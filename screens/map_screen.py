@@ -158,3 +158,4 @@ class MapScreen(Subscreen):
       x, y = self.world.get_random_floor_in_room(room)
       p.move_to(x,y)
       p.upkeep()
+      p.world.update_fov(p)

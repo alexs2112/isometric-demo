@@ -20,7 +20,7 @@ class SpellScreen(Subscreen):
     s = self.spells[self.index]
     if not s.is_castable(self.creature):
       s = None
-    draw_player_stats(screen, self.creature, spell=s)
+    draw_player_stats(screen, self.creature)
     
     x1 = 12
     y = 12
