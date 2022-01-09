@@ -35,3 +35,13 @@ class WeaponFactory:
     item.set_description("A small axe, just as useful for hacking down enemies as breaking down wood.")
     self.cache[name] = item
     return item
+
+  def shortbow(self):
+    name = "Shortbow"
+    if name in self.cache:
+      return self.cache[name]
+    item = Weapon(name, self.tileset.get_item(name))
+    item.set_stats(attack_min=2, attack_max=3, range=5)
+    item.set_description("Temp: A curved piece of wood and string, for shooting arrows.")
+    self.cache[name] = item
+    return item

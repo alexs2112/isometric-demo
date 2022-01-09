@@ -28,13 +28,13 @@ def get_item_image_ids():
     # Rings
     ["Ring of Magic Resistance", "Ring of Mana", "Ring of Health"],
     # Weapons
-    ["Dagger", "Short Sword", "Hand Axe"],
+    ["Dagger", "Short Sword", "Hand Axe", "Shortbow"],
 
     # Potions
     ["Potion of Minor Healing", "Potion of Regeneration"],
 
     # Spell Tomes
-    ["Tome of Embers"]
+    ["Tome of Embers", "Tome of Flame Lash"]
   ]
   return image_ids
 
@@ -66,6 +66,7 @@ class ItemFactory:
       self.weapon.dagger,
       self.weapon.short_sword,
       self.weapon.hand_axe,
+      self.weapon.shortbow,
       self.trinket.ring_magic_resist,
       self.trinket.ring_health,
       self.trinket.ring_mana,

@@ -17,7 +17,7 @@ class CreatureFactory:
     creature = Creature(name, icon, "Player", self.world)
     creature.set_base_stats(max_hp=10, max_mana=2, p_armor=1, m_armor=1)
     creature.set_misc_stats(max_ap=3, speed=3, vision_radius=5)
-    creature.add_and_equip(self.items.weapon.short_sword())
+    creature.add_and_equip(self.items.weapon.shortbow())
     creature.add_and_equip(self.items.equipment.leather_armor())
     creature.move_to(x, y)
     self.world.add_creature(creature)

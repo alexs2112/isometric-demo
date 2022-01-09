@@ -7,7 +7,6 @@ Unordered Roadmap:
     - More equipment once we have ways to make them interesting and unique
     - RPG skilling system
     - A way to deal less damage while making things still interesting (since we are kind of capped on armor)
- - Ranged attacks
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
@@ -45,3 +44,4 @@ Side work:
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
    - Picking it up crashes the game
+ - The active enemies system and enemy memory of location doesnt work very well

@@ -21,18 +21,21 @@ def write_active_player(screen: Screen, active: Creature):
     y += 26
     screen.write("Casting " + active.loaded_spell.name, (x, y), screen.tileset.get_font())
 
-def draw_player_stats(screen: Screen, active: Creature, path=[], spell=None):
+def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creature = None):
   x, y = screen.width - 256, 0
   x, y = draw_player_name_box(screen, active, x, y)
   x, y = draw_player_health_mana_armor(screen, active, x, y)
 
   screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
 
-  if spell:
-    cost = spell.ap_cost
+  if active.loaded_spell:
+    cost = active.loaded_spell.ap_cost
+    free_movement = active.free_movement
+  elif target:
+    cost = active.get_attack_cost()
     free_movement = active.free_movement
   else:
-    cost, free_movement = active.cost_of_path_with_attacks(path)
+    cost, free_movement = active.cost_of_path(path)
   leftover_ap = active.ap - cost
   for i in range(leftover_ap):
     screen.blit(screen.tileset.get_ui("ap_active"), (x + 3 + i * 25, y + 4))
@@ -183,30 +186,37 @@ def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, s
   return (p_armor_x, armor_y + 32)
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
-  path = creature.get_path_to(x, y)[:creature.get_possible_distance()]
-  if len(path) > 0:
-    # If we cannot afford to make an attack at the end of the move, remove the last tile
-    ap_cost, _ = creature.cost_of_path_with_attacks(path)
-    if ap_cost <= creature.ap:
-      c = creature.world.get_creature_at_location(path[-1][0], path[-1][1])
-    else:
-      c = None
-      path = path[:-1]
-  else:
-    return path
-  
-  if c:
-    highlight = screen.tileset.get_ui("floor_highlight_red")
-  elif creature.world.get_inventory(x, y) and creature.world.no_active_enemies():
-    highlight = screen.tileset.get_ui("floor_highlight_yellow")
-  else:
-    highlight = screen.tileset.get_ui("floor_highlight_green")
+  # If there are no active enemies and we mouse over an inventory, highlight it in yellow
+  if creature.world.no_active_enemies():
+    i = creature.world.get_inventory(x,y)
+    if i:
+      iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
+      screen.blit(screen.tileset.get_ui("floor_highlight_yellow"), (iso_x, iso_y))
+      return [], None
 
+  # If we mouse over a creature and are able to attack it, show the attack interface
+  c = creature.world.get_creature_at_location(x, y)
+  if c:
+    attack_path, target = creature.get_attack_line(x,y)
+    if target and creature.ap >= creature.get_attack_cost():
+      for (dx,dy) in attack_path:
+        iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, dx * 32, dy * 32)
+        screen.blit(screen.tileset.get_ui("floor_highlight_red"), (iso_x, iso_y))
+      return [], target
+
+  path = creature.get_path_to(x, y)
+
+  # If we mouse over a creature and are not in range to attack it, show movement next to it
+  if c:
+    path = path[:-1]
+
+  # Highlight the tiles in green to move to the location
+  path = path[:creature.get_possible_distance()]
   for tile in path:
     tile_x, tile_y = tile
     iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, tile_x * 32, tile_y * 32)
-    screen.blit(highlight, (iso_x, iso_y))
-  return path
+    screen.blit(screen.tileset.get_ui("floor_highlight_green"), (iso_x, iso_y))
+  return path, None
 
 def highlight_ability_target(screen: Screen, creature: Creature, tile_x, tile_y):
   tiles = creature.loaded_spell.get_target_tiles(creature.x, creature.y, tile_x, tile_y)

@@ -73,18 +73,23 @@ class Game:
             sys.exit(0)
 
           if event.type == MOUSEBUTTONDOWN:
-            c = self.world.get_creature_at_location(tile_x, tile_y)
-            i = self.world.get_inventory(tile_x, tile_y)
-            path = active.get_path_to(tile_x, tile_y)
+            # If we are casting a spell
             if active.loaded_spell:
               self.cast_loaded_spell(active, tile_x, tile_y)
-            elif c:
-              self.move_and_attack(active, c, path)
-            elif i and self.world.no_active_enemies():
-              self.move_and_pickup(active, path, i, tile_x, tile_y)
+
+            # If we click a creature in range:
+            elif self.world.get_creature_at_location(tile_x, tile_y):
+              _, target = active.get_attack_line(tile_x, tile_y)
+              self.attack_target(active, target)
+
+            # If we click an inventory and there are no active enemies
+            elif self.world.get_inventory(tile_x, tile_y) and self.world.no_active_enemies():
+              self.loot_inventory_at(tile_x, tile_y)
+
+            # Otherwise, draw a path and move along it
             else:
+              path = active.get_path_to(tile_x, tile_y)
               active.move_along_path(path)
-            
           if event.type == KEYDOWN:
             if event.key == K_SPACE:
               self.screen.center_offset_on_creature(active)
@@ -134,9 +139,10 @@ class Game:
         if active.loaded_spell:
           highlight_ability_target(self.screen, active, tile_x, tile_y)
           path = None
+          target = None
         else:
-          path = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
-        draw_player_stats(self.screen, active, path, active.loaded_spell)
+          path, target = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
+        draw_player_stats(self.screen, active, path, target)
         show_mouse_tooltips(self.screen, self.world, mouse_x, mouse_y, tile_x, tile_y)
         display_messages(self.screen, self.messages)
         write_active_player(self.screen, active)
@@ -154,20 +160,6 @@ class Game:
       active.take_turn()
       if active.is_player():
         return active
-
-  def move_and_attack(self, active: Creature, target: Creature, path):
-    path = path[:-1]
-    active.move_along_path(path)
-    active.attack_creature(target)
-
-  def move_and_pickup(self, active: Creature, path, inventory, inv_x, inv_y):
-    path = path[:-1]
-    active.move_along_path(path)
-    if abs(active.x - inv_x) <= 1 and abs(active.y - inv_y) <= 1:
-      if self.world.no_active_enemies():
-        self.subscreen = InventoryScreen(self.world.players, inventory)
-      else:
-        active.notify("There are active enemies!")
   
   def cast_loaded_spell(self, active: Creature, tile_x, tile_y):
     tiles = active.loaded_spell.get_target_tiles(active.x, active.y, tile_x, tile_y)
@@ -185,6 +177,12 @@ class Game:
     active.loaded_spell.cast(active, targets)
     active.loaded_spell = None
 
+  def attack_target(self, active: Creature, target: Creature):
+    active.attack_creature(target)
+
+  def loot_inventory_at(self, tile_x, tile_y):
+    self.subscreen = InventoryScreen(self.players, self.world.get_inventory(tile_x, tile_y))
+    
 def start():
   args = sys.argv
   if "--help" in args or "-h" in args:

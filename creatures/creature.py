@@ -1,4 +1,5 @@
-import math, random, time
+import math, random
+import helpers
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
 import world.fov as fov
@@ -52,11 +53,12 @@ class Creature:
     self.vision_radius = vision_radius
     self.free_movement = 0  # The remaining moves after moving, so moves arent "wasted"
   
-  def set_unarmed_stats(self, min=0, max=1, type="physical", cost=2):
+  def set_unarmed_stats(self, min=0, max=1, type="physical", cost=2, range=1):
     self.unarmed_min = min
     self.unarmed_max = max
     self.unarmed_type = type
     self.unarmed_cost = cost
+    self.unarmed_range = range
 
   def get_max_hp(self):
     return self.max_hp + self.equipment.get_bonus("MAX_HP")
@@ -98,6 +100,14 @@ class Creature:
         return i.damage_type
     
     return self.unarmed_type
+
+  def get_attack_range(self):
+    i = self.get_main_hand()
+    if i:
+      if i.is_weapon():
+        return i.range
+    
+    return self.unarmed_range
 
   def get_p_armor_cap(self):
     return min(self.p_armor_cap + self.equipment.get_bonus("P_ARMOR"), self.P_ARMOR_MAX)
@@ -228,19 +238,6 @@ class Creature:
       leftover_free_movement += self.get_speed() - rem
     return (ap_cost, leftover_free_movement)
 
-  def cost_of_path_with_attacks(self, path):
-    if len(path) == 0:
-      return self.cost_of_path(path)
-
-    (x,y) = path[-1]
-    c = self.world.get_creature_at_location(x,y)
-    if c:
-      ap_cost, free_movement = self.cost_of_path(path[:-1])
-      ap_cost += self.get_attack_cost()
-      return (ap_cost, free_movement)
-    else:
-      return self.cost_of_path(path)
-  
   def can_see(self, to_x, to_y):
     return fov.can_see(self.world, self.x, self.y, to_x, to_y, self.vision_radius)
   
@@ -279,13 +276,26 @@ class Creature:
       self.world.add_item(item, (self.x, self.y), quantity)
     self.world.remove_creature(self)
 
+  # Get a line constrained by our range that stops before a wall or at another creature
+  def get_attack_line(self, tile_x, tile_y):
+    path = []
+    l = helpers.get_line(self.x, self.y, tile_x, tile_y)
+    for (x,y) in l[1:self.get_attack_range() + 1]:
+      if not self.world.is_floor(x,y):
+        return path, None
+      path.append((x,y))
+      c = self.world.get_creature_at_location(x,y)
+      if c:
+        return path, c
+    return path, None
+
   def attack_creature(self, target):
     if self.is_player() and target.is_player():
       self.notify("Are you sure you want to attack a party member?")
       return
 
-    # Can set this 1 to be a range stat or something
-    if abs(self.x - target.x) > 1 or abs(self.y - target.y) > 1:
+    r = self.get_attack_range()
+    if abs(self.x - target.x) > r or abs(self.y - target.y) > r:
       self.notify("The " + target.name + " is out of range!")
       return
 
