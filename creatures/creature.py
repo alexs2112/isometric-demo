@@ -157,7 +157,7 @@ class Creature:
 
     for e in self.effects:
       e.update(self)
-  
+
   def rest(self):
     self.upkeep()
     self.m_armor = self.get_m_armor_cap()
@@ -186,8 +186,12 @@ class Creature:
     return self.faction not in ["Player", "Plant"]
 
   def activate(self, creature=None):
-    if self.ai:
+    if self.ai.can_activate():
       self.ai.activate(creature)
+      if self.world.in_combat():
+        self.world.add_creature_to_combat(self)
+      else:
+        self.world.start_combat()
 
   def can_enter(self, x, y):
     if self.world.is_floor(x, y) and not self.world.get_creature_at_location(x,y):
@@ -206,7 +210,10 @@ class Creature:
         self.world.update_fov(self)
 
   def get_possible_distance(self):
-    return self.get_speed() * self.ap + self.free_movement
+    if self.world.in_combat():
+      return self.get_speed() * self.ap + self.free_movement
+    else:
+      return 100
 
   def get_path_to(self, dx, dy):
     if self.world.outside_world(dx,dy) or not (self.world.is_floor(dx,dy) and self.world.has_seen(dx,dy)):
@@ -222,13 +229,19 @@ class Creature:
       return
     if self.is_player():
       for (x,y) in path:
+        # Probably figure out a better way to handle stopping movement if combat starts
+        before = self.world.in_combat()
         self.move_to(x, y)
+        if before == False and self.world.in_combat() == True:
+          return
     else:
       x,y = path[-1]
       self.move_to(x, y)
-    ap_cost, free_movement = self.cost_of_path(path)
-    self.ap -= ap_cost
-    self.free_movement = free_movement
+    
+    if self.world.in_combat():
+      ap_cost, free_movement = self.cost_of_path(path)
+      self.ap -= ap_cost
+      self.free_movement = free_movement
   
   def cost_of_path(self, path):
     distance = len(path)
@@ -306,7 +319,9 @@ class Creature:
     if self.ap < self.get_attack_cost():
       self.notify(self.name + " does not have enough AP to attack!")
       return
-    self.ap -= self.get_attack_cost()
+
+    if self.world.in_combat():
+      self.ap -= self.get_attack_cost()
 
     # Damage will be weighted towards the average, biased to be rounded up because of .5s
     atk_min = self.get_attack_min()

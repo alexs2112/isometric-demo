@@ -31,14 +31,19 @@ def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creatur
 
   screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
 
-  if active.loaded_spell:
-    cost = active.loaded_spell.ap_cost
-    free_movement = active.free_movement
-  elif target:
-    cost = active.get_attack_cost()
-    free_movement = active.free_movement
+  if active.world.in_combat():
+    if active.loaded_spell:
+      cost = active.loaded_spell.ap_cost
+      free_movement = active.free_movement
+    elif target:
+      cost = active.get_attack_cost()
+      free_movement = active.free_movement
+    else:
+      cost, free_movement = active.cost_of_path(path)
   else:
-    cost, free_movement = active.cost_of_path(path)
+    cost = 0
+    free_movement = active.free_movement
+
   leftover_ap = active.ap - cost
   for i in range(leftover_ap):
     screen.blit(screen.tileset.get_ui("ap_active"), (x + 3 + i * 25, y + 4))
@@ -189,8 +194,8 @@ def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, s
   return (p_armor_x, armor_y + 32)
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
-  # If there are no active enemies and we mouse over an inventory, highlight it in yellow
-  if creature.world.no_active_enemies():
+  # If we are not in combat and we mouse over an inventory, highlight it in yellow
+  if creature.world.in_combat():
     i = creature.world.get_inventory(x,y)
     if i:
       iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
@@ -200,6 +205,12 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   # If we mouse over a creature and are able to attack it, show the attack interface
   c = creature.world.get_creature_at_location(x, y)
   if c:
+    # If we aren't in combat and mouse over a player, highlight them in purple to select them
+    if c.is_player() and not creature.world.in_combat():
+        iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, c.x * 32, c.y * 32)
+        screen.blit(screen.tileset.get_ui("floor_highlight_purple"), (iso_x, iso_y))
+        return [], None
+
     attack_path, target = creature.get_attack_line(x,y)
     if target and creature.ap >= creature.get_attack_cost():
       for (dx,dy) in attack_path:

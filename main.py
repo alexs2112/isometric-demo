@@ -52,7 +52,7 @@ class Game:
   # Run the main game loop
   def main(self):
     running = True
-    active: Creature = self.world.get_active_creature()
+    active: Creature = self.world.players[0]
     self.screen.center_offset_on_creature(active)
     while running:
       self.screen.clear()
@@ -77,32 +77,58 @@ class Game:
             if active.loaded_spell:
               self.cast_loaded_spell(active, tile_x, tile_y)
 
-            # If we click a creature in range:
-            elif self.world.get_creature_at_location(tile_x, tile_y):
-              _, target = active.get_attack_line(tile_x, tile_y)
-              if target and active.ap >= active.get_attack_cost():
-                self.attack_target(active, target)
+            # If we are in combat
+            elif self.world.in_combat():
+              c = self.world.get_creature_at_location(tile_x, tile_y)
+              if c:
+                _, target = active.get_attack_line(tile_x, tile_y)
+                if target and active.ap >= active.get_attack_cost():
+                  self.attack_target(active, target)
+                else:
+                  path = active.get_path_to(tile_x, tile_y)
+                  active.move_along_path(path[:-1])
               else:
                 path = active.get_path_to(tile_x, tile_y)
-                active.move_along_path(path[:-1])
-
-            # If we click an inventory and there are no active enemies
-            elif self.world.get_inventory(tile_x, tile_y) and self.world.no_active_enemies():
-              self.loot_inventory_at(tile_x, tile_y)
-
-            # Otherwise, draw a path and move along it
+                active.move_along_path(path)
+            
+            # If we aren't in combat
             else:
-              path = active.get_path_to(tile_x, tile_y)
-              active.move_along_path(path)
+              c = self.world.get_creature_at_location(tile_x, tile_y)
+              i = self.world.get_inventory(tile_x, tile_y)
+
+              if c:
+                if c.is_player():
+                  active = c
+                else:
+                  _, target = active.get_attack_line(tile_x, tile_y)
+                  if target:
+                    self.attack_target(active, target)
+                  else:
+                    path = active.get_path_to(tile_x, tile_y)
+                    active.move_along_path(path[:-1])
+              elif i:
+                self.loot_inventory_at(tile_x, tile_y)
+              else:
+                path = active.get_path_to(tile_x, tile_y)
+                active.move_along_path(path)
+            
+              # At the end of a turn, if a combat has started during that turn reset active
+              if self.world.in_combat():
+                active = self.world.get_active_creature()
+
           if event.type == KEYDOWN:
             if event.key == K_SPACE:
               self.screen.center_offset_on_creature(active)
             elif event.key == K_RETURN:
-              active = self.take_turns()
-              if active:
-                self.screen.center_offset_on_creature(active)
+              if self.world.in_combat():
+                active = self.take_turns()
+                if not active:
+                  self.subscreen = GameOverScreen()
+              
+              # TEMPORARY
               else:
-                self.subscreen = GameOverScreen()
+                self.messages.clear()
+                active.upkeep()
             elif event.key == K_ESCAPE:
               if active.loaded_spell:
                 active.loaded_spell = None
@@ -163,6 +189,7 @@ class Game:
       active = self.world.get_next_active_creature()
       active.take_turn()
       if active.is_player():
+        self.screen.center_offset_on_creature(active)
         return active
   
   def cast_loaded_spell(self, active: Creature, tile_x, tile_y):

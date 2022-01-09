@@ -10,6 +10,9 @@ class AI:
     self.active = False       # If the creature is actively hunting a player
     # We could also point self.world = self.creature.world here, but it could be useful to have world as a param in other methods?
   
+  def can_activate(self):
+    return True
+
   def activate(self, creature=None):
     self.active = True
 
@@ -58,9 +61,8 @@ class AI:
 
 # Does nothing each turn
 class Plant(AI):
-  def activate(self, creature=None):
-    # This is a plant, it cannot be activated
-    return
+  def can_activate(self):
+    return False
 
 # Simple turn logic:
 # - If we can see a player, move as close as possible and try to attack it if we have AP

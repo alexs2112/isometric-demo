@@ -1,4 +1,5 @@
 import random
+from world.combat_queue import CombatQueue
 import world.maze_gen as maze_gen
 import world.dungeon_gen as dungeon_gen
 from world.tile import Tile
@@ -15,11 +16,11 @@ class World:
     self.fov = FieldOfView(self.width, self.height)
     self.creatures = []
     self.players = []   # A subset of creatures
-    self.active_index = 0
     self.rooms = []
+    self.items = {}     # A hash of location: inventory
     self.start_room = None
     self.end_room = None
-    self.items = {}     # A hash of location: inventory
+    self.combat_queue = None
 
   def set_rooms(self, rooms):
     self.rooms = rooms
@@ -95,20 +96,43 @@ class World:
 
   def remove_creature(self, creature):
     if creature in self.creatures:
-      i = self.creatures.index(creature)
-      if i <= self.active_index:
-        self.active_index -= 1
       self.creatures.remove(creature)
     if creature.is_player() and creature in self.players:
       self.players.remove(creature)
+    
+    if self.in_combat():
+      self.combat_queue.remove_creature(creature)
+    
+    if self.no_active_enemies():
+      self.end_combat()
+
+  def in_combat(self):
+    if self.combat_queue:
+      return True
+    return False
+
+  def start_combat(self):
+    self.combat_queue = CombatQueue(self.creatures)
+    self.players[0].notify("Start of combat!")
   
+  def add_creature_to_combat(self, creature):
+    self.combat_queue.add_creature(creature)
+
+  def end_combat(self):
+    self.combat_queue = None
+    self.players[0].notify("End of combat.")
+    for p in self.players:
+      p.ap = p.max_ap
+      p.free_movement = 0
+
   def get_active_creature(self):
-    return self.creatures[self.active_index]
+    return self.combat_queue.get_current_creature()
   
   def get_next_active_creature(self):
-    self.active_index = (self.active_index + 1) % len(self.creatures)
-    active = self.get_active_creature()
-    return active
+    c = self.combat_queue.get_next_creature()
+    if self.no_active_enemies():
+      self.end_combat()
+    return c
 
   def no_active_enemies(self):
     # No enemies are actively hunting the players

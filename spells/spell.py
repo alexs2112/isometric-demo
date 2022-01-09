@@ -47,10 +47,11 @@ class Spell:
       caster.notify(self.name + " is still on cooldown.")
       return
     
-    caster.notify_player(caster.name + " casts " + self.name)
-    caster.ap -= self.ap_cost
+    if caster.world.in_combat():
+      caster.ap -= self.ap_cost
     caster.mana -= self.mana_cost
     self.downtime = self.cooldown
+    caster.notify_player(caster.name + " casts " + self.name)
     caster.add_effect(self.caster_effect)
     for c in target_list:
       c.add_effect(self.target_effect)

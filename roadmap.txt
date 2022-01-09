@@ -45,4 +45,6 @@ Side work:
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
-   - Picking it up crashes the game
+   - Picking it up crashes the game (might not happen anymore)
+   - It is possibly (likely) an indexing problem with the inventory screen
+   

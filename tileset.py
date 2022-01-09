@@ -183,6 +183,7 @@ class TileSet:
     self.ui["floor_highlight_red"] = tile_highlight.subsurface((0,32,64,32))
     self.ui["floor_highlight_yellow"] = tile_highlight.subsurface((0,64,64,32))
     self.ui["floor_highlight_blue"] = tile_highlight.subsurface((0,96,64,32))
+    self.ui["floor_highlight_purple"] = tile_highlight.subsurface((64,96,64,32))
     self.ui["floor_highlight_dark"] = tile_highlight.subsurface((64,0,64,32))
     self.ui["wall_highlight_dark"] = tile_highlight.subsurface((64,32,64,48))
 
