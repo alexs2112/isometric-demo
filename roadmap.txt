@@ -1,9 +1,9 @@
 Active Work:
 
 Unordered Roadmap:
- - Character overhaul, different character models that show their equipped equipment
  - Combat overhaul
     - More equipment once we have ways to make them interesting and unique
+    - More enemies and different AIs
     - RPG skilling system
     - A way to deal less damage while making things still interesting (since we are kind of capped on armor)
  - Dungeon features, such as doors, barrels, random stuff sitting around
@@ -13,9 +13,9 @@ Unordered Roadmap:
  - Quests and more of a surface world to explore
  - More mouse controls, everything should be controllable by mouse, including many buttons around the screen and redoing
    most subscreens
+ - Saving game state
 
 Side work:
- - More enemies and different AIs
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
@@ -37,6 +37,9 @@ Side work:
  - Spells with cooldowns, this is mostly ignored for now
  - "Animate" movement, add a short delay between each tile of movement, redrawing the screen each time. But only if the creature
    is on screen
+   - This will massively suck with party movement...
+ - A menu for the escape key so that id doesn't just immediately kill the game instead
+ - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details

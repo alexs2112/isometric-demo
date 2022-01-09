@@ -4,6 +4,7 @@ from items.equipment_list import EquipmentList
 from items.inventory import Inventory
 import world.fov as fov
 from creatures.pathfinder import Path
+from creatures.creature_sprite import get_sprite
 from world.world_builder import World
 
 class Creature:
@@ -12,9 +13,10 @@ class Creature:
   M_ARMOR_MAX = 6
   AP_MAX = 8
 
-  def __init__(self, name, icon, faction, world: World):
+  def __init__(self, name, base_sprite, faction, world: World):
     self.name = name
-    self.icon = icon
+    self.base_sprite = base_sprite
+    self.sprite = base_sprite
     self.faction = faction
     self.world = world
     self.ai = None
@@ -59,6 +61,9 @@ class Creature:
     self.unarmed_type = type
     self.unarmed_cost = cost
     self.unarmed_range = range
+
+  def update_sprite(self):
+    self.sprite = get_sprite(self)
 
   def get_max_hp(self):
     return self.max_hp + self.equipment.get_bonus("MAX_HP")
@@ -126,11 +131,13 @@ class Creature:
   
   def unequip(self, item):
     self.equipment.remove(item)
+    self.update_sprite()
 
   def equip(self, item):
     if self.inventory.get_quantity(item) > 0:
       if item.is_equipment():
         self.equipment.equip(item)
+        self.update_sprite()
       else:
         raise ValueError("Trying to equip a non-equipment")
 

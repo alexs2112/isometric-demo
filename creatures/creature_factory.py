@@ -19,6 +19,7 @@ class CreatureFactory:
     creature.set_misc_stats(max_ap=3, speed=3, vision_radius=5)
     creature.add_and_equip(self.items.weapon.shortbow())
     creature.add_and_equip(self.items.equipment.leather_armor())
+    creature.update_sprite()
     creature.move_to(x, y)
     self.world.add_creature(creature)
     self.world.update_fov(creature)
@@ -34,6 +35,7 @@ class CreatureFactory:
     creature.move_to(x, y)
     creature.add_and_equip(self.items.equipment.cloak())
     creature.add_and_equip(self.items.equipment.shoes())
+    creature.update_sprite()
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -47,8 +49,10 @@ class CreatureFactory:
     creature.move_to(x, y)
     creature.set_unarmed_stats(min=3, max=5, type="magical")
     creature.add_and_equip(self.items.equipment.wizard_hat())
+    creature.add_and_equip(self.items.equipment.robe())
+    creature.update_sprite()
     creature.add_item(self.items.potion.potion_minor_healing())
-    creature.add_item(self.items.tomes.tome_of_embers())
+    creature.add_spell(self.items.spells.embers())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -62,6 +66,7 @@ class CreatureFactory:
     creature.move_to(x, y)
     creature.add_and_equip(self.items.weapon.hand_axe())
     creature.add_and_equip(self.items.equipment.leather_armor())
+    creature.update_sprite()
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -93,16 +98,17 @@ class CreatureFactory:
         creature.add_and_equip(self.items.weapon.hand_axe())
       else:
         creature.add_and_equip(self.items.weapon.short_sword())
-    if random.random() < 0.5:
-      i = random.random()
-      if i < 0.25:
-        creature.add_and_equip(self.items.equipment.wizard_hat())
-      elif i < 0.5:
-        creature.add_and_equip(self.items.equipment.cloak())
-      elif i > 0.75:
-        creature.add_and_equip(self.items.equipment.basic_helm())
-      else:
-        creature.add_and_equip(self.items.equipment.leather_armor())
+    # Equipment doesnt fit the skeleton sprite
+    #if random.random() < 0.5:
+    #  i = random.random()
+    #  if i < 0.25:
+    #    creature.add_and_equip(self.items.equipment.wizard_hat())
+    #  elif i < 0.5:
+    #    creature.add_and_equip(self.items.equipment.cloak())
+    #  elif i > 0.75:
+    #    creature.add_and_equip(self.items.equipment.basic_helm())
+    #  else:
+    #    creature.add_and_equip(self.items.equipment.leather_armor())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature

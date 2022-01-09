@@ -24,6 +24,7 @@ class TileSet:
     self.initialize_creatures()
     self.item_icons = {}
     self.item_icons_large = {}
+    self.item_sprites = {}
     self.initialize_items()
     self.ui = {}
     self.initialize_ui()
@@ -67,6 +68,9 @@ class TileSet:
   
   def get_item(self, item_name):
     return self.item_icons[item_name]
+
+  def get_item_sprite(self, item_name):
+    return self.item_sprites[item_name]
   
   def get_item_large(self, item_name):
     return self.item_icons_large[item_name]
@@ -128,12 +132,13 @@ class TileSet:
 
   def initialize_creatures(self):
     creatures_full = pygame.image.load("assets/creatures.png")
+    players_full = pygame.image.load("assets/bodies.png")
     image_width = 32
     image_height = 32
     
     # Images are stored in rows of 10, this will hopefully keep it organized
     image_ids = [
-      'Edward', 'Goobert', 'Wizard', 'Harold', 'Mushroom', 'Skeleton'
+      '_', '_', '_', '_', 'Mushroom', 'Skeleton'
     ]
 
     for i in range(len(image_ids)):
@@ -142,9 +147,20 @@ class TileSet:
       image = creatures_full.subsurface((x, y, image_width, image_height))
       self.creatures[image_ids[i]] = image
 
+    player_ids = [
+      'Edward', 'Goobert', 'Wizard', 'Harold'
+    ]
+    for i in range(len(player_ids)):
+      x = (i % 10) * image_width
+      y = int(i / 10) * image_height
+      image = players_full.subsurface((x, y, image_width, image_height))
+      self.creatures[player_ids[i]] = image
+
+
   def initialize_items(self):
     from items.item_factory import get_item_image_ids
     items_full = pygame.image.load("assets/item_icons.png")
+    sprites_full = pygame.image.load("assets/item_sprites.png")
     image_width = 32
     image_height = 32
 
@@ -161,6 +177,17 @@ class TileSet:
 
         self.item_icons[type[i]] = image
         self.item_icons_large[type[i]] = pygame.transform.scale(image, (64,64))
+
+    # This will need to be fixed when we make the sprites less than 32x32 (unnecessary)
+    y = -image_height
+    for type in image_ids[:6]:
+      x = 0
+      for i in range(len(type)):
+        x = (i % 10) * image_width
+        if (i % 10) == 0:
+          y += image_height
+        sprite = sprites_full.subsurface((x, y, image_width, image_height))
+        self.item_sprites[type[i]] = sprite
   
   def initialize_misc(self):
     base = pygame.image.load("assets/misc.png")

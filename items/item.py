@@ -22,8 +22,9 @@ class Item:
     self.description = desc
 
 class Equipment(Item):
-  def __init__(self, name, icon, slot):
+  def __init__(self, name, icon, sprite, slot):
     super().__init__(name, icon)
+    self.sprite = sprite
     self.slot = slot
 
     # Let the bonuses the item provides be a hash where we can search for
@@ -46,8 +47,8 @@ class Equipment(Item):
     return True
 
 class Weapon(Equipment):
-  def __init__(self, name, icon):
-    super().__init__(name, icon, "Main")  # For now weapons can only be equipped in the main hand
+  def __init__(self, name, icon, sprite):
+    super().__init__(name, icon, sprite, "Main")  # For now weapons can only be equipped in the main hand
     self.set_stats(0,1)
   
   def set_stats(self, attack_min, attack_max, damage_type="physical", range=1, cost=2):

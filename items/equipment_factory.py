@@ -10,7 +10,7 @@ class EquipmentFactory:
     name = "Robe"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Chest")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Chest")
     item.set_bonus("M_ARMOR", 1)
     item.set_description("Temp: A large, loose-fitting, wide-sleeved outer garment made of light cloth. It offers little protection against physical harm, but does not hinder evasion or spellcasting.")
     self.cache[name] = item
@@ -20,7 +20,7 @@ class EquipmentFactory:
     name = "Leather Armor"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Chest")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Chest")
     item.set_bonus("P_ARMOR", 1)
     item.set_description("Temp: A suit made from layers of tanned animal hide, this light armour provides basic protection with almost no hindrance to elaborate gestures or swift, stealthy movement.")
     self.cache[name] = item
@@ -30,7 +30,7 @@ class EquipmentFactory:
     name = "Wizard Hat"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Head")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Head")
     item.set_bonus("M_ARMOR", 1)
     item.set_description("Magical protection woven into the cloth that makes this hat.")
     self.cache[name] = item
@@ -40,7 +40,7 @@ class EquipmentFactory:
     name = "Basic Helm"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Head")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Head")
     item.set_bonus("P_ARMOR", 1)
     item.set_description("Temp: A simple piece of metal headgear.")
     self.cache[name] = item
@@ -50,7 +50,7 @@ class EquipmentFactory:
     name = "Shoes"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Feet")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Feet")
     item.set_bonus("SPEED", 1)
     item.set_description("Simple cloth shoes, they permit faster running on the hard stone tiles of the dungeon.")
     self.cache[name] = item
@@ -60,7 +60,7 @@ class EquipmentFactory:
     name = "Gloves"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Hands")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Hands")
     item.set_bonus("UNARMED_DAMAGE", 1)
     item.set_description("A pair of weighted gloves, they add a bit of extra force to your punches.")
     self.cache[name] = item
@@ -70,7 +70,7 @@ class EquipmentFactory:
     name = "Cloak"
     if name in self.cache:
       return self.cache[name]
-    item = Equipment(name, self.tileset.get_item(name), "Cloak")
+    item = Equipment(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Cloak")
     item.set_bonus("P_ARMOR", 1)
     item.set_description("A sturdy cloak, it helps protect against errant blades.")
     self.cache[name] = item

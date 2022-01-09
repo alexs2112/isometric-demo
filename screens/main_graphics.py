@@ -88,7 +88,7 @@ def draw_world(screen: Screen, world: World):
         if world.can_see(x,y):
           if (x,y) in creature_locations:
             creature = creature_locations[(x,y)]
-            screen.blit(creature.icon, (sx + 16, sy - 16))
+            screen.blit(creature.sprite, (sx + 16, sy - 16))
             draw_healthbar(screen, creature, sx, sy)
         else:
           screen.blit(screen.tileset.get_ui("floor_highlight_dark"), (sx, sy))

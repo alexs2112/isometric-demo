@@ -133,10 +133,11 @@ class World:
     return self.combat_queue.get_current_creature()
   
   def get_next_active_creature(self):
-    c = self.combat_queue.get_next_creature()
-    if self.no_active_enemies():
+    if self.combat_queue and not self.no_active_enemies():
+      c = self.combat_queue.get_next_creature()
+      return c
+    else:
       self.end_combat()
-    return c
 
   def no_active_enemies(self):
     # No enemies are actively hunting the players

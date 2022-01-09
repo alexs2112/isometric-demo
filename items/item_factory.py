@@ -1,6 +1,5 @@
 import random
 from items.tome_factory import TomeFactory
-from spells.effect import Effect
 from spells.effect_factory import EffectFactory
 from items.equipment_factory import EquipmentFactory
 from items.trinket_factory import TrinketFactory
@@ -8,8 +7,6 @@ from items.weapon_factory import WeaponFactory
 from items.potion_factory import PotionFactory
 from spells.spell_factory import SpellFactory
 from world.world_builder import World
-from items.item import Equipment, Weapon, Potion
-from creatures.creature import Creature
 from tileset import TileSet
 
 def get_item_image_ids():
@@ -25,10 +22,12 @@ def get_item_image_ids():
     ["Gloves"],
     # Cloak
     ["Cloak"],
-    # Rings
-    ["Ring of Magic Resistance", "Ring of Mana", "Ring of Health"],
+
     # Weapons
     ["Dagger", "Short Sword", "Hand Axe", "Shortbow"],
+
+    # Rings
+    ["Ring of Magic Resistance", "Ring of Mana", "Ring of Health"],
 
     # Potions
     ["Potion of Minor Healing", "Potion of Regeneration"],

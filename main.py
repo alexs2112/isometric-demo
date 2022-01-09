@@ -190,10 +190,11 @@ class Game:
       if len(self.world.players) == 0:
         return None
       active = self.world.get_next_active_creature()
-      active.take_turn()
-      if active.is_player():
-        self.screen.center_offset_on_creature(active)
-        return active
+      if self.world.in_combat(): # Its possible for a creature to die by an effect, crashing here
+        active.take_turn()
+        if active.is_player():
+          self.screen.center_offset_on_creature(active)
+          return active
   
   def cast_loaded_spell(self, active: Creature, tile_x, tile_y):
     tiles = active.loaded_spell.get_target_tiles(active.x, active.y, tile_x, tile_y)
