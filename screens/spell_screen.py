@@ -75,7 +75,7 @@ class SpellScreen(Subscreen):
         elif event.key == K_DOWN:
           self.index = min(len(self.spells) - 1, self.index + 1)
         elif event.key == K_RETURN:
-          if self.spells[self.index].is_castable:
+          if self.spells[self.index].is_castable(self.creature):
             self.creature.load_spell(self.spells[self.index])
             return None
     return self

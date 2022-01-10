@@ -5,6 +5,7 @@ from items.inventory import Inventory
 import world.fov as fov
 from creatures.pathfinder import Path
 from creatures.creature_sprite import get_sprite
+from creatures.skills_helper import *
 from world.world_builder import World
 
 class Creature:
@@ -27,6 +28,8 @@ class Creature:
     self.equipment = EquipmentList()
     self.spells = []
     self.loaded_spell = None
+    self.attributes = {}
+    self.skills = {}
 
   def set_ai(self, ai):
     self.ai = ai
@@ -48,12 +51,13 @@ class Creature:
     self.m_armor = m_armor
     self.set_unarmed_stats()
 
-  def set_misc_stats(self, max_ap, speed, vision_radius):
+  def set_misc_stats(self, max_ap=3, speed=3, vision_radius=5, initiative=3):
     self.max_ap = max_ap
     self.ap = max_ap
     self.speed = speed
     self.vision_radius = vision_radius
     self.free_movement = 0  # The remaining moves after moving, so moves arent "wasted"
+    self.base_initiative = initiative
   
   def set_unarmed_stats(self, min=0, max=1, type="physical", cost=2, range=1):
     self.unarmed_min = min
@@ -62,17 +66,49 @@ class Creature:
     self.unarmed_cost = cost
     self.unarmed_range = range
 
+  def set_attributes(self, brawn, agility, will):
+    self.attributes["Brawn"] = brawn
+    self.attributes["Agility"] = agility
+    self.attributes["Will"] = will
+
+  def modify_attribute(self, attribute, value):
+    if attribute not in ATTRIBUTE_LIST:
+      raise ValueError(attribute + " is not a attribute")
+    self.attributes[attribute] += value
+
+  def get_attribute(self, attr):
+    # Dont need to check if attr exists since we should always call set_attributes() on a new creature
+    return self.attributes[attr]
+
+  def modify_skill(self, skill, value):
+    if skill not in SKILL_LIST:
+      raise ValueError(skill + " is not a skill")
+    if skill in self.skills:
+      self.skills[skill] += value
+    else:
+      self.skills[skill] = value
+
+  def get_skill(self, skill):
+    if skill not in SKILL_LIST:
+      raise ValueError(skill + " is not a skill")
+    if skill in self.skills:
+      return self.skills[skill]
+    return 0
+
   def update_sprite(self):
     self.sprite = get_sprite(self)
 
   def get_max_hp(self):
-    return self.max_hp + self.equipment.get_bonus("MAX_HP")
+    return self.max_hp + self.equipment.get_bonus("MAX_HP") + get_hp_bonus(self)
 
   def get_max_mana(self):
-    return self.max_mana + self.equipment.get_bonus("MAX_MANA")
+    return self.max_mana + self.equipment.get_bonus("MAX_MANA") + get_mana_bonus(self)
 
   def get_speed(self):
     return self.speed + self.equipment.get_bonus("SPEED")
+  
+  def get_initiative(self):
+    return self.base_initiative + self.equipment.get_bonus("INITIATIVE") + get_initiative_bonus(self)
 
   def get_attack_min(self):
     i = self.get_main_hand()
@@ -164,6 +200,10 @@ class Creature:
 
     for e in self.effects:
       e.update(self)
+
+  def full_rest(self):
+    self.rest()
+    self.hp = self.get_max_hp()
 
   def rest(self):
     self.upkeep()

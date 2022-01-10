@@ -94,6 +94,7 @@ class World:
     return self.fov.can_see(x,y)
 
   def add_creature(self, creature):
+    creature.full_rest()
     self.creatures.append(creature)
     if creature.is_player():
       self.players.append(creature)
@@ -129,15 +130,17 @@ class World:
       p.ap = p.max_ap
       p.free_movement = 0
 
-  def get_active_creature(self):
+  def get_current_active_creature(self):
     return self.combat_queue.get_current_creature()
-  
+
   def get_next_active_creature(self):
-    if self.combat_queue and not self.no_active_enemies():
+    if self.combat_queue:
       c = self.combat_queue.get_next_creature()
+      if self.no_active_enemies():
+        self.end_combat()
       return c
     else:
-      self.end_combat()
+      return self.players[0]
 
   def no_active_enemies(self):
     # No enemies are actively hunting the players

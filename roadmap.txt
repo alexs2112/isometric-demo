@@ -1,11 +1,13 @@
 Active Work:
+ - Initiative
+   - CURRENTLY BREAKING IF AN NPC GOES FIRST
+ - More types of weapons that utilize the new skill
+ - Finish implementing all skills and attributes
 
 Unordered Roadmap:
  - Combat overhaul
-    - More equipment once we have ways to make them interesting and unique
     - More enemies and different AIs
-    - RPG skilling system
-    - A way to deal less damage while making things still interesting (since we are kind of capped on armor)
+    - Possibly increase the armor cap
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
@@ -19,6 +21,11 @@ Side work:
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
+ - Magic system:
+   - Spells have a element and level
+   - Need to have the corresponding skill to be at least that level in order to learn it
+   - Can only have prepared spells of total levels less than or equal to your spell slots
+   - Can rest and reorganize your prepared spells, possibly only outside of a dungeon? Once we have an "outside"
  - Inventory screen optimizations
    - Allow the inventory screen to take multiple inventories as a param
      - Looting rooms with multiple inventories
@@ -35,6 +42,7 @@ Side work:
    - I think we should do one book icon for each magic school/type/whatever, then have the spell icon in the bottom corner of the
      book icon
  - Spells with cooldowns, this is mostly ignored for now
+ - Spells and effects need icons and indicators
  - "Animate" movement, add a short delay between each tile of movement, redrawing the screen each time. But only if the creature
    is on screen
    - This will massively suck with party movement...

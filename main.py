@@ -117,12 +117,16 @@ class Game:
             
               # At the end of a turn, if a combat has started during that turn reset active
               if self.world.in_combat():
-                active = self.world.get_active_creature()
+                active = self.world.get_current_active_creature()
+                if not active.is_player():
+                  active.take_turn()
+                  active = self.take_turns()
 
           if event.type == KEYDOWN:
             if event.key == K_SPACE:
               self.screen.center_offset_on_creature(active)
             elif event.key == K_RETURN:
+              self.messages.clear()
               if self.world.in_combat():
                 active = self.take_turns()
                 if not active:
@@ -185,16 +189,14 @@ class Game:
 
   # Move to the next active creature and keep taking their turn until it is a human player
   def take_turns(self):
-    self.messages.clear()
     while len(self.world.creatures) > 0:
       if len(self.world.players) == 0:
         return None
       active = self.world.get_next_active_creature()
-      if self.world.in_combat(): # Its possible for a creature to die by an effect, crashing here
-        active.take_turn()
-        if active.is_player():
-          self.screen.center_offset_on_creature(active)
-          return active
+      active.take_turn()
+      if active.is_player():
+        self.screen.center_offset_on_creature(active)
+        return active
   
   def cast_loaded_spell(self, active: Creature, tile_x, tile_y):
     tiles = active.loaded_spell.get_target_tiles(active.x, active.y, tile_x, tile_y)
@@ -245,7 +247,6 @@ class Game:
     for x in range(dx + cx - 1, dx + cx + 2):
       for y in range(dy + cy - 1, dy + cy + 2):
         tiles.append((x,y))
-    print(tiles)
 
     for c in self.world.players:
       if c == active or (c.x, c.y) in tiles:
@@ -253,6 +254,7 @@ class Game:
       try:
         px, py = self.world.get_random_floor_from_set(tiles)
         c.x, c.y = px, py
+        self.world.update_fov(c)
       except:
         # Just dont move the creature if we can't find a valid tile
         pass

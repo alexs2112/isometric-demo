@@ -132,13 +132,12 @@ class TileSet:
 
   def initialize_creatures(self):
     creatures_full = pygame.image.load("assets/creatures.png")
-    players_full = pygame.image.load("assets/bodies.png")
     image_width = 32
     image_height = 32
     
     # Images are stored in rows of 10, this will hopefully keep it organized
     image_ids = [
-      '_', '_', '_', '_', 'Mushroom', 'Skeleton'
+      'Mushroom', 'Skeleton'
     ]
 
     for i in range(len(image_ids)):
@@ -147,6 +146,7 @@ class TileSet:
       image = creatures_full.subsurface((x, y, image_width, image_height))
       self.creatures[image_ids[i]] = image
 
+    players_full = pygame.image.load("assets/bodies.png")
     player_ids = [
       'Edward', 'Goobert', 'Wizard', 'Harold'
     ]
