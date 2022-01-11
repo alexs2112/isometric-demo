@@ -98,12 +98,14 @@ class CreatureFactory:
     creature.set_unarmed_stats(min=2, max=3)
     if random.random() < 0.2:
       i = random.random()
-      if i < 0.3:
+      if i < 0.2:
         creature.add_and_equip(self.items.weapon.dagger())
-      elif i > 0.9:
-        creature.add_and_equip(self.items.weapon.hand_axe())
-      else:
+      elif i < 0.4:
         creature.add_and_equip(self.items.weapon.short_sword())
+      elif i > 0.9:
+        creature.add_and_equip(self.items.weapon.wooden_club())
+      else:
+        creature.add_and_equip(self.items.weapon.hand_axe())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature

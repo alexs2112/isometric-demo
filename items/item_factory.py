@@ -24,7 +24,7 @@ def get_item_image_ids():
     ["Cloak"],
 
     # Weapons
-    ["Dagger", "Short Sword", "Hand Axe", "Shortbow"],
+    ["Dagger", "Short Sword", "Wooden Club", "Hand Axe", "Shortbow"],
 
     # Rings
     ["Ring of Magic Resistance", "Ring of Mana", "Ring of Health"],
@@ -64,6 +64,7 @@ class ItemFactory:
       self.equipment.cloak,
       self.weapon.dagger,
       self.weapon.short_sword,
+      self.weapon.wooden_club,
       self.weapon.hand_axe,
       self.weapon.shortbow,
       self.trinket.ring_magic_resist,

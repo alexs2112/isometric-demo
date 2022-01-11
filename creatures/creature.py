@@ -213,6 +213,7 @@ class Creature:
     self.notify(self.name + " is feeling refreshed!")
 
   def take_turn(self):
+    self.notify_player(self.name + "'s Turn")
     self.upkeep()
     if self.ai:
       self.ai.take_turn(self.world)
@@ -323,7 +324,10 @@ class Creature:
     self.hp = min(self.get_max_hp(), self.hp + random.randint(3, 8))
     self.notify_player(self.name + " heals " + str(amount) + " HP!")
 
-  def take_damage(self, damage, type):
+  def take_damage(self, damage, type, piercing=0):
+    if piercing > 0:  # Ignores armor
+      self.hp -= min(damage, piercing)
+      damage -= min(damage, piercing)
     if type == "physical":
       amount = max(0, damage - self.p_armor)
       self.p_armor = max(0, self.p_armor - damage)
@@ -378,13 +382,36 @@ class Creature:
     damage_type = self.get_damage_type()
 
     w = self.get_main_hand()
+
+    critical = False
+    piercing = 0
     if w and w.is_weapon():
-      s = w.name
+      source = w.name
+      if w.get_type() == "Light Blade":
+        if random.random() * 10 < self.get_skill("Light Blades"):
+          critical = True
+          damage = damage * 2
+      if w.get_type() == "Heavy Blade":
+        damage += self.get_skill("Heavy Blades")
+      if w.get_type() == "Crushing":
+        piercing = self.get_skill("Crushing")
     else:
-      s = "Unarmed"
-    self.notify(self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
-    target.notify(target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage! [" + s + "]")
-    target.take_damage(damage, damage_type)
+      source = "Unarmed"
+      damage += self.get_skill("Unarmed")
+
+    self_string = self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage!"
+    target_string = target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage!"
+
+    self_string += " [" + source + "]"
+    target_string += " [" + source + "]"
+
+    if critical:
+      self_string += " (CRITICAL)"
+      target_string += " (CRITICAL)"
+
+    self.notify(self_string)
+    target.notify(target_string)
+    target.take_damage(damage, damage_type, piercing)
 
   def get_spells(self):
     return self.spells

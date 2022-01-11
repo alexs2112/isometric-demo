@@ -26,6 +26,7 @@ class Equipment(Item):
     super().__init__(name, icon)
     self.sprite = sprite
     self.slot = slot
+    self.tags = []
 
     # Let the bonuses the item provides be a hash where we can search for
     # bonus type by key
@@ -46,10 +47,36 @@ class Equipment(Item):
   def is_equipment(self):
     return True
 
+  def add_tag(self, tag):
+    self.tags.append(tag)
+  
+  def has_tag(self, tag):
+    if tag in self.tags:
+      return True
+    else:
+      return False
+
+  def get_tags(self):
+    return self.tags
+
 class Weapon(Equipment):
-  def __init__(self, name, icon, sprite):
+  VALID_TYPES = [
+    "Light Blade",
+    "Heavy Blade",
+    "Crushing",
+    "Cleaving",
+    "Polearm",
+    "Ranged"
+  ]
+
+  def __init__(self, name, icon, sprite, type):
     super().__init__(name, icon, sprite, "Main")  # For now weapons can only be equipped in the main hand
     self.set_stats(0,1)
+
+    if type in Weapon.VALID_TYPES:
+      self.type = type
+    else:
+      raise ValueError(type + " is not a valid weapon type!")
   
   def set_stats(self, attack_min, attack_max, damage_type="physical", range=1, cost=2):
     self.attack_min = attack_min
@@ -58,6 +85,9 @@ class Weapon(Equipment):
     self.range = range
     self.cost = cost
   
+  def get_type(self):
+    return self.type
+
   def is_weapon(self):
     return True
 

@@ -1,13 +1,11 @@
 Active Work:
- - Initiative
-   - CURRENTLY BREAKING IF AN NPC GOES FIRST
- - More types of weapons that utilize the new skill
- - Finish implementing all skills and attributes
 
 Unordered Roadmap:
  - Combat overhaul
     - More enemies and different AIs
     - Possibly increase the armor cap
+ - Remaining weapon types + their skills
+ - Magic Overhaul to use spell slots, skill levels, cooldowns, skills
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
