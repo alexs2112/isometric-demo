@@ -25,6 +25,7 @@ from pygame.locals import (
     K_m, K_i, K_s, K_h, K_g, K_p,
     KEYDOWN,
     MOUSEBUTTONDOWN,
+    K_LSHIFT,
     QUIT
 )
 
@@ -67,102 +68,120 @@ class Game:
         if not self.subscreen:
           self.screen.center_offset_on_creature(active)
       else:
-        for event in pygame.event.get():
-          if event.type == QUIT:
-            pygame.quit()
-            sys.exit(0)
+        keys = pygame.key.get_pressed()
 
-          if event.type == MOUSEBUTTONDOWN:
-            # If we are casting a spell
-            if active.loaded_spell:
-              self.cast_loaded_spell(active, tile_x, tile_y)
+        # If we are waiting for movement, or for AI
+        if self.world.movement_in_progress():
+          self.world.apply_next_move()
+          self.screen.center_offset_on_creature(active)
+        elif not active.is_player():
+          done_turn = active.take_turn()
+          self.screen.center_offset_on_creature(active)
+          if done_turn:
+            active = self.world.get_next_active_creature()
+          while not self.world.can_see(active.x, active.y):
+            done_turn = active.take_turn()
+            print(done_turn)
+            if done_turn:
+              active = self.world.get_next_active_creature()
+        else:
+          # Take player input
+          for event in pygame.event.get():
+            if event.type == QUIT:
+              pygame.quit()
+              sys.exit(0)
 
-            # If we are in combat
-            elif self.world.in_combat():
-              c = self.world.get_creature_at_location(tile_x, tile_y)
-              if c:
-                _, target = active.get_attack_line(tile_x, tile_y)
-                if target and active.ap >= active.get_attack_cost():
-                  self.attack_target(active, target)
-                else:
-                  path = active.get_path_to(tile_x, tile_y)
-                  active.move_along_path(path[:-1])
-              else:
-                path = active.get_path_to(tile_x, tile_y)
-                active.move_along_path(path)
-            
-            # If we aren't in combat
-            else:
-              c = self.world.get_creature_at_location(tile_x, tile_y)
-              i = self.world.get_inventory(tile_x, tile_y)
+            if event.type == MOUSEBUTTONDOWN:
+              # If we are casting a spell
+              if active.loaded_spell:
+                self.cast_loaded_spell(active, tile_x, tile_y)
 
-              if c:
-                if c.is_player():
-                  active = c
-                else:
+              # If we are in combat
+              elif self.world.in_combat():
+                c = self.world.get_creature_at_location(tile_x, tile_y)
+                if c:
                   _, target = active.get_attack_line(tile_x, tile_y)
-                  if target:
+                  if target and active.ap >= active.get_attack_cost():
                     self.attack_target(active, target)
                   else:
                     path = active.get_path_to(tile_x, tile_y)
                     active.move_along_path(path[:-1])
-              elif i:
-                self.loot_inventory_at(tile_x, tile_y)
-              else:
-                start = active.x, active.y
-                path = active.get_path_to(tile_x, tile_y)
-                active.move_along_path(path)
-                end = active.x, active.y
-                self.move_party(active, start, end)
-            
-              # At the end of a turn, if a combat has started during that turn reset active
-              if self.world.in_combat():
-                active = self.world.get_current_active_creature()
-                if not active.is_player():
-                  active.take_turn()
-                  active = self.take_turns()
-
-          if event.type == KEYDOWN:
-            if event.key == K_SPACE:
-              self.screen.center_offset_on_creature(active)
-            elif event.key == K_RETURN:
-              self.messages.clear()
-              if self.world.in_combat():
-                active = self.take_turns()
-                if not active:
-                  self.subscreen = GameOverScreen()
+                else:
+                  path = active.get_path_to(tile_x, tile_y)
+                  active.move_along_path(path)
               
-              # TEMPORARY
+              # If we aren't in combat
               else:
+                c = self.world.get_creature_at_location(tile_x, tile_y)
+                i = self.world.get_inventory(tile_x, tile_y)
+
+                if c:
+                  if c.is_player():
+                    active = c
+                  else:
+                    _, target = active.get_attack_line(tile_x, tile_y)
+                    if target:
+                      self.attack_target(active, target)
+                    else:
+                      path = active.get_path_to(tile_x, tile_y)
+                      active.move_along_path(path[:-1])
+                elif i:
+                  self.loot_inventory_at(tile_x, tile_y)
+                else:
+                  if keys[K_LSHIFT]:
+                    start = active.x, active.y
+                    path = active.get_path_to(tile_x, tile_y)
+                    active.move_along_path_old(path)
+                    end = active.x, active.y
+                    self.move_party(active, start, end)
+                  else:
+                    path = active.get_path_to(tile_x, tile_y)
+                    active.move_along_path(path)
+              
+                # At the end of a turn, if a combat has started during that turn reset active
+                if self.world.in_combat():
+                  active = self.world.get_current_active_creature()
+                  if self.world.can_see(active.x, active.y):
+                    self.screen.center_offset_on_creature(active)
+
+            if event.type == KEYDOWN:
+              if event.key == K_SPACE:
+                self.screen.center_offset_on_creature(active)
+              elif event.key == K_RETURN:
                 self.messages.clear()
-                active.upkeep()
-            elif event.key == K_ESCAPE:
-              if active.loaded_spell:
-                active.loaded_spell = None
-              else:
-                # Preferably open a game menu here instead of just ending the game lol
-                running = False
-            elif event.key == K_m:
-              self.messages.clear()
-              self.subscreen = MapScreen(self.world, self.screen, active)
-            elif event.key == K_i:
-              self.subscreen = InventoryScreen(self.world.players)
-            elif event.key == K_p:
-              self.subscreen = PartyScreen(self.world.players)
-            elif event.key == K_h:
-              self.subscreen = HelpScreen()
-            elif event.key == K_g:
-              i = Inventory()
-              i.add_item(self.item_factory.wizard_hat())
-              self.subscreen = InventoryScreen(self.world.players, i)
-            elif event.key == K_s:
-              if active.spells:
-                self.subscreen = SpellScreen(active)
-              else:
-                active.notify(active.name + " has no spells to cast.")
+                if self.world.in_combat():
+                  active = self.world.get_next_active_creature()
+                  if self.world.can_see(active.x, active.y):
+                    self.screen.center_offset_on_creature(active)
+                else:
+                  self.messages.clear()
+              elif event.key == K_ESCAPE:
+                if active.loaded_spell:
+                  active.loaded_spell = None
+                else:
+                  # Preferably open a game menu here instead of just ending the game lol
+                  running = False
+              elif event.key == K_m:
+                self.messages.clear()
+                self.subscreen = MapScreen(self.world, self.screen, active)
+              elif event.key == K_i:
+                self.subscreen = InventoryScreen(self.world.players)
+              elif event.key == K_p:
+                self.subscreen = PartyScreen(self.world.players)
+              elif event.key == K_h:
+                self.subscreen = HelpScreen()
+              elif event.key == K_g:
+                i = Inventory()
+                i.add_item(self.item_factory.wizard_hat())
+                self.subscreen = InventoryScreen(self.world.players, i)
+              elif event.key == K_s:
+                if active.spells:
+                  self.subscreen = SpellScreen(active)
+                else:
+                  active.notify(active.name + " has no spells to cast.")
+        # OUT OF FOR LOOP
 
         # Not sure if we need to be able to scroll anymore
-        keys = pygame.key.get_pressed()
         if keys[K_RIGHT]:
           self.screen.offset_x += 15
         if keys[K_LEFT]:
@@ -179,7 +198,9 @@ class Game:
           target = None
         else:
           path, target = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
-        draw_player_stats(self.screen, active, path, target)
+
+        if active.is_player:
+          draw_player_stats(self.screen, active, path, target)
         show_mouse_tooltips(self.screen, self.world, mouse_x, mouse_y, tile_x, tile_y)
         display_messages(self.screen, self.messages)
         write_active_player(self.screen, active)

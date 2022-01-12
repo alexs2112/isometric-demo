@@ -19,8 +19,9 @@ class AI:
   def is_active(self):
     return self.active
 
+  # Returns if this creatures turn is complete after making this move
   def take_turn(self, world: World):
-    return
+    return True
   
   def get_players_in_los(self, world: World):
     players = []
@@ -72,9 +73,8 @@ class Plant(AI):
 class Basic(AI):
   def take_turn(self, world: World):
     if self.move_to and self.creature.x == self.move_to[0] and self.creature.y == self.move_to[1]:
-      self.active = False
       self.move_to = None
-
+    
     p: Creature = self.get_closest_player(world)
     if p:
       self.activate(p)
@@ -82,16 +82,23 @@ class Basic(AI):
       self.active = False
       self.move_to = self.get_home_tile(world)
       if not self.move_to:
-        return
+        return True
 
-    path = self.creature.get_path_to(self.move_to[0], self.move_to[1])
-    if world.get_creature_at_location(self.move_to[0], self.move_to[1]):
-      path = path[:-1]
-    self.creature.move_along_path(path)
-
-    if p:
-      if abs(self.creature.x - p.x) <= self.creature.get_attack_range() and abs(self.creature.y - p.y) <= self.creature.get_attack_range():
+    if p and abs(self.creature.x - p.x) <= self.creature.get_attack_range() and abs(self.creature.y - p.y) <= self.creature.get_attack_range():
+      if self.creature.ap >= self.creature.get_attack_cost():
         self.creature.attack_creature(p)
+      else:
+        return True
+    else:
+      path = self.creature.get_path_to(self.move_to[0], self.move_to[1])
+      if not path:
+        return True
+      x,y = path[0]
+      self.creature.move(x,y)
+    
+    if self.creature.free_movement == 0 and self.creature.ap == 0:
+      return True
+    return False
 
   def activate(self, creature=None):
     super().activate()
