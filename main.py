@@ -156,7 +156,7 @@ class Game:
               i.add_item(self.item_factory.wizard_hat())
               self.subscreen = InventoryScreen(self.world.players, i)
             elif event.key == K_s:
-              if active.get_spells():
+              if active.spells:
                 self.subscreen = SpellScreen(active)
               else:
                 active.notify(active.name + " has no spells to cast.")

@@ -53,6 +53,7 @@ class CreatureFactory:
     creature.set_unarmed_stats(min=3, max=5, type="magical")
     creature.add_and_equip(self.items.equipment.wizard_hat())
     creature.add_and_equip(self.items.equipment.robe())
+    creature.modify_skill("Fire", 1)
     creature.update_sprite()
     creature.add_item(self.items.potion.potion_minor_healing())
     creature.add_spell(self.items.spells.embers())
@@ -98,11 +99,13 @@ class CreatureFactory:
     creature.set_unarmed_stats(min=2, max=3)
     if random.random() < 0.2:
       i = random.random()
-      if i < 0.2:
+      if i < 0.15:
         creature.add_and_equip(self.items.weapon.dagger())
-      elif i < 0.4:
+      elif i < 0.3:
         creature.add_and_equip(self.items.weapon.short_sword())
-      elif i > 0.9:
+      elif i < 0.45:
+        creature.add_and_equip(self.items.weapon.spear())
+      elif i < 0.9:
         creature.add_and_equip(self.items.weapon.wooden_club())
       else:
         creature.add_and_equip(self.items.weapon.hand_axe())

@@ -55,3 +55,13 @@ class WeaponFactory:
     item.set_description("Temp: A curved piece of wood and string, for shooting arrows.")
     self.cache[name] = item
     return item
+  
+  def spear(self):
+    name = "Spear"
+    if name in self.cache:
+      return self.cache[name]
+    item = Weapon(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Polearm")
+    item.set_stats(attack_min=2, attack_max=2, range=2)
+    item.set_description("Temp: A hunting weapon consisting of a wooden shaft with a pointed metal head fastened on one end.")
+    self.cache[name] = item
+    return item

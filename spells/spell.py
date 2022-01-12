@@ -3,8 +3,10 @@ from spells.target import Target
 from creatures.creature import Creature
 
 class Spell:
-  def __init__(self, name, ap_cost, mana_cost, cooldown):
+  def __init__(self, name, level, type, ap_cost, mana_cost, cooldown):
     self.name = name
+    self.level = level
+    self.type = type
     self.ap_cost = ap_cost
     self.cooldown = cooldown
     self.downtime = 0
@@ -13,6 +15,12 @@ class Spell:
     self.caster_effect = None
     self.target_effect = None
     self.friendly_fire = False
+
+  def get_type(self):
+    return self.type
+  
+  def get_level(self):
+    return self.level
 
   def set_target_type(self, target_type: Target):
     self.target_type = target_type
@@ -30,7 +38,8 @@ class Spell:
     self.target_effect = effect
 
   def is_castable(self, caster: Creature):
-    if self.ap_cost > caster.ap or \
+    if not caster.spell_prepared(self) or \
+       self.ap_cost > caster.ap or \
        self.mana_cost > caster.mana or \
        self.downtime > 0:
        return False

@@ -3,13 +3,13 @@
 ATTRIBUTE_LIST = {
   "Brawn": "Increases HP (2 HP per point), !NOT IMPLEMENTED! Inventory Limit, Minor Melee Damage",
   "Agility": "Increases Initiative (1 Initiative per point), !NOT IMPLEMENTED! Evasion, Accuracy, Minor Ranged and Light Weapon Damage",
-  "Will": "Increases Mana (2 Mana per point), !NOT IMPLEMENTED! Spell Slots, Resistance to Magical Effects, Minor Magical Damage"
+  "Will": "Increases Mana (2 Mana per point), Spell Slots (1 slot per point), !NOT IMPLEMENTED! Resistance to Magical Effects, Minor Magical Damage"
 }
 SKILL_LIST = {
   # Generic
   "Endurance": "Minorly Increases HP (1 HP per point), !NOT IMPLEMENTED! Increases inventory limit",
   "Awareness": "Increases Initiative (1 Initiative per point)",
-  "Memory": "!NOT IMPLEMENTED! Increases spell slots",
+  "Memory": "Increases spell slots (1 slot per point)",
 
   # Physical
   "Light Blades": "Adds critical chance for light blades (10% per point)",
@@ -42,3 +42,8 @@ def get_initiative_bonus(creature):
 def get_mana_bonus(creature):
   x = creature.get_attribute("Will")
   return x * 2
+
+def get_spell_slots_bonus(creature):
+  x = creature.get_attribute("Will")
+  y = creature.get_skill("Memory")
+  return x + y

@@ -26,7 +26,8 @@ class Creature:
     self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
-    self.spells = []
+    self.spells = {}  # Spells are stored in a hash of {Spell: Prepared}
+    self.spell_slots = 0
     self.loaded_spell = None
     self.attributes = {}
     self.skills = {}
@@ -66,6 +67,19 @@ class Creature:
     self.unarmed_cost = cost
     self.unarmed_range = range
 
+  def is_player(self):
+    if self.faction == "Player":
+      return True
+    else:
+      return False
+  
+  def update_sprite(self):
+    self.sprite = get_sprite(self)
+
+
+#######################
+# GETTERS AND SETTERS #
+#######################
   def set_attributes(self, brawn, agility, will):
     self.attributes["Brawn"] = brawn
     self.attributes["Agility"] = agility
@@ -95,9 +109,6 @@ class Creature:
       return self.skills[skill]
     return 0
 
-  def update_sprite(self):
-    self.sprite = get_sprite(self)
-
   def get_max_hp(self):
     return self.max_hp + self.equipment.get_bonus("MAX_HP") + get_hp_bonus(self)
 
@@ -109,6 +120,9 @@ class Creature:
   
   def get_initiative(self):
     return self.base_initiative + self.equipment.get_bonus("INITIATIVE") + get_initiative_bonus(self)
+  
+  def get_spell_slots(self):
+    return self.spell_slots + self.equipment.get_bonus("SPELL_SLOTS") + get_spell_slots_bonus(self)
 
   def get_attack_min(self):
     i = self.get_main_hand()
@@ -156,6 +170,10 @@ class Creature:
   def get_m_armor_cap(self):
     return min(self.m_armor_cap + self.equipment.get_bonus("M_ARMOR"), self.M_ARMOR_MAX)
 
+
+######################
+# ITEM RELATED STUFF #
+######################
   def add_item(self, item, quantity=1):
     self.inventory.add_item(item, quantity)
 
@@ -189,10 +207,10 @@ class Creature:
       return False
     return self.equipment.is_equipped(item)
 
-  def add_effect(self, effect):
-    if effect:
-      effect.apply(self)
 
+######################
+# TURN RELATED STUFF #
+######################
   def upkeep(self):
     self.loaded_spell = None
     self.ap = self.max_ap
@@ -217,13 +235,15 @@ class Creature:
     self.upkeep()
     if self.ai:
       self.ai.take_turn(self.world)
+  
+  def add_effect(self, effect):
+    if effect:
+      effect.apply(self)
 
-  def is_player(self):
-    if self.faction == "Player":
-      return True
-    else:
-      return False
 
+########################
+# COMBAT RELATED STUFF #
+########################
   # If this creature is actively hunting a player
   def is_active(self):
     if self.ai:
@@ -241,6 +261,10 @@ class Creature:
       else:
         self.world.start_combat()
 
+
+##########################
+# MOVEMENT RELATED STUFF #
+##########################
   def can_enter(self, x, y):
     if self.world.is_floor(x, y) and not self.world.get_creature_at_location(x,y):
       return True
@@ -303,6 +327,10 @@ class Creature:
       leftover_free_movement += self.get_speed() - rem
     return (ap_cost, leftover_free_movement)
 
+
+########################
+# MEMORY RELATED STUFF #
+########################
   def can_see(self, to_x, to_y):
     return fov.can_see(self.world, self.x, self.y, to_x, to_y, self.vision_radius)
   
@@ -320,6 +348,10 @@ class Creature:
         p.notify(message)
         break
 
+
+########################
+# ATTACK RELATED STUFF #
+########################
   def heal(self, amount):
     self.hp = min(self.get_max_hp(), self.hp + random.randint(3, 8))
     self.notify_player(self.name + " heals " + str(amount) + " HP!")
@@ -413,17 +445,59 @@ class Creature:
     target.notify(target_string)
     target.take_damage(damage, damage_type, piercing)
 
-  def get_spells(self):
-    return self.spells
+
+#######################
+# SPELL RELATED STUFF #
+#######################
+  def spell_list(self):
+    return list(self.spells.keys())
+
+  def get_prepared_spells(self):
+    out = []
+    for s in self.spell_list():
+      if self.spell_prepared(s):
+        out.append(s)
+    return out
+  
+  def get_unprepared_spells(self):
+    out = []
+    for s in self.spell_list():
+      if not self.spell_prepared(s):
+        out.append(s)
+    return out
   
   def add_spell(self, spell):
-    self.spells.append(spell)
+    if spell not in self.spells:
+      self.spells[spell] = False
+
+  def get_remaining_spell_slots(self):
+    v = self.get_spell_slots()
+    for spell in self.get_prepared_spells():
+      v -= spell.get_level()
+    return v
+
+  def can_prepare(self, spell):
+    if spell in self.spells and not self.spells[spell]:
+      if self.get_skill(spell.get_type()) >= spell.get_level():
+        if self.get_remaining_spell_slots() >= spell.get_level():
+          return True
+    return False
+
+  def prepare_spell(self, spell):
+    if spell in self.spells:
+      self.spells[spell] = True
+
+  def unprepare_spell(self, spell):
+    if spell in self.spells:
+      self.spells[spell] = False
+
+  def spell_prepared(self, spell):
+    if spell in self.spells:
+      return self.spells[spell]
+    return False
 
   def load_spell(self, spell):
     self.loaded_spell = spell
 
   def knows_spell(self, spell_name):
-    for s in self.spells:
-      if s.name == spell_name:
-        return True
-    return False
+    return spell_name in self.spells

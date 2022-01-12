@@ -5,12 +5,12 @@ Unordered Roadmap:
     - More enemies and different AIs
     - Possibly increase the armor cap
  - Remaining weapon types + their skills
- - Magic Overhaul to use spell slots, skill levels, cooldowns, skills
  - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Dungeon overhaul, multiple floors with a surface to talk to NPCs
  - Quests and more of a surface world to explore
+ - Experience and levelling up
  - More mouse controls, everything should be controllable by mouse, including many buttons around the screen and redoing
    most subscreens
  - Saving game state
@@ -46,10 +46,12 @@ Side work:
    - This will massively suck with party movement...
  - A menu for the escape key so that id doesn't just immediately kill the game instead
  - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
+ - Redraw all character and item sprites that we are using from DCSS
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
    - Picking it up crashes the game (might not happen anymore)
    - It is possibly (likely) an indexing problem with the inventory screen
  - Party movement is a little broken, mostly works
-   
+ - Sometimes enemies will skip their turn. It seems to happen when another enemy dies to the burning effect, but it is hard to
+   reproduce...
