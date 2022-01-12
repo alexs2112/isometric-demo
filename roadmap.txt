@@ -1,4 +1,7 @@
 Active Work:
+ - "Animate" movement, add a short delay between each tile of movement, redrawing the screen each time. But only if the creature
+   is on screen
+ - Assign a movement queue to world. As long as this queue has moves in it, dont let the player enter input (within reason)
 
 Unordered Roadmap:
  - Combat overhaul
@@ -19,11 +22,6 @@ Side work:
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
- - Magic system:
-   - Spells have a element and level
-   - Need to have the corresponding skill to be at least that level in order to learn it
-   - Can only have prepared spells of total levels less than or equal to your spell slots
-   - Can rest and reorganize your prepared spells, possibly only outside of a dungeon? Once we have an "outside"
  - Inventory screen optimizations
    - Allow the inventory screen to take multiple inventories as a param
      - Looting rooms with multiple inventories
@@ -41,12 +39,10 @@ Side work:
      book icon
  - Spells with cooldowns, this is mostly ignored for now
  - Spells and effects need icons and indicators
- - "Animate" movement, add a short delay between each tile of movement, redrawing the screen each time. But only if the creature
-   is on screen
-   - This will massively suck with party movement...
  - A menu for the escape key so that id doesn't just immediately kill the game instead
  - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
  - Redraw all character and item sprites that we are using from DCSS
+ - Optimize party movement algorithm so they actually follow a path instead of just teleport around
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details

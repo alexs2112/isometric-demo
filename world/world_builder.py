@@ -5,6 +5,7 @@ import world.dungeon_gen as dungeon_gen
 from world.tile import Tile
 from world.fov import FieldOfView
 from items.inventory import Inventory
+from world.movement_queue import MovementQueue, Move
 FLOOR = 0
 WALL = 1
 
@@ -21,6 +22,7 @@ class World:
     self.start_room = None
     self.end_room = None
     self.combat_queue = None
+    self.movement_queue = None
 
   def set_rooms(self, rooms):
     self.rooms = rooms
@@ -188,6 +190,29 @@ class World:
       if i == inventory:
         self.items.pop(p)
         return
+
+  def movement_in_progress(self):
+    if self.movement_queue:
+      return True
+    return False
+
+  def apply_next_move(self):
+    combat_before = self.in_combat()
+    moves = self.movement_queue.get_first_moves()
+    for move in moves:
+      x,y = move.point
+      move.creature.move(x,y)
+      
+    if not combat_before and self.in_combat():
+      self.movement_queue = None
+
+    elif self.movement_queue.is_complete():
+      self.movement_queue = None
+
+  def add_player_move(self, creature, path):
+    if not self.movement_queue:
+      self.movement_queue = MovementQueue()
+    self.movement_queue.add_movement([Move(creature, point) for point in path])
 
   # Simply print the world to the terminal
   def print_world(self):

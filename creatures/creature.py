@@ -273,6 +273,22 @@ class Creature:
     if self.world.is_floor(self.x + dx, self.y + dy):
       self.x += dx
       self.y += dy
+    
+  def move(self, x, y, cost=1):
+    if self.free_movement < cost and self.ap <= 0:
+      return
+    if self.can_enter(x, y):
+      self.x = x
+      self.y = y
+
+      if self.world.in_combat():
+        if self.free_movement < cost:
+          self.ap -= 1
+          self.free_movement += self.get_speed()
+        self.free_movement -= cost
+
+      if self.is_player():
+        self.world.update_fov(self)
 
   def move_to(self, x, y):
     if self.world.is_floor(x, y):
@@ -293,6 +309,9 @@ class Creature:
 
     path = Path(self, dx, dy).points
     return path
+
+  def move_test(self, path):
+    self.world.add_player_move(self, path)
 
   def move_along_path(self, path):
     path = path[:self.get_possible_distance()]
