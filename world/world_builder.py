@@ -138,6 +138,8 @@ class World:
   def get_next_active_creature(self):
     if self.combat_queue:
       c = self.combat_queue.get_next_creature()
+      c.upkeep()
+      c.notify_player(c.name + "'s Turn")
       if self.no_active_enemies():
         self.end_combat()
       return c
@@ -210,6 +212,8 @@ class World:
       self.movement_queue = None
 
   def add_player_move(self, creature, path):
+    if not path:
+      return
     if not self.movement_queue:
       self.movement_queue = MovementQueue()
     self.movement_queue.add_movement([Move(creature, point) for point in path])

@@ -230,11 +230,11 @@ class Creature:
     self.mana = self.get_max_mana()
     self.notify(self.name + " is feeling refreshed!")
 
+  # Returns if this creatures turn is complete after making this move
   def take_turn(self):
-    self.notify_player(self.name + "'s Turn")
-    self.upkeep()
     if self.ai:
-      self.ai.take_turn(self.world)
+      return self.ai.take_turn(self.world)
+    return True
   
   def add_effect(self, effect):
     if effect:
@@ -310,10 +310,11 @@ class Creature:
     path = Path(self, dx, dy).points
     return path
 
-  def move_test(self, path):
+  def move_along_path(self, path):
     self.world.add_player_move(self, path)
 
-  def move_along_path(self, path):
+  def move_along_path_old(self, path):
+    # Still used for party movement, this will be removed when we fix that to work with animated movement
     path = path[:self.get_possible_distance()]
     distance = len(path)
     if distance == 0:

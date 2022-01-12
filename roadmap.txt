@@ -1,7 +1,4 @@
 Active Work:
- - "Animate" movement, add a short delay between each tile of movement, redrawing the screen each time. But only if the creature
-   is on screen
- - Assign a movement queue to world. As long as this queue has moves in it, dont let the player enter input (within reason)
 
 Unordered Roadmap:
  - Combat overhaul

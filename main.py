@@ -69,9 +69,21 @@ class Game:
           self.screen.center_offset_on_creature(active)
       else:
         keys = pygame.key.get_pressed()
+
+        # If we are waiting for movement, or for AI
         if self.world.movement_in_progress():
           self.world.apply_next_move()
           self.screen.center_offset_on_creature(active)
+        elif not active.is_player():
+          done_turn = active.take_turn()
+          self.screen.center_offset_on_creature(active)
+          if done_turn:
+            active = self.world.get_next_active_creature()
+          while not self.world.can_see(active.x, active.y):
+            done_turn = active.take_turn()
+            print(done_turn)
+            if done_turn:
+              active = self.world.get_next_active_creature()
         else:
           # Take player input
           for event in pygame.event.get():
@@ -93,12 +105,10 @@ class Game:
                     self.attack_target(active, target)
                   else:
                     path = active.get_path_to(tile_x, tile_y)
-                    #active.move_along_path(path[:-1])
-                    active.move_test(path[:-1])
+                    active.move_along_path(path[:-1])
                 else:
                   path = active.get_path_to(tile_x, tile_y)
-                  #active.move_along_path(path)
-                  active.move_test(path)
+                  active.move_along_path(path)
               
               # If we aren't in combat
               else:
@@ -114,27 +124,25 @@ class Game:
                       self.attack_target(active, target)
                     else:
                       path = active.get_path_to(tile_x, tile_y)
-                      #active.move_along_path(path[:-1])
-                      active.move_test(path[:-1])
+                      active.move_along_path(path[:-1])
                 elif i:
                   self.loot_inventory_at(tile_x, tile_y)
                 else:
                   if keys[K_LSHIFT]:
                     start = active.x, active.y
                     path = active.get_path_to(tile_x, tile_y)
-                    active.move_along_path(path)
+                    active.move_along_path_old(path)
                     end = active.x, active.y
                     self.move_party(active, start, end)
                   else:
                     path = active.get_path_to(tile_x, tile_y)
-                    active.move_test(path)
+                    active.move_along_path(path)
               
                 # At the end of a turn, if a combat has started during that turn reset active
                 if self.world.in_combat():
                   active = self.world.get_current_active_creature()
-                  if not active.is_player():
-                    active.take_turn()
-                    active = self.take_turns()
+                  if self.world.can_see(active.x, active.y):
+                    self.screen.center_offset_on_creature(active)
 
             if event.type == KEYDOWN:
               if event.key == K_SPACE:
@@ -142,14 +150,11 @@ class Game:
               elif event.key == K_RETURN:
                 self.messages.clear()
                 if self.world.in_combat():
-                  active = self.take_turns()
-                  if not active:
-                    self.subscreen = GameOverScreen()
-                
-                # TEMPORARY
+                  active = self.world.get_next_active_creature()
+                  if self.world.can_see(active.x, active.y):
+                    self.screen.center_offset_on_creature(active)
                 else:
                   self.messages.clear()
-                  active.upkeep()
               elif event.key == K_ESCAPE:
                 if active.loaded_spell:
                   active.loaded_spell = None
