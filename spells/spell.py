@@ -66,7 +66,7 @@ class Spell:
       c.add_effect(self.target_effect)
 
   def clone(self):
-    new = Spell(self.name, self.ap_cost, self.mana_cost, self.cooldown)
+    new = Spell(self.name, self.level, self.type, self.ap_cost, self.mana_cost, self.cooldown)
     new.set_target_type(self.get_target_type())
     new.set_caster_effect(self.caster_effect)
     new.set_target_effect(self.target_effect)

@@ -434,6 +434,8 @@ class Creature:
     damage_type = self.get_damage_type()
 
     w = self.get_main_hand()
+    attacking_flavour = " attacks "
+    getting_attacked_flavour = " gets attacked by "
 
     critical = False
     piercing = 0
@@ -447,12 +449,15 @@ class Creature:
         damage += self.get_skill("Heavy Blades")
       if w.get_type() == "Crushing":
         piercing = self.get_skill("Crushing")
+      if w.get_type() == "Ranged":
+        attacking_flavour = " shoots "
+        getting_attacked_flavour = " gets shot by "
     else:
       source = "Unarmed"
       damage += self.get_skill("Unarmed")
 
-    self_string = self.name + " attacks " + target.name + " for " + str(damage) + " " + damage_type + " damage!"
-    target_string = target.name + " gets attacked by " + self.name + " for " + str(damage) + " " + damage_type + " damage!"
+    self_string = self.name + attacking_flavour + target.name + " for " + str(damage) + " " + damage_type + " damage!"
+    target_string = target.name + getting_attacked_flavour + self.name + " for " + str(damage) + " " + damage_type + " damage!"
 
     self_string += " [" + source + "]"
     target_string += " [" + source + "]"

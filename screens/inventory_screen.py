@@ -113,8 +113,11 @@ class InventoryScreen(Subscreen):
           p = self.get_current_selected_player()
           i, q = self.get_current_item()
           p.remove_item(i, q)
-          p.world.add_item(i, (p.x, p.y), q)
-          self.inventory = p.world.get_inventory(p.x, p.y)
+          if self.inventory:
+            self.inventory.add_item(i, q)
+          else:
+            p.world.add_item(i, (p.x, p.y), q)
+            self.inventory = p.world.get_inventory(p.x, p.y)
           self.set_min_max_indices()
           self.selected_index = max(0, self.selected_index - 1)
         elif event.key == K_RETURN:

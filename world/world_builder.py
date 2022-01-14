@@ -153,6 +153,11 @@ class World:
         return False
     return True
   
+  def activate_room_enemies(self, room, creature=None):
+    for c in self.creatures:
+      if c.home_room == room and not c.is_active() and c.can_be_activated():
+        c.activate(creature)
+
   def creature_location_dict(self):
     locations = {}
     for c in self.creatures:

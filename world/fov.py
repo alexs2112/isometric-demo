@@ -68,15 +68,18 @@ class FieldOfView(list):
         if creature.can_see(to_x, to_y):
           self.current[to_x][to_y] = True
 
-          # For now, activate each non-active creature you can see
+          # If you see a non-active creature, activate all enemies in the room
           c = creature.world.get_creature_at_location(to_x, to_y)
           if c and c.can_be_activated() and not c.is_active():
-            c.activate(creature)
-            s = "You see a " + c.name
-            w = c.equipment.slot("Main")
-            if w:
-              s += " wielding a " + w.name
-            creature.notify(s)
+            if c.home_room:
+              c.world.activate_room_enemies(c.home_room, creature)
+            else:
+              c.activate(creature)
+              s = "You see a " + c.name
+              w = c.equipment.slot("Main")
+              if w:
+                s += " wielding a " + w.name
+              creature.notify(s)
   
   def print(self):
     for y in range(self.height):
