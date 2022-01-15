@@ -1,7 +1,7 @@
 import pygame
 
 # Keep track of how many are even available in the files
-WALL_TILESETS = 6
+WALL_TILESETS = 8
 FLOOR_TILESETS = 5
 
 # Load all relevant images and assets at the start and store them here so that we can quickly access them without
@@ -30,6 +30,8 @@ class TileSet:
     self.initialize_ui()
     self.misc = {}
     self.initialize_misc()
+    self.features = {}
+    self.initialize_features()
 
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
@@ -237,3 +239,10 @@ class TileSet:
     self.ui["map_enemy_dot"] = map_icons.subsurface((0,8,24,8))
     self.ui["map_items_dot"] = map_icons.subsurface((24,0,24,8))
     self.ui["map_floor_orange"] = map_icons.subsurface((0,16,32,16))
+
+  def initialize_features(self):
+    full = pygame.image.load("assets/features.png")
+    self.features["door_closed_w"] = full.subsurface((0,0,40,60))
+    self.features["door_closed_e"] = full.subsurface((40,0,40,60))
+    self.features["door_open_w"] = full.subsurface((0,64,40,60))
+    self.features["door_open_e"] = full.subsurface((40,64,40,60))

@@ -1,11 +1,16 @@
 Active Work:
+ - Doors:
+    - Block movement when closed, need sprites for open, closed, ne, nw, possibly se, sw too
+    - Figure out how to pathfind through them so that closing a door doesn't just fuck everything up
+ - Chests:
+    - A static inventory, needs to stay in the world even if empty
+    - Maybe a closed icon for items, and an open icon if it is empty?
 
 Unordered Roadmap:
  - Combat overhaul
     - More enemies and different AIs
     - Possibly increase the armor cap
  - Remaining weapon types + their skills
- - Dungeon features, such as doors, barrels, random stuff sitting around
  - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Dungeon overhaul, multiple floors with a surface to talk to NPCs
@@ -19,6 +24,7 @@ Side work:
  - Prettier subscreens and UI
  - Mousing over things changes the cursor (attacking and grabbing items)
  - Pick up items from the map screen
+ - Clean up how dungeons are generated to be optimized, passing a single World object around instead of like 5 variables
  - Inventory screen optimizations
    - Allow the inventory screen to take multiple inventories as a param
      - Looting rooms with multiple inventories
@@ -48,3 +54,13 @@ Known Bugs:
  - Party movement is a little broken, mostly works
  - Sometimes enemies will skip their turn. It seems to happen when another enemy dies to the burning effect, but it is hard to
    reproduce...
+ - Its possible for an enemy to die to an effect, turn invisible and then take infinite turns, running around and killing everyone
+ - Hallway bugs:
+    - Two hallways that are adjacent to each other:
+      ...#..
+      #+++..
+      #.##..
+    - Hallways that hit the corner of other rooms:
+      .##+...
+      .+..#+#
+      ####...

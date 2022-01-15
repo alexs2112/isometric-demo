@@ -8,9 +8,9 @@ ROOM_MAX_SIZE = 7
 
 def generate_dungeon(world, width, height, room_count):
   world, rooms = create_rooms(world, width, height, room_count)
-  world = place_hallways(world, rooms)
+  world, doors = place_hallways(world, rooms)
   start_room, end_room = get_start_and_end_rooms(rooms)
-  return world, rooms, start_room, end_room
+  return world, rooms, start_room, end_room, doors
 
 def create_rooms(world, width, height, amount):
   # Returns the updated world along with a list of rooms
@@ -105,23 +105,63 @@ def find_good_hallways(rooms):
 
 def place_hallways(world, rooms):
   origins = list(map(lambda room: room.origin, rooms))
+  doors = []
   hallways = find_good_hallways(origins)
   for edge in hallways:
-    for x,y in edge.path:
-      world[x][y] = FLOOR
-    
     room1 = None
     room2 = None
     for room in rooms:
-      if edge.touches(room.origin):
-        if room1 == None:
-          room1 = room
-        else:
-          room2 = room
+      if edge.vertex_a == room.origin:
+        room1 = room
+      elif edge.vertex_b == room.origin:
+        room2 = room
     room1.add_neighbor(room2)
     room2.add_neighbor(room1)
-    
-  return world
+
+# Hallway optimization and door finding algorithm
+# Get a list of tiles cardinally adjacent to the start room and the end room. Then for each tile in the path:
+# - If the tile is already a floor, continue
+# - If the tile is in the end room list, turn into floor, mark as door, and break
+# - If the tile is in the start room list AND the next tile is NOT in the start room list, turn into floor and mark as door
+# - If the tile is in the start room list AND the next tile is ALSO in the start room list, continue
+    tiles1 = room1.get_adjacent_tiles()
+    tiles2 = room2.get_adjacent_tiles()
+    for i in range(edge.length):
+      x,y = edge.path[i]
+
+      if world[x][y] == FLOOR:
+        continue
+
+      if (x,y) in tiles2:
+        world[x][y] = FLOOR
+
+        if not_adjacent_to_door(doors, x, y):
+          doors.append((x,y))
+        break
+
+      if i < edge.length - 1:
+        x2,y2 = edge.path[i+1]
+        if (x,y) in tiles1:
+          if (x2,y2) in tiles1:
+            continue
+          else:
+            world[x][y] = FLOOR
+            if not_adjacent_to_door(doors, x, y):
+              doors.append((x,y))
+        else:
+          world[x][y] = FLOOR
+  return world, doors
+
+def not_adjacent_to_door(doors, sx, sy):
+  n = []
+  for x in range(sx-1, sx+2):
+    for y in range(sy-1, sy+2):
+      n.append((x,y))
+  
+  for t in n:
+    if t in doors:
+      return False
+  return True
 
 # The start and end rooms should be the rooms with the largest number of intervening rooms
 def get_start_and_end_rooms(rooms):

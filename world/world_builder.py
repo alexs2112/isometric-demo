@@ -19,6 +19,7 @@ class World:
     self.players = []   # A subset of creatures
     self.rooms = []
     self.items = {}     # A hash of location: inventory
+    self.features = {}
     self.start_room = None
     self.end_room = None
     self.combat_queue = None
@@ -26,6 +27,10 @@ class World:
 
   def set_rooms(self, rooms):
     self.rooms = rooms
+  
+  def set_doors(self, doors):
+    for point in doors:
+      self.features[point] = True
   
   def finalize_tiles(self, initial_array):
     from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
@@ -227,10 +232,12 @@ class World:
   def print_world(self):
     for y in range(self.height):
       for x in range(self.width):
-        if self.is_floor(x,y):
-          print(str(FLOOR), end='')
+        if (x,y) in self.features:
+          print('+', end='')
+        elif self.is_floor(x,y):
+          print('.', end='')
         else:
-          print(str(WALL), end='')
+          print('#', end='')
       print()
     print()
 
@@ -254,6 +261,21 @@ class Room:
         points.append((x,y))
     return points
   
+  def get_adjacent_tiles(self):
+    points = []
+    x1, y1 = self.p1
+    x2, y2 = self.p2
+    x_points = list(range(x1, x2))
+    y_points = list(range(y1, y2))
+
+    for x in x_points:
+      points.append((x, y1-1))
+      points.append((x, y2))
+    for y in y_points:
+      points.append((x1-1, y))
+      points.append((x2, y))
+    return points
+      
   def is_explored(self, world: World):
     points = self.get_tiles()
     for p in points:
@@ -280,9 +302,10 @@ def generate_maze(width, height):
 # Will generate at most the number of rooms specified, constrained by world size
 def generate_dungeon(width, height, rooms):
   initial_array = make_empty_initial_array(width, height)
-  initial_array, rooms, start_room, end_room = dungeon_gen.generate_dungeon(initial_array, width, height, rooms)
+  initial_array, rooms, start_room, end_room, doors = dungeon_gen.generate_dungeon(initial_array, width, height, rooms)
   world = World(initial_array)
   world.set_rooms(rooms)
+  world.set_doors(doors)
   world.start_room = start_room
   world.end_room = end_room
   return world
