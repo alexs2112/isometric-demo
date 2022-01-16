@@ -21,6 +21,8 @@ class Screen:
 
   def blit(self, image, coords):
     # A simple wrapper so we don't need to call screen.display.blit(...)
+    if image == None:
+      return
     self.display.blit(image, coords)
 
   def write(self, text, coords, font, colour=(255,255,255)):

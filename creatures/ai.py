@@ -84,7 +84,7 @@ class Basic(AI):
       if not self.move_to:
         return True
 
-    if p and abs(self.creature.x - p.x) <= self.creature.get_attack_range() and abs(self.creature.y - p.y) <= self.creature.get_attack_range():
+    if p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
       if self.creature.ap >= self.creature.get_attack_cost():
         self.creature.attack_creature(p)
       else:

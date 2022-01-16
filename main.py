@@ -46,7 +46,7 @@ class Game:
     self.spell_factory = SpellFactory(self.effect_factory)
     self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.spell_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
-    init.create_creatures(self.world, self.creature_factory, self.messages)
+    init.create_creatures(args, self.world, self.creature_factory, self.messages)
     init.create_items(self.world, self.item_factory)
     self.subscreen = StartScreen()
 
@@ -114,6 +114,7 @@ class Game:
               else:
                 c = self.world.get_creature_at_location(tile_x, tile_y)
                 i = self.world.get_inventory(tile_x, tile_y)
+                f = self.world.get_feature(tile_x, tile_y)
 
                 if c:
                   if c.is_player():
@@ -126,7 +127,17 @@ class Game:
                       path = active.get_path_to(tile_x, tile_y)
                       active.move_along_path(path[:-1])
                 elif i:
-                  self.loot_inventory_at(tile_x, tile_y)
+                  if active.simple_distance_to(tile_x, tile_y) <= 1:
+                    self.loot_inventory_at(tile_x, tile_y)
+                  else:
+                    path = active.get_path_to(tile_x, tile_y)
+                    active.move_along_path(path[:-1])
+                elif f:
+                  if active.simple_distance_to(tile_x, tile_y) <= 1:
+                    f.interact(active)
+                  else:
+                    path = active.get_path_to(tile_x, tile_y)
+                    active.move_along_path(path[:-1])
                 else:
                   if keys[K_LSHIFT]:
                     start = active.x, active.y
@@ -296,6 +307,7 @@ def print_help():
     -h, --help
     -v
     --solo
+    --no-enemies
   
   World Types:
     --dungeon           (default)

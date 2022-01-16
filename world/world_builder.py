@@ -1,4 +1,4 @@
-import random
+import random, pygame
 from world.combat_queue import CombatQueue
 import world.maze_gen as maze_gen
 import world.dungeon_gen as dungeon_gen
@@ -6,6 +6,7 @@ from world.tile import Tile
 from world.fov import FieldOfView
 from items.inventory import Inventory
 from world.movement_queue import MovementQueue, Move
+from world.features import Door
 FLOOR = 0
 WALL = 1
 
@@ -27,10 +28,6 @@ class World:
 
   def set_rooms(self, rooms):
     self.rooms = rooms
-  
-  def set_doors(self, doors):
-    for point in doors:
-      self.features[point] = True
   
   def finalize_tiles(self, initial_array):
     from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
@@ -71,7 +68,7 @@ class World:
       attempts -= 1
       x = random.randint(0, self.width-1)
       y = random.randint(0, self.height-1)
-      if self.is_floor(x,y) and not self.get_creature_at_location(x,y):
+      if not self.block_movement(x,y) and not self.get_creature_at_location(x,y):
         return x, y
 
     # Honestly this shouldnt happen but right now the maze generator just sometimes just doesn't make a maze
@@ -84,11 +81,10 @@ class World:
   def get_random_floor_from_set(self, tiles):
     random.shuffle(tiles)
     for (x,y) in tiles:
-      if self.is_floor(x,y) and not self.get_creature_at_location(x,y):
+      if not self.block_movement(x,y) and not self.get_creature_at_location(x,y):
         return x, y
 
     raise Exception("Could not find an empty floor tile in set!")
-
 
   # Some wrapper methods around our field of view
   def update_fov(self, creature):
@@ -99,6 +95,24 @@ class World:
   
   def can_see(self, x, y):
     return self.fov.can_see(x,y)
+  
+  def block_sight(self, x, y):
+    # If there is an object here that would block sight
+    if not self.is_floor(x,y):
+      return True
+    f = self.get_feature(x,y)
+    if f and not f.see_through():
+      return True
+    return False
+  
+  def block_movement(self, x, y):
+    # If there is an object here that would block movement
+    if not self.is_floor(x,y):
+      return True
+    f = self.get_feature(x,y)
+    if f and not f.move_through():
+      return True
+    return False
 
   def add_creature(self, creature):
     creature.full_rest()
@@ -202,6 +216,33 @@ class World:
       if i == inventory:
         self.items.pop(p)
         return
+
+  def set_doors(self, doors):
+    # Temporary, copied from tileset until we figure out how to get the images to features
+    # Probably use a feature factory
+    full = pygame.image.load("assets/features.png")
+    door_closed_e = full.subsurface((0,0,40,52))
+    door_closed_w = full.subsurface((40,0,40,52))
+    door_open_e = full.subsurface((0,52,40,52))
+    door_open_w = full.subsurface((40,52,40,52))
+    door_shadow_e = full.subsurface((0,104,40,35))
+    door_shadow_w = full.subsurface((40,104,40,35))
+    for (x,y) in doors:
+      if self.is_floor(x, y-1):
+        orientation = 0
+        open = door_open_e
+        closed = door_closed_e
+        shadow = door_shadow_e
+      if self.is_floor(x+1, y):
+        orientation = 1
+        open = door_open_w
+        closed = door_closed_w
+        shadow = door_shadow_w
+      self.features[(x,y)] = Door(orientation, closed, open, shadow)
+
+  def get_feature(self, x, y):
+    if (x,y) in self.features:
+      return self.features[(x,y)]
 
   def movement_in_progress(self):
     if self.movement_queue:

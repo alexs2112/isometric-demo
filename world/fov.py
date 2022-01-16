@@ -67,6 +67,7 @@ class FieldOfView(list):
       
         if creature.can_see(to_x, to_y):
           self.current[to_x][to_y] = True
+          self[to_x][to_y] = True
 
           # If you see a non-active creature, activate all enemies in the room
           c = creature.world.get_creature_at_location(to_x, to_y)
@@ -97,7 +98,7 @@ def can_see(world, sx, sy, dx, dy, radius):
 
     l = helpers.get_line(sx, sy, dx, dy)
     for p_x, p_y in l:
-      if world.is_floor(p_x, p_y) or (p_x == dx and p_y == dy):
+      if not world.block_sight(p_x, p_y) or (p_x == dx and p_y == dy):
         continue
       return False
     return True

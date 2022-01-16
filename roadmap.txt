@@ -1,7 +1,6 @@
 Active Work:
- - Doors:
-    - Block movement when closed, need sprites for open, closed, ne, nw, possibly se, sw too
-    - Figure out how to pathfind through them so that closing a door doesn't just fuck everything up
+ - Do a bit of work to clean up wall shadows, should be easy
+ - Clean up the dungeon_gen class to use a World object from the beginning
  - Chests:
     - A static inventory, needs to stay in the world even if empty
     - Maybe a closed icon for items, and an open icon if it is empty?
@@ -46,6 +45,9 @@ Side work:
  - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
  - Redraw all character and item sprites that we are using from DCSS
  - Optimize party movement algorithm so they actually follow a path instead of just teleport around
+ - Door shadows, only show shadow on one side of the door if you can't see the other
+ - Right now AI can't open doors or path through them. But you also can't close doors mid combat. If we decide to let you close
+   doors in combat, we will also have to let AI open doors
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
@@ -55,12 +57,3 @@ Known Bugs:
  - Sometimes enemies will skip their turn. It seems to happen when another enemy dies to the burning effect, but it is hard to
    reproduce...
  - Its possible for an enemy to die to an effect, turn invisible and then take infinite turns, running around and killing everyone
- - Hallway bugs:
-    - Two hallways that are adjacent to each other:
-      ...#..
-      #+++..
-      #.##..
-    - Hallways that hit the corner of other rooms:
-      .##+...
-      .+..#+#
-      ####...

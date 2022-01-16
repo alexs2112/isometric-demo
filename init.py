@@ -52,8 +52,10 @@ def create_players(world: world_builder.World, cf: CreatureFactory, messages):
     c.set_home_room(room)
     c.set_messages(messages)
 
-def create_creatures(world: world_builder.World, cf: CreatureFactory, messages):
+def create_creatures(args, world: world_builder.World, cf: CreatureFactory, messages):
   create_players(world, cf, messages)
+  if "--no-enemies" in args:
+    return
   for room in world.rooms:
     if room == world.start_room:
       continue

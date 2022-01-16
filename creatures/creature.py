@@ -266,8 +266,11 @@ class Creature:
 # MOVEMENT RELATED STUFF #
 ##########################
   def can_enter(self, x, y):
-    if self.world.is_floor(x, y) and not self.world.get_creature_at_location(x,y):
+    if not self.world.block_movement(x,y) and not self.world.get_creature_at_location(x,y):
       return True
+    
+  def simple_distance_to(self, x, y):
+    return max(abs(self.x - x), abs(self.y - y))
 
   def move_relative(self, dx, dy):
     if self.world.is_floor(self.x + dx, self.y + dy):
@@ -415,7 +418,7 @@ class Creature:
       return
 
     r = self.get_attack_range()
-    if abs(self.x - target.x) > r or abs(self.y - target.y) > r:
+    if self.simple_distance_to(target.x, target.y) > r:
       self.notify("The " + target.name + " is out of range!")
       return
 

@@ -8,6 +8,15 @@ FLOOR_TILESETS = 5
 # reloading images all the time
 # Using Dungeon Crawl Stone Soup tiles for creatures and items: https://crawl.develz.org/
 class TileSet:
+  WHITE = (255, 255, 255)
+  HP_RED = (172, 50, 50)
+  MANA_BLUE = (99, 155, 255)
+  PHYSICAL_YELLOW = (251, 242, 54)
+  MAGICAL_CYAN = (95, 205, 228)
+  EQUIPPED_GREEN = (106, 190, 48)
+  ORANGE = (223, 113, 38)
+  DARK_GREY = (34, 32, 52)
+
   def __init__(self):
     self.corners = []
     self.ne_walls = []
@@ -36,33 +45,20 @@ class TileSet:
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
 
-    self.WHITE = (255, 255, 255)
-    self.HP_RED = (172, 50, 50)
-    self.MANA_BLUE = (99, 155, 255)
-    self.PHYSICAL_YELLOW = (251, 242, 54)
-    self.MAGICAL_CYAN = (95, 205, 228)
-    self.EQUIPPED_GREEN = (106, 190, 48)
-    self.ORANGE = (223, 113, 38)
-    self.DARK_GREY = (34, 32, 52)
-
   def get_corner(self, tileset_id, small=False):
-    if small:
-      return self.corners_small[tileset_id]
+    if small: return self.corners_small[tileset_id]
     return self.corners[tileset_id]
 
   def get_floor(self, tileset_id, small=False):
-    if small:
-      return self.floors_small[tileset_id]
+    if small: return self.floors_small[tileset_id]
     return self.floors[tileset_id]
 
   def get_ne_wall(self, tileset_id, small=False):
-    if small:
-      return self.ne_walls_small[tileset_id]
+    if small: return self.ne_walls_small[tileset_id]
     return self.ne_walls[tileset_id]
 
   def get_nw_wall(self, tileset_id, small=False):
-    if small:
-      return self.nw_walls_small[tileset_id]
+    if small: return self.nw_walls_small[tileset_id]
     return self.nw_walls[tileset_id]
   
   def get_creature(self, image_id):
@@ -118,7 +114,6 @@ class TileSet:
       xm = int(i / 6) * 96
       corner = walls_full.subsurface((offset_x + xm, offset_y * ym, image_width, image_height))
       self.corners.append(corner)
-
 
   def initialize_floors(self):
     floors_full = pygame.image.load("assets/floors.png")
@@ -242,7 +237,7 @@ class TileSet:
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")
-    self.features["door_closed_w"] = full.subsurface((0,0,40,60))
-    self.features["door_closed_e"] = full.subsurface((40,0,40,60))
-    self.features["door_open_w"] = full.subsurface((0,64,40,60))
-    self.features["door_open_e"] = full.subsurface((40,64,40,60))
+    self.features["door_closed_w"] = full.subsurface((0,0,40,52))
+    self.features["door_closed_e"] = full.subsurface((40,0,40,52))
+    self.features["door_open_w"] = full.subsurface((0,52,40,52))
+    self.features["door_open_e"] = full.subsurface((40,52,40,52))

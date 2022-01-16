@@ -150,7 +150,20 @@ def place_hallways(world, rooms):
               doors.append((x,y))
         else:
           world[x][y] = FLOOR
+
+  # Temporary, clean up invalid doors aftwards (doors in corners and stuff)
+  for (x,y) in doors:
+    if not valid_door(world,x,y):
+      doors.remove((x,y))
   return world, doors
+
+def valid_door(world, sx, sy):
+  valid = world[sx-1][sy] == FLOOR and world[sx+1][sy] == FLOOR and world[sx][sy-1] == WALL and world[sx][sy+1] == WALL
+  if not valid:
+    valid = world[sx-1][sy] == WALL and world[sx+1][sy] == WALL and world[sx][sy-1] == FLOOR and world[sx][sy+1] == FLOOR
+  if not valid:
+    return False
+  return True
 
 def not_adjacent_to_door(doors, sx, sy):
   n = []

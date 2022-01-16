@@ -6,8 +6,8 @@ from tileset import TileSet
 from helpers import get_tile_position, is_ne_wall, is_nw_wall, is_outer_corner
 
 def initialize_screen(width, height):
-  tileset = TileSet()
   display = pygame.display.set_mode((width, height))
+  tileset = TileSet()
   return Screen(width, height, display, tileset)
 
 def write_active_player(screen: Screen, active: Creature):
@@ -80,7 +80,12 @@ def draw_world(screen: Screen, world: World):
       tileset_id = world.tile(x,y).tileset_id
       if world.is_floor(x,y):
         screen.blit(screen.tileset.get_floor(tileset_id), (sx, sy))
-        
+
+        feature = world.get_feature(x,y)
+        if feature:
+          screen.blit(feature.get_image(), (sx + feature.get_tile_blit_x_mod(), sy + feature.get_tile_blit_y_mod()))
+          if not world.can_see(x,y):
+            screen.blit(feature.get_shadow(), (sx + feature.get_tile_blit_x_mod(), sy + feature.get_tile_blit_y_mod()))
         items = world.get_inventory(x,y)
         if items:
           screen.blit(screen.tileset.get_misc("satchel"), (sx + 16, sy - 4))
@@ -100,15 +105,16 @@ def draw_world(screen: Screen, world: World):
           corner_x, corner_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32 + 4, y * 32 - 20)
           screen.blit(screen.tileset.get_corner(tileset_id), (corner_x, corner_y))
         if nw_wall:
-          screen.blit(screen.tileset.get_nw_wall(tileset_id), (sx + 32 - 8, sy - 16 - 4))
+          screen.blit(screen.tileset.get_nw_wall(tileset_id), (sx + 24, sy - 20))
         if ne_wall:
-          screen.blit(screen.tileset.get_ne_wall(tileset_id), (sx, sy - 16 - 4))
+          screen.blit(screen.tileset.get_ne_wall(tileset_id), (sx, sy - 20))
         if nw_wall and ne_wall:
           corner_x, corner_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32 + 4, y * 32 - 20)
           screen.blit(screen.tileset.get_corner(tileset_id), (corner_x, corner_y))
 
         if not world.can_see(x,y):
-          screen.blit(screen.tileset.get_ui("wall_highlight_dark"), (sx, sy - 16))
+          if nw_wall or ne_wall:
+            screen.blit(screen.tileset.get_ui("wall_highlight_dark"), (sx, sy - 16))
 
 def get_healthbar(tileset: TileSet, creature: Creature):
   quarter = creature.get_max_hp() / 4
@@ -194,10 +200,11 @@ def draw_player_health_mana_armor(screen: Screen, creature: Creature, start_x, s
   return (p_armor_x, armor_y + 32)
 
 def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
-  # If we are not in combat and we mouse over an inventory, highlight it in yellow
+  # If we are not in combat and we mouse over an inventory or feature, highlight it in yellow
+  i = creature.world.get_inventory(x,y)
+  f = creature.world.get_feature(x,y)
   if not creature.world.in_combat():
-    i = creature.world.get_inventory(x,y)
-    if i:
+    if (i or f) and creature.simple_distance_to(x,y) <= 1:
       iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, x * 32, y * 32)
       screen.blit(screen.tileset.get_ui("floor_highlight_yellow"), (iso_x, iso_y))
       return [], None
@@ -220,8 +227,8 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
 
   path = creature.get_path_to(x, y)
 
-  # If we mouse over a creature and are not in range to attack it, show movement next to it
-  if c:
+  # If we mouse over something and are not in range to attack/interact with it, show movement next to it
+  if c or i or f:
     path = path[:-1]
 
   # Highlight the tiles in green to move to the location
