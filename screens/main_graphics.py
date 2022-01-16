@@ -77,6 +77,8 @@ def draw_world(screen: Screen, world: World):
       if sx < -96 or sy < -64 or sx > screen.width or sy > screen.height:
         continue
 
+      can_see = world.can_see(x,y)
+
       tileset_id = world.tile(x,y).tileset_id
       if world.is_floor(x,y):
         screen.blit(screen.tileset.get_floor(tileset_id), (sx, sy))
@@ -84,19 +86,19 @@ def draw_world(screen: Screen, world: World):
         feature = world.get_feature(x,y)
         if feature:
           screen.blit(feature.get_image(), (sx + feature.get_tile_blit_x_mod(), sy + feature.get_tile_blit_y_mod()))
-          if not world.can_see(x,y):
+          if not can_see:
             screen.blit(feature.get_shadow(), (sx + feature.get_tile_blit_x_mod(), sy + feature.get_tile_blit_y_mod()))
         items = world.get_inventory(x,y)
         if items:
           screen.blit(screen.tileset.get_misc("satchel"), (sx + 16, sy - 4))
 
-        if world.can_see(x,y):
+        if can_see:
           if (x,y) in creature_locations:
             creature = creature_locations[(x,y)]
             screen.blit(creature.sprite, (sx + 16, sy - 16))
             draw_healthbar(screen, creature, sx, sy)
         else:
-          screen.blit(screen.tileset.get_ui("floor_highlight_dark"), (sx, sy))
+          screen.blit(screen.tileset.get_shadow("floor"), (sx, sy))
       else:
         # These need to be if statements in case its both NW and NE wall (corners)
         nw_wall = is_nw_wall(world, x, y)
@@ -114,7 +116,7 @@ def draw_world(screen: Screen, world: World):
 
         if not world.can_see(x,y):
           if nw_wall or ne_wall:
-            screen.blit(screen.tileset.get_ui("wall_highlight_dark"), (sx, sy - 16))
+            screen.blit(screen.tileset.get_shadow("wall"), (sx, sy-16))
 
 def get_healthbar(tileset: TileSet, creature: Creature):
   quarter = creature.get_max_hp() / 4

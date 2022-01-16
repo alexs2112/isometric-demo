@@ -1,6 +1,6 @@
 import random, math, helpers
 import world.dfs as dfs
- 
+
 FLOOR = 0
 WALL = 1
 ROOM_MIN_SIZE = 3

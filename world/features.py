@@ -4,7 +4,8 @@ class Feature:
     self.shadow = shadow
 
   def interact(self, creature):
-    pass
+    # Features can return a subscreen that will be handled in main
+    return None
 
   def get_image(self):
     return self.image

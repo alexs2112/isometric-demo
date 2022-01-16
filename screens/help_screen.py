@@ -15,7 +15,7 @@ class HelpScreen(Subscreen):
       "Arrow keys to scroll the screen",
       "Spacebar to center screen on active player",
       "Enter to end turn",
-      "Left click to move and attack",
+      "Left click to move, attack, and interact. Interacting cannot be done in combat",
       "[h] to view this menu",
       "[m] to show the map view to travel and rest",
       "[i] to show the inventories of your party members",

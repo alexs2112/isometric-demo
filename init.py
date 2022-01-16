@@ -3,7 +3,7 @@ from items.item_factory import ItemFactory
 import world.world_builder as world_builder
 from creatures.creature_factory import CreatureFactory
 
-def create_world(args):
+def create_world(args, feature_factory):
   world_width = 30
   world_height = 40
   if "--small" in args:
@@ -17,7 +17,7 @@ def create_world(args):
   elif "--no_walls" in args:
     world = world_builder.only_floors(world_width, world_height)
   else: # Default to --dungeon
-    world = world_builder.generate_dungeon(world_width, world_height, 15)
+    world = world_builder.generate_dungeon(world_width, world_height, 15, feature_factory)
 
   if '-v' in args:
     world.print_world()

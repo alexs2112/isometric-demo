@@ -5,13 +5,13 @@ from items.item_factory import ItemFactory
 from screens.spell_screen import SpellScreen
 from spells.effect_factory import EffectFactory
 from spells.spell_factory import SpellFactory
+from creatures.creature_factory import CreatureFactory
+from world.feature_factory import FeatureFactory
 from screens.help_screen import HelpScreen
 from screens.inventory_screen import InventoryScreen
 from screens.party_screen import PartyScreen
-from screens.subscreen import GameOverScreen, StartScreen
+from screens.subscreen import StartScreen
 from screens.map_screen import MapScreen
-import world.world_builder as world_builder
-from creatures.creature_factory import CreatureFactory
 from screens.main_graphics import *
 from helpers import *
 from pygame.locals import (
@@ -40,12 +40,15 @@ class Game:
   def __init__(self, args):
     self.args = args
     self.screen = initialize_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
-    self.world = init.create_world(args)
-    self.messages = [] # Keep track of all the notifications each turn
+
+    self.feature_factory = FeatureFactory(self.screen.tileset)
+    self.world = init.create_world(args, self.feature_factory)
     self.effect_factory = EffectFactory()
     self.spell_factory = SpellFactory(self.effect_factory)
     self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.spell_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
+
+    self.messages = [] # Keep track of all the notifications each turn
     init.create_creatures(args, self.world, self.creature_factory, self.messages)
     init.create_items(self.world, self.item_factory)
     self.subscreen = StartScreen()
@@ -134,7 +137,7 @@ class Game:
                     active.move_along_path(path[:-1])
                 elif f:
                   if active.simple_distance_to(tile_x, tile_y) <= 1:
-                    f.interact(active)
+                    subscreen = f.interact(active)
                   else:
                     path = active.get_path_to(tile_x, tile_y)
                     active.move_along_path(path[:-1])
@@ -308,14 +311,15 @@ def print_help():
     -v
     --solo
     --no-enemies
-  
+
   World Types:
     --dungeon           (default)
     --small
     --maze
     --no_paths
     --no_walls
-    
+  Note: maze, no_paths, no_walls are not actively supported and kind of suck
+
   Press [h] in game to view the controls""")
   sys.exit(0)
 

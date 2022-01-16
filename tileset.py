@@ -29,6 +29,8 @@ class TileSet:
     self.initialize_floors()
     self.initialize_walls()
 
+    self.shadows = {} # Not initialized, just appended to by a bunch of functions
+
     self.creatures = {}
     self.initialize_creatures()
     self.item_icons = {}
@@ -78,6 +80,12 @@ class TileSet:
 
   def get_ui(self, image_id):
     return self.ui[image_id]
+
+  def get_feature(self, image_id):
+    return self.features[image_id]
+
+  def get_shadow(self, image_id):
+    return self.shadows[image_id] 
 
   def get_font(self, size=24):
     if size not in self.fonts:
@@ -208,8 +216,8 @@ class TileSet:
     self.ui["floor_highlight_yellow"] = tile_highlight.subsurface((0,64,64,32))
     self.ui["floor_highlight_blue"] = tile_highlight.subsurface((0,96,64,32))
     self.ui["floor_highlight_purple"] = tile_highlight.subsurface((64,96,64,32))
-    self.ui["floor_highlight_dark"] = tile_highlight.subsurface((64,0,64,32))
-    self.ui["wall_highlight_dark"] = tile_highlight.subsurface((64,32,64,48))
+    self.shadows["floor"] = tile_highlight.subsurface((64,0,64,32))
+    self.shadows["wall"] = tile_highlight.subsurface((64,32,64,48))
 
     player_status = pygame.image.load("assets/ui/player_stats_ui.png")
     self.ui["player_name"] = player_status.subsurface((7,0,242,32))
@@ -237,7 +245,9 @@ class TileSet:
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")
-    self.features["door_closed_w"] = full.subsurface((0,0,40,52))
-    self.features["door_closed_e"] = full.subsurface((40,0,40,52))
-    self.features["door_open_w"] = full.subsurface((0,52,40,52))
-    self.features["door_open_e"] = full.subsurface((40,52,40,52))
+    self.features["door_closed_east"] = full.subsurface((0,0,40,52))
+    self.features["door_closed_west"] = full.subsurface((40,0,40,52))
+    self.features["door_open_east"] = full.subsurface((0,52,40,52))
+    self.features["door_open_west"] = full.subsurface((40,52,40,52))
+    self.shadows["door_east"] = full.subsurface((0,104,40,35))
+    self.shadows["door_west"] = full.subsurface((40,104,40,35))

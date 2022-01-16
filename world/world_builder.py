@@ -6,7 +6,7 @@ from world.tile import Tile
 from world.fov import FieldOfView
 from items.inventory import Inventory
 from world.movement_queue import MovementQueue, Move
-from world.features import Door
+from world.feature_factory import FeatureFactory
 FLOOR = 0
 WALL = 1
 
@@ -25,9 +25,13 @@ class World:
     self.end_room = None
     self.combat_queue = None
     self.movement_queue = None
+    self.feature_factory = None
 
   def set_rooms(self, rooms):
     self.rooms = rooms
+  
+  def set_feature_factory(self, factory: FeatureFactory):
+    self.feature_factory = factory
   
   def finalize_tiles(self, initial_array):
     from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
@@ -218,27 +222,11 @@ class World:
         return
 
   def set_doors(self, doors):
-    # Temporary, copied from tileset until we figure out how to get the images to features
-    # Probably use a feature factory
-    full = pygame.image.load("assets/features.png")
-    door_closed_e = full.subsurface((0,0,40,52))
-    door_closed_w = full.subsurface((40,0,40,52))
-    door_open_e = full.subsurface((0,52,40,52))
-    door_open_w = full.subsurface((40,52,40,52))
-    door_shadow_e = full.subsurface((0,104,40,35))
-    door_shadow_w = full.subsurface((40,104,40,35))
     for (x,y) in doors:
       if self.is_floor(x, y-1):
-        orientation = 0
-        open = door_open_e
-        closed = door_closed_e
-        shadow = door_shadow_e
-      if self.is_floor(x+1, y):
-        orientation = 1
-        open = door_open_w
-        closed = door_closed_w
-        shadow = door_shadow_w
-      self.features[(x,y)] = Door(orientation, closed, open, shadow)
+        self.features[(x,y)] = self.feature_factory.east_door()
+      elif self.is_floor(x+1, y):
+        self.features[(x,y)] = self.feature_factory.west_door()
 
   def get_feature(self, x, y):
     if (x,y) in self.features:
@@ -341,11 +329,12 @@ def generate_maze(width, height):
   return World(initial_array)
 
 # Will generate at most the number of rooms specified, constrained by world size
-def generate_dungeon(width, height, rooms):
+def generate_dungeon(width, height, rooms, feature_factory):
   initial_array = make_empty_initial_array(width, height)
   initial_array, rooms, start_room, end_room, doors = dungeon_gen.generate_dungeon(initial_array, width, height, rooms)
   world = World(initial_array)
   world.set_rooms(rooms)
+  world.set_feature_factory(feature_factory)
   world.set_doors(doors)
   world.start_room = start_room
   world.end_room = end_room
@@ -355,7 +344,7 @@ def generate_dungeon(width, height, rooms):
 def place_rooms(rooms, width, height):
   initial_array = make_empty_initial_array(width, height)
   minsize, maxsize = 3, 7
-  for i in range(rooms):
+  for _ in range(rooms):
     x_start = random.randint(1, width - maxsize - 2)
     y_start = random.randint(1, height - maxsize - 2)
     x_len = random.randint(minsize, maxsize)

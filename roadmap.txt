@@ -1,16 +1,16 @@
 Active Work:
- - Do a bit of work to clean up wall shadows, should be easy
- - Clean up the dungeon_gen class to use a World object from the beginning
  - Chests:
     - A static inventory, needs to stay in the world even if empty
     - Maybe a closed icon for items, and an open icon if it is empty?
+ - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
+    - Chest holding an object of power in the end room. Picking it up does nothing, but for now it can "count" as winning
+ - Update readme screenshots
 
 Unordered Roadmap:
  - Combat overhaul
     - More enemies and different AIs
     - Possibly increase the armor cap
  - Remaining weapon types + their skills
- - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Dungeon overhaul, multiple floors with a surface to talk to NPCs
  - Quests and more of a surface world to explore
@@ -42,12 +42,18 @@ Side work:
  - Spells with cooldowns, this is mostly ignored for now
  - Spells and effects need icons and indicators
  - A menu for the escape key so that id doesn't just immediately kill the game instead
- - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
  - Redraw all character and item sprites that we are using from DCSS
  - Optimize party movement algorithm so they actually follow a path instead of just teleport around
+ - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
+   do to walls having thickness
  - Door shadows, only show shadow on one side of the door if you can't see the other
  - Right now AI can't open doors or path through them. But you also can't close doors mid combat. If we decide to let you close
    doors in combat, we will also have to let AI open doors
+
+Tech Debt:
+ - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
+ - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
+   awkward
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
