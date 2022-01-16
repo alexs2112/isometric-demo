@@ -6,9 +6,11 @@ from creatures.creature_factory import CreatureFactory
 def create_world(args, feature_factory):
   world_width = 30
   world_height = 40
+  rooms = 15
   if "--small" in args:
     world_width = 25
     world_height = 25
+    rooms = 5
 
   if "--no_paths" in args:
     world = world_builder.place_rooms(6, world_width, world_height)
@@ -17,7 +19,7 @@ def create_world(args, feature_factory):
   elif "--no_walls" in args:
     world = world_builder.only_floors(world_width, world_height)
   else: # Default to --dungeon
-    world = world_builder.generate_dungeon(world_width, world_height, 15, feature_factory)
+    world = world_builder.generate_dungeon(world_width, world_height, rooms, feature_factory)
 
   if '-v' in args:
     world.print_world()
@@ -72,4 +74,8 @@ def create_items(world: world_builder.World, f: ItemFactory):
   for _ in range(10):
     x, y = world.get_floor_coordinate()
     world.add_item(f.get_random_item(), (x,y))
+  
+  if world.end_room:
+    x,y = world.get_random_floor_in_room(world.end_room)
+    world.add_item(f.get_win_condition(), (x,y))
   

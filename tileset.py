@@ -197,6 +197,10 @@ class TileSet:
   def initialize_misc(self):
     base = pygame.image.load("assets/misc.png")
     self.misc["satchel"] = base.subsurface((0,0,32,32))
+
+    win_con = base.subsurface((32,0,32,32))
+    self.item_icons["Stone of Power"] = win_con
+    self.item_icons_large["Stone of Power"] = pygame.transform.scale(win_con, (64,64))
       
   def initialize_ui(self):
     main_icons = pygame.image.load("assets/ui/main_icons.png")

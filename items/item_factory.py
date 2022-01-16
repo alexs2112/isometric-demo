@@ -1,4 +1,5 @@
 import random
+from items.item import Item
 from items.tome_factory import TomeFactory
 from spells.effect_factory import EffectFactory
 from items.equipment_factory import EquipmentFactory
@@ -81,3 +82,8 @@ class ItemFactory:
   def get_random_item(self):
     f = random.choice(self.item_functions)
     return f()
+
+  def get_win_condition(self):
+    item = Item("Stone of Power", self.tileset.get_item("Stone of Power"), True)
+    item.set_description("The stone of power! If you have picked this up, consider the game won...")
+    return item

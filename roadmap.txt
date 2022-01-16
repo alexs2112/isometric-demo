@@ -1,10 +1,4 @@
 Active Work:
- - Chests:
-    - A static inventory, needs to stay in the world even if empty
-    - Maybe a closed icon for items, and an open icon if it is empty?
- - Game win condition. Make it from the start room to the end room, the longest path of rooms in the dungeon
-    - Chest holding an object of power in the end room. Picking it up does nothing, but for now it can "count" as winning
- - Update readme screenshots
 
 Unordered Roadmap:
  - Combat overhaul
@@ -49,11 +43,16 @@ Side work:
  - Door shadows, only show shadow on one side of the door if you can't see the other
  - Right now AI can't open doors or path through them. But you also can't close doors mid combat. If we decide to let you close
    doors in combat, we will also have to let AI open doors
+ - Chests:
+   - A static inventory, needs to stay in the world even if empty
+   - Maybe a closed icon for items, and an open icon if it is empty?
+   - I can't draw this shit
 
 Tech Debt:
  - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
    awkward
+ - Im pretty sure assigning items an icon in the constructor doesn't actually matter
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
@@ -63,3 +62,5 @@ Known Bugs:
  - Sometimes enemies will skip their turn. It seems to happen when another enemy dies to the burning effect, but it is hard to
    reproduce...
  - Its possible for an enemy to die to an effect, turn invisible and then take infinite turns, running around and killing everyone
+    - Have not yet reproduced this
+ - Sometimes you can see walls from rooms you haven't seen yet
