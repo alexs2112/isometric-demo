@@ -18,7 +18,6 @@ SKILL_LIST = {
   "Cleaving": "!NOT IMPLEMENTED! Deal a percentage of damage to each enemy creature adjacent to both you and the target when using cleaving weapons",
   "Polearms": "!NOT IMPLEMENTED!",
   "Accuracy": "!NOT IMPLEMENTED! Increases accuracy when using bows and crossbows",
-  "Throwing": "!NOT IMPLEMENTED! Deal bonus base damage when throwing weapons and potions at enemies", # <- This we might just make a perk
   "Unarmed": "Increases damage with unarmed strikes (1 damage per point)",
 
   # Magical

@@ -181,18 +181,35 @@ class TileSet:
         image = items_full.subsurface((x, y, image_width, image_height))
 
         self.item_icons[type[i]] = image
-        self.item_icons_large[type[i]] = pygame.transform.scale(image, (64,64))
+        self.item_icons_large[type[i]] = pygame.transform.scale(image, (48,48))
 
-    # This will need to be fixed when we make the sprites less than 32x32 (unnecessary)
-    y = -image_height
-    for type in image_ids[:6]:
-      x = 0
-      for i in range(len(type)):
-        x = (i % 10) * image_width
-        if (i % 10) == 0:
-          y += image_height
-        sprite = sprites_full.subsurface((x, y, image_width, image_height))
-        self.item_sprites[type[i]] = sprite
+    y = 0
+    # Chest
+    y = self.item_sprites_helper(image_ids, sprites_full, 32, 32, 0, y)
+
+    # Head
+    y = self.item_sprites_helper(image_ids, sprites_full, 32, 16, 1, y)
+
+    # Feet
+    y = self.item_sprites_helper(image_ids, sprites_full, 32, 16, 2, y)
+
+    # Hands
+    y = self.item_sprites_helper(image_ids, sprites_full, 32, 16, 3, y)
+
+    # Cloak
+    y = self.item_sprites_helper(image_ids, sprites_full, 32, 32, 4, y)
+
+    # Weapons
+    y = self.item_sprites_helper(image_ids, sprites_full, 16, 32, 5, y)
+
+  def item_sprites_helper(self, image_ids, sprites_full, image_width, image_height, item_type_index, y):
+    for i in range(len(image_ids[item_type_index])):
+      x = (i % 10) * image_width
+      if i > 0 and (i % 10) == 0:
+        y += image_height
+      sprite = sprites_full.subsurface((x, y, image_width, image_height))
+      self.item_sprites[image_ids[item_type_index][i]] = sprite
+    return y + image_height
   
   def initialize_misc(self):
     base = pygame.image.load("assets/misc.png")
@@ -200,7 +217,7 @@ class TileSet:
 
     win_con = base.subsurface((32,0,32,32))
     self.item_icons["Stone of Power"] = win_con
-    self.item_icons_large["Stone of Power"] = pygame.transform.scale(win_con, (64,64))
+    self.item_icons_large["Stone of Power"] = pygame.transform.scale(win_con, (48,48))
       
   def initialize_ui(self):
     main_icons = pygame.image.load("assets/ui/main_icons.png")
@@ -246,6 +263,12 @@ class TileSet:
     self.ui["map_enemy_dot"] = map_icons.subsurface((0,8,24,8))
     self.ui["map_items_dot"] = map_icons.subsurface((24,0,24,8))
     self.ui["map_floor_orange"] = map_icons.subsurface((0,16,32,16))
+
+    item_slots = pygame.image.load("assets/ui/item_slots.png")
+    self.ui["slot_item"] = item_slots.subsurface((0,0,78,78))
+    self.ui["slot_equipped"] = item_slots.subsurface((0,0,78,78))
+    self.ui["slot_potion"] = item_slots.subsurface((0,0,78,78))
+    self.ui["slot_tome"] = item_slots.subsurface((0,0,78,78))
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")

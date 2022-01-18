@@ -2,6 +2,7 @@ import pygame, sys
 import init
 from items.inventory import Inventory
 from items.item_factory import ItemFactory
+from screens.character_screen import CharacterScreen
 from screens.spell_screen import SpellScreen
 from spells.effect_factory import EffectFactory
 from spells.spell_factory import SpellFactory
@@ -22,7 +23,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m, K_i, K_s, K_h, K_g, K_p,
+    K_m, K_i, K_s, K_h, K_g, K_p, K_c,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     K_LSHIFT,
@@ -193,6 +194,9 @@ class Game:
                   self.subscreen = SpellScreen(active)
                 else:
                   active.notify(active.name + " has no spells to cast.")
+              elif event.key == K_c:
+                if active.is_player():
+                  self.subscreen = CharacterScreen(active)
         # OUT OF FOR LOOP
 
         # Not sure if we need to be able to scroll anymore

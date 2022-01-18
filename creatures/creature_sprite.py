@@ -21,10 +21,10 @@ def get_sprite(creature):
     res.blit(i.sprite, (0,0))
   i = e.slot("Feet")
   if i:
-    res.blit(i.sprite, (0,0))
+    res.blit(i.sprite, (0,16))
   i = e.slot("Hands")
   if i:
-    res.blit(i.sprite, (0,0))
+    res.blit(i.sprite, (0,10))
   i = e.slot("Chest")
   if i:
     res.blit(i.sprite, (0,0))

@@ -1,9 +1,11 @@
 Active Work:
+ - Character + Inventory screen
+ - Break into three thirds: 1280/3 = 420 x 800
+ - Left Third: All stats, attributes, and skills. Increase them on level up here
+ - Center: Player model and their current equipment. Buttons to swap to other characters. Desc of current moused over item
+ - Right: Party Inventory with the selected player at the top.
 
 Unordered Roadmap:
- - Combat overhaul
-    - More enemies and different AIs
-    - Possibly increase the armor cap
  - Remaining weapon types + their skills
  - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Dungeon overhaul, multiple floors with a surface to talk to NPCs
@@ -36,7 +38,6 @@ Side work:
  - Spells with cooldowns, this is mostly ignored for now
  - Spells and effects need icons and indicators
  - A menu for the escape key so that id doesn't just immediately kill the game instead
- - Redraw all character and item sprites that we are using from DCSS
  - Optimize party movement algorithm so they actually follow a path instead of just teleport around
  - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
    do to walls having thickness
@@ -47,9 +48,9 @@ Side work:
    - A static inventory, needs to stay in the world even if empty
    - Maybe a closed icon for items, and an open icon if it is empty?
    - I can't draw this shit
+ - We might want to add shadows to creatures again if it looks kind of funky without them
 
 Tech Debt:
- - Optimize loading equipment images to make it less clunky with so much blank space (assets/items_equipped.png)
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
    awkward
  - Im pretty sure assigning items an icon in the constructor doesn't actually matter
@@ -62,5 +63,5 @@ Known Bugs:
  - Sometimes enemies will skip their turn. It seems to happen when another enemy dies to the burning effect, but it is hard to
    reproduce...
  - Its possible for an enemy to die to an effect, turn invisible and then take infinite turns, running around and killing everyone
-    - Have not yet reproduced this
+    - This seems to happen if multiple enemies burn to death at once. So the second to burn to death in a row just goes berserk
  - Sometimes you can see walls from rooms you haven't seen yet
