@@ -1,5 +1,6 @@
 import pygame
-from screens.screen import Screen, write, write_centered, split_text_to_list
+from screens.screen import Screen, Button, write, write_centered, split_text_to_list
+from tileset import TileSet
 from screens.subscreen import Subscreen
 from creatures.creature import Creature
 from creatures.skills_helper import ATTRIBUTE_LIST, SKILL_LIST
@@ -22,30 +23,63 @@ EQUIPMENT_ORDER = [
   "Main"
 ]
 class CharacterScreen(Subscreen):
-  def __init__(self, creature: Creature, party):
+  def __init__(self, tileset: TileSet, creature: Creature, party):
     self.creature = creature
     self.party = party
+    self.font = tileset.get_font()
 
     # Don't cache these rather large images in tileset
     self.stats_block = pygame.image.load("assets/screens/player_stats_block.png")
     self.stats_cache_surface = None
-    self.font = None  # This is awkwardly set in draw
     self.equipment_block = pygame.image.load("assets/screens/player_equipment_block.png")
+    self.update_player_stats()
 
     self.clicked_item = None
     self.clicked_player = None
 
     self.mouse_item = None
     self.mouse_player = None
+
+    self.player_buttons = []
+    self.set_player_buttons(tileset)
+
+  def set_player_buttons(self, tileset: TileSet):
+    self.player_buttons.clear()
+    base_x = INVENTORIES_START_X
+    base_y = 0
+    button_width = 420
+    button_height = 36
+
+    button_default = tileset.get_ui("char_screen_inv_name")
+    button_mouse = tileset.get_ui("char_screen_inv_name_highlighted")
+
+    rect = (base_x, base_y, button_width, button_height)
+    self.player_buttons.append(Button(rect, button_default, button_mouse, func=self.get_button_function(self.creature, tileset)))
+    base_y += self.get_player_height(self.creature)
+
+    for c in self.party:
+      if c == self.creature:
+        continue
+      rect = (base_x, base_y, button_width, button_height)
+      self.player_buttons.append(Button(rect, button_default, button_mouse, func=self.get_button_function(c, tileset)))
+      base_y += self.get_player_height(c)
+
+  def get_button_function(self, creature, tileset):
+    def func():
+      if self.creature == creature:
+        return
+      self.creature = creature
+      self.update_player_stats()
+      self.set_player_buttons(tileset)
+    return func
   
   def draw(self, screen: Screen):
     mouse_x, mouse_y = pygame.mouse.get_pos()
     self.update_mouse(mouse_x, mouse_y)
 
-    if self.stats_cache_surface == None:
-      self.font = screen.tileset.get_font()
-      self.update_player_stats()
     screen.blit(self.stats_cache_surface, (0,0))
+    for button in self.player_buttons:
+      screen.blit(button.get_image(mouse_x, mouse_y), (button.x, button.y))
     self.draw_player_equipment(screen)
     self.draw_inventories(screen)
     self.write_item_description(screen)
@@ -95,8 +129,6 @@ class CharacterScreen(Subscreen):
       
 
   def draw_player_inventory(self, screen: Screen, creature:  Creature, x, y):
-    screen.blit(screen.tileset.get_ui("char_screen_inv_name"), (x,y))
-
     screen.write_centered(creature.name, (x+210, y+4), screen.tileset.get_font())
     y += 36
     x += 2
@@ -257,6 +289,10 @@ class CharacterScreen(Subscreen):
         x,y = pygame.mouse.get_pos()
 
         if x > INVENTORIES_START_X:
+          for b in self.player_buttons:
+            if b.in_bounds(x,y):
+              b.click()
+
           self.clicked_player, player_base_height = self.get_player_by_mouse(y)
           if self.clicked_player:
             self.clicked_item = self.get_inventory_item_by_mouse(self.clicked_player, x - INVENTORIES_START_X, y - player_base_height)

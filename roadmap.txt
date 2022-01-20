@@ -1,5 +1,4 @@
 Active Work:
- - Character screen lets you swap between characters by clicking their names
 
 Unordered Roadmap:
  - Remaining weapon types + their skills
@@ -51,6 +50,7 @@ Tech Debt:
  - We can optimize drawing to the screen by caching a current section. We can blit to this section, and then blit the section
    to the screen. This way if we don't make changes we can simply blit this section every time without recalculating where
    everything needs to be
+    - Small example with stats in the character screen
 
 Known Bugs:
  - :)

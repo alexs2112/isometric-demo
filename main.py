@@ -196,7 +196,7 @@ class Game:
                   active.notify(active.name + " has no spells to cast.")
               elif event.key == K_c:
                 if active.is_player():
-                  self.subscreen = CharacterScreen(active, self.world.players)
+                  self.subscreen = CharacterScreen(self.screen.tileset, active, self.world.players)
         # OUT OF FOR LOOP
 
         # Not sure if we need to be able to scroll anymore

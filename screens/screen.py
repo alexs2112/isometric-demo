@@ -66,3 +66,38 @@ def split_text_to_list(text, width, font):
         current += new_word
     output.append(current)
     return output
+
+class Button:
+  def __init__(self, rect, default_image, mouse_image=None, click_image=None, func=None):
+    self.rect = rect
+    self.x = rect[0]
+    self.y = rect[1]
+    self.width = rect[2]
+    self.height = rect[3]
+
+    self.default_image = default_image
+    self.mouse_image = mouse_image
+    self.click_image = click_image
+
+    self.func = func
+
+    # How many frames we want to show the click_image for after being clicked
+    self.click_frames = 0
+
+  def in_bounds(self, mouse_x, mouse_y):
+    return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
+
+  def get_image(self, mouse_x, mouse_y):
+    if self.in_bounds(mouse_x, mouse_y):
+      if self.click_frames > 0 and self.click_image:
+        self.click_frames -= 1
+        return self.click_image
+      elif self.mouse_image:
+        return self.mouse_image
+    return self.default_image
+
+  def click(self, *args):
+    if self.click_image:
+      self.click_frames = 1
+    if self.func:
+      return self.func(*args)
