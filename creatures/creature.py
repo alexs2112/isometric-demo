@@ -1,4 +1,4 @@
-import math, random
+import math, random, pygame
 import helpers
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
@@ -18,6 +18,7 @@ class Creature:
     self.name = name
     self.base_sprite = base_sprite
     self.sprite = base_sprite
+    self.big_sprite = self.sprite
     self.faction = faction
     self.world = world
     self.ai = None
@@ -75,6 +76,7 @@ class Creature:
   
   def update_sprite(self):
     self.sprite = get_sprite(self)
+    self.big_sprite = pygame.transform.scale(self.sprite, (86, 86))
 
 
 #######################

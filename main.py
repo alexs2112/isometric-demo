@@ -187,7 +187,7 @@ class Game:
                 self.subscreen = HelpScreen()
               elif event.key == K_g:
                 i = Inventory()
-                i.add_item(self.item_factory.wizard_hat())
+                i.add_item(self.item_factory.equipment.wizard_hat())
                 self.subscreen = InventoryScreen(self.world.players, i)
               elif event.key == K_s:
                 if active.spells:
@@ -196,7 +196,7 @@ class Game:
                   active.notify(active.name + " has no spells to cast.")
               elif event.key == K_c:
                 if active.is_player():
-                  self.subscreen = CharacterScreen(active)
+                  self.subscreen = CharacterScreen(active, self.world.players)
         # OUT OF FOR LOOP
 
         # Not sure if we need to be able to scroll anymore

@@ -1,4 +1,4 @@
-from screens.screen import Screen
+from screens.screen import Screen, split_text_to_list
 from screens.subscreen import Subscreen
 from pygame.locals import (
   KEYDOWN,
@@ -66,11 +66,11 @@ class InventoryScreen(Subscreen):
         y += line_height
 
     i, _ = self.get_current_item()
-    self.set_cache_item(screen, font, i)
+    self.set_cache_item(font, i)
     if self.cache_item:
       x = 420
       y = 12
-      screen.blit(screen.tileset.get_item_large(self.cache_item.name), (x,y))
+      screen.blit(self.cache_item.icon, (x,y))
       y += 22
       screen.write(self.cache_item.name, (x+70,y), font)
       x += 12
@@ -207,11 +207,11 @@ class InventoryScreen(Subscreen):
       color = screen.tileset.WHITE
     return color
 
-  def set_cache_item(self, screen, font, i):
+  def set_cache_item(self, font, i):
     if i != self.cache_item:
       self.cache_item = i
       if i:
-        self.cache_item_desc = screen.split_text_to_list(i.description, 400, font)
+        self.cache_item_desc = split_text_to_list(i.description, 400, font)
         
         if i.is_equipment():
           self.cache_item_desc.append("")

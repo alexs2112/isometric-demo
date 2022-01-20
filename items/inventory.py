@@ -37,6 +37,16 @@ class Inventory:
   def get_items(self):
     return list(self.items.items())
 
+  def get_unequipped_items(self, creature):
+    items = self.get_items()
+    out = []
+    for (i,q) in items:
+      if not creature.is_equipped(i):
+        out.append((i,q))
+      elif q > 1:
+        out.append((i,q-1))
+    return out
+
   def number_of_different_items(self):
     return len(self.items.keys())
 

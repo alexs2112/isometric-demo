@@ -16,6 +16,7 @@ class TileSet:
   EQUIPPED_GREEN = (106, 190, 48)
   ORANGE = (223, 113, 38)
   DARK_GREY = (34, 32, 52)
+  LIGHT_GREY = (139, 147, 175)
 
   def __init__(self):
     self.corners = []
@@ -34,7 +35,6 @@ class TileSet:
     self.creatures = {}
     self.initialize_creatures()
     self.item_icons = {}
-    self.item_icons_large = {}
     self.item_sprites = {}
     self.initialize_items()
     self.ui = {}
@@ -43,6 +43,9 @@ class TileSet:
     self.initialize_misc()
     self.features = {}
     self.initialize_features()
+
+    # Some subscreen related inits that don't have specific image hashes
+    self.initialize_character_screen()
 
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
@@ -71,9 +74,6 @@ class TileSet:
 
   def get_item_sprite(self, item_name):
     return self.item_sprites[item_name]
-  
-  def get_item_large(self, item_name):
-    return self.item_icons_large[item_name]
 
   def get_misc(self, image_id):
     return self.misc[image_id]
@@ -180,8 +180,7 @@ class TileSet:
           y += image_height
         image = items_full.subsurface((x, y, image_width, image_height))
 
-        self.item_icons[type[i]] = image
-        self.item_icons_large[type[i]] = pygame.transform.scale(image, (48,48))
+        self.item_icons[type[i]] = pygame.transform.scale(image, (48,48))
 
     y = 0
     # Chest
@@ -216,8 +215,7 @@ class TileSet:
     self.misc["satchel"] = base.subsurface((0,0,32,32))
 
     win_con = base.subsurface((32,0,32,32))
-    self.item_icons["Stone of Power"] = win_con
-    self.item_icons_large["Stone of Power"] = pygame.transform.scale(win_con, (48,48))
+    self.item_icons["Stone of Power"] = pygame.transform.scale(win_con, (48,48))
       
   def initialize_ui(self):
     main_icons = pygame.image.load("assets/ui/main_icons.png")
@@ -264,11 +262,13 @@ class TileSet:
     self.ui["map_items_dot"] = map_icons.subsurface((24,0,24,8))
     self.ui["map_floor_orange"] = map_icons.subsurface((0,16,32,16))
 
-    item_slots = pygame.image.load("assets/ui/item_slots.png")
-    self.ui["slot_item"] = item_slots.subsurface((0,0,78,78))
-    self.ui["slot_equipped"] = item_slots.subsurface((0,0,78,78))
-    self.ui["slot_potion"] = item_slots.subsurface((0,0,78,78))
-    self.ui["slot_tome"] = item_slots.subsurface((0,0,78,78))
+  def initialize_character_screen(self):
+    full = pygame.image.load("assets/ui/character_screen_icons.png")
+    self.ui["char_screen_inv_name"] = full.subsurface((0,0,420,36))
+    self.ui["char_screen_inv_name_highlighted"] = full.subsurface((0,36,420,36))
+    self.ui["item_icon_box"] = full.subsurface((0,72,52,52))
+    self.ui["item_icon_box_green"] = full.subsurface((52,72,52,52))
+    self.ui["item_icon_box_yellow"] = full.subsurface((104,72,52,52))
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")

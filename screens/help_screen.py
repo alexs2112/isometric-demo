@@ -18,8 +18,8 @@ class HelpScreen(Subscreen):
       "Left click to move, attack, and interact. Interacting cannot be done in combat",
       "[h] to view this menu",
       "[m] to show the map view to travel and rest",
-      "[i] to show the inventories of your party members",
-      "[p] to show the stats of your party members",
+      "[c] to show the inventory and stats of your current character",
+      "[p] to show the stats of your party members (temporary)",
       "[s] to select a spell to cast if the active player knows any",
       "Escape to close this menu",
     ]:

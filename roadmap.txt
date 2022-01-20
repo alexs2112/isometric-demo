@@ -1,9 +1,6 @@
 Active Work:
- - Character + Inventory screen
- - Break into three thirds: 1280/3 = 420 x 800
- - Left Third: All stats, attributes, and skills. Increase them on level up here
- - Center: Player model and their current equipment. Buttons to swap to other characters. Desc of current moused over item
- - Right: Party Inventory with the selected player at the top.
+ - Character screen lets you swap between characters by clicking their names
+ - Fix why the walls are now showing up when they shouldnt be...
 
 Unordered Roadmap:
  - Remaining weapon types + their skills
@@ -21,9 +18,6 @@ Side work:
  - Pick up items from the map screen
  - Clean up how dungeons are generated to be optimized, passing a single World object around instead of like 5 variables
  - Inventory screen optimizations
-   - Allow the inventory screen to take multiple inventories as a param
-     - Looting rooms with multiple inventories
-     - Dropping items from multiple creatures at once
    - Also allow you to pick up and move around a specific number of things, not just the max every time
  - Better Ranged Weapons:
    - When we shoot maybe return a projectile_path line, if there is one in main then just display the projectile on each tile
@@ -54,6 +48,9 @@ Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
    awkward
  - Im pretty sure assigning items an icon in the constructor doesn't actually matter
+ - We can optimize drawing to the screen by caching a current section. We can blit to this section, and then blit the section
+   to the screen. This way if we don't make changes we can simply blit this section every time without recalculating where
+   everything needs to be
 
 Known Bugs:
  - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
