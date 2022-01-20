@@ -85,7 +85,6 @@ class Game:
             active = self.world.get_next_active_creature()
           while not self.world.can_see(active.x, active.y):
             done_turn = active.take_turn()
-            print(done_turn)
             if done_turn:
               active = self.world.get_next_active_creature()
         else:
@@ -188,6 +187,7 @@ class Game:
               elif event.key == K_g:
                 i = Inventory()
                 i.add_item(self.item_factory.equipment.wizard_hat())
+                i.add_item(self.item_factory.tomes.tome_of_embers(), 3)
                 self.subscreen = InventoryScreen(self.world.players, i)
               elif event.key == K_s:
                 if active.spells:

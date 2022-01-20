@@ -55,4 +55,5 @@ class Inventory:
     for item, quantity in self.get_items():
       if i == index:
         return item, quantity
+      i += 1
     return (None, 0)

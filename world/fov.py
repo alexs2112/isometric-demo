@@ -67,7 +67,6 @@ class FieldOfView(list):
       
         if creature.can_see(to_x, to_y):
           self.current[to_x][to_y] = True
-          self[to_x][to_y] = True
 
           # If you see a non-active creature, activate all enemies in the room
           c = creature.world.get_creature_at_location(to_x, to_y)

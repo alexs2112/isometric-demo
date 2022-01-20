@@ -159,12 +159,12 @@ class World:
     return self.combat_queue.get_current_creature()
 
   def get_next_active_creature(self):
-    if self.combat_queue:
+    if self.in_combat():
       c = self.combat_queue.get_next_creature()
-      c.upkeep()
       c.notify_player(c.name + "'s Turn")
-      if self.no_active_enemies():
-        self.end_combat()
+      c.upkeep()
+      if not self.in_combat():
+        return self.players[0]
       return c
     else:
       return self.players[0]

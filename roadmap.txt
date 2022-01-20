@@ -1,6 +1,5 @@
 Active Work:
  - Character screen lets you swap between characters by clicking their names
- - Fix why the walls are now showing up when they shouldnt be...
 
 Unordered Roadmap:
  - Remaining weapon types + their skills
@@ -43,6 +42,7 @@ Side work:
    - Maybe a closed icon for items, and an open icon if it is empty?
    - I can't draw this shit
  - We might want to add shadows to creatures again if it looks kind of funky without them
+ - Make party movement better to work with animations. Right now you all just teleport. Not sure how to pathfind properly
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
@@ -53,12 +53,4 @@ Tech Debt:
    everything needs to be
 
 Known Bugs:
- - Sometimes an item on the ground will be None, but be listed in the inventory under its name without showing any details
-   - Picking it up crashes the game (might not happen anymore)
-   - It is possibly (likely) an indexing problem with the inventory screen
- - Party movement is a little broken, mostly works
- - Sometimes enemies will skip their turn. It seems to happen when another enemy dies to the burning effect, but it is hard to
-   reproduce...
- - Its possible for an enemy to die to an effect, turn invisible and then take infinite turns, running around and killing everyone
-    - This seems to happen if multiple enemies burn to death at once. So the second to burn to death in a row just goes berserk
- - Sometimes you can see walls from rooms you haven't seen yet
+ - :)
