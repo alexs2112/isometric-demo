@@ -431,11 +431,9 @@ class Creature:
     if self.world.in_combat():
       self.ap -= self.get_attack_cost()
 
-    # Damage will be weighted towards the average, biased to be rounded up because of .5s
     atk_min = self.get_attack_min()
     atk_max = self.get_attack_max()
-    damage = random.randint(atk_min, atk_max) + random.randint(atk_min, atk_max)
-    damage = round(damage/2)
+    damage = random.randint(atk_min, atk_max)
     damage_type = self.get_damage_type()
 
     w = self.get_main_hand()

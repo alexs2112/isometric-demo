@@ -5,7 +5,6 @@ import pygame
 def get_sprite(creature):
   e = creature.equipment
   res = pygame.Surface((32, 32), pygame.SRCALPHA)
-  #res.set_colorkey((0, 0, 0))
 
   # Cloaks go first
   i = e.slot("Cloak")

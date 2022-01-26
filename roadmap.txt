@@ -1,22 +1,22 @@
 Active Work:
 
 Unordered Roadmap:
- - Remaining weapon types + their skills
- - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
- - Dungeon overhaul, multiple floors with a surface to talk to NPCs
- - Quests and more of a surface world to explore
- - Experience and levelling up
- - More mouse controls, everything should be controllable by mouse, including many buttons around the screen and redoing
-   most subscreens
- - Saving game state
-
-Side work:
+ - Skills and Stats:
+   - Retheme spell tomes as skill tomes, can have any skill as a requirement (martial ones)
+   - With reduced scope, we want a way to make skill tomes unique and fit certain characters better than others
+   - We won't have conventional leveling up so we probably don't need to display all of the skills at once
+   - Make martial skills provide a more powerful buff to using those weapons, to account for being essentially immutable
+   - Possibly a skill tree for each character? "Level Up" per dungeon floor
+ - Dungeon Overhaul:
+   - Up to 3 floors with increasing difficulty. Use staircases to traverse from one "world" to the next
+   - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Prettier subscreens and UI
- - Mousing over things changes the cursor (attacking and grabbing items)
- - Pick up items from the map screen
- - Clean up how dungeons are generated to be optimized, passing a single World object around instead of like 5 variables
- - Inventory screen optimizations
-   - Also allow you to pick up and move around a specific number of things, not just the max every time
+   - New pickup subscreen
+   - New spell subscreen
+   - Escape key menu that doesn't immediately kill the game
+   - UI buttons on the main screen to simulate keypresses
+   - Mousing over things changes the cursor (attacking and grabbing items)
+   - Redo main UI to have health, mana, and armor at the bottom along with an action bar
  - Better Ranged Weapons:
    - When we shoot maybe return a projectile_path line, if there is one in main then just display the projectile on each tile
      of the path with a quick sleep in between to "animate" their movement
@@ -24,29 +24,32 @@ Side work:
        anyway
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
- - Spellbook Icons:
-   - I think we should do one book icon for each magic school/type/whatever, then have the spell icon in the bottom corner of the
-     book icon
- - Spells with cooldowns, this is mostly ignored for now
- - Spells and effects need icons and indicators
- - A menu for the escape key so that id doesn't just immediately kill the game instead
- - Optimize party movement algorithm so they actually follow a path instead of just teleport around
- - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
-   do to walls having thickness
- - Door shadows, only show shadow on one side of the door if you can't see the other
- - Right now AI can't open doors or path through them. But you also can't close doors mid combat. If we decide to let you close
-   doors in combat, we will also have to let AI open doors
+ - Spell optimizations:
+   - Needing to prepare spells is probably obsolete with new scope
+   - Spellbook Icons:
+     - I think we should do one book icon for each magic school/type/whatever, then have the spell icon in the bottom corner of the
+       book icon
+   - Spells with cooldowns, this is mostly ignored for now
+   - Spells and effects need icons and indicators
+ - Shadow optimizations:
+   - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
+     do to walls having thickness
+   - Door shadows, only show shadow on one side of the door if you can't see the other
+   - We might want to add shadows to creatures again if it looks kind of funky without them
+ - Character rework:
+   - At the start of the game the player can select up to 4 available characters to make their party
+   - Each character should have a set of unique skills. Perhaps unlock more each floor.
  - Chests:
    - A static inventory, needs to stay in the world even if empty
    - Maybe a closed icon for items, and an open icon if it is empty?
    - I can't draw this shit
- - We might want to add shadows to creatures again if it looks kind of funky without them
+ - We can possibly add a saving feature:
+   - This will be a pain in the ass, but the way cached items work, it might not be that bad
  - Make party movement better to work with animations. Right now you all just teleport. Not sure how to pathfind properly
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
    awkward
- - Im pretty sure assigning items an icon in the constructor doesn't actually matter
  - We can optimize drawing to the screen by caching a current section. We can blit to this section, and then blit the section
    to the screen. This way if we don't make changes we can simply blit this section every time without recalculating where
    everything needs to be

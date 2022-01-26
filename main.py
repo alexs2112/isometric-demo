@@ -137,7 +137,7 @@ class Game:
                     active.move_along_path(path[:-1])
                 elif f:
                   if active.simple_distance_to(tile_x, tile_y) <= 1:
-                    subscreen = f.interact(active)
+                    self.subscreen = f.interact(active)
                   else:
                     path = active.get_path_to(tile_x, tile_y)
                     active.move_along_path(path[:-1])
