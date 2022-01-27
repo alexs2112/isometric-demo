@@ -31,7 +31,7 @@ from pygame.locals import (
 )
 
 # How long (in milliseconds) between each frame
-FRAME_DELAY = 100
+FRAME_DELAY = 50
 
 # Dimensions of the screen in pixels
 SCREEN_WIDTH = 1280
@@ -57,6 +57,7 @@ class Game:
   # Run the main game loop
   def main(self):
     running = True
+    frame_counter = 0
     active: Creature = self.world.players[0]
     self.screen.center_offset_on_creature(active)
     while running:
@@ -76,8 +77,9 @@ class Game:
 
         # If we are waiting for movement, or for AI
         if self.world.movement_in_progress():
-          self.world.apply_next_move()
-          self.screen.center_offset_on_creature(active)
+          if frame_counter == 0:
+            self.world.apply_next_move()
+            self.screen.center_offset_on_creature(active)
         elif not active.is_player():
           done_turn = active.take_turn()
           self.screen.center_offset_on_creature(active)
@@ -225,6 +227,12 @@ class Game:
 
       pygame.display.update()
       pygame.time.delay(FRAME_DELAY)
+      
+      # For now the frame counter just flips a bit
+      if frame_counter == 0:
+        frame_counter = 1
+      else:
+        frame_counter = 0
 
   # Move to the next active creature and keep taking their turn until it is a human player
   def take_turns(self):

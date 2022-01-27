@@ -1,4 +1,8 @@
 Active Work:
+ - Animated attacks:
+   - We probably want to store animations in World, similar to movement
+   - Stores a list of lists, each time a call is made then it takes the first image of each list and draws it where it needs to
+     be. We probably want to store a hash in World of {location: Image} and just write to this and clear it each iteration
 
 Unordered Roadmap:
  - Skills and Stats:
@@ -18,10 +22,6 @@ Unordered Roadmap:
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
  - Better Ranged Weapons:
-   - When we shoot maybe return a projectile_path line, if there is one in main then just display the projectile on each tile
-     of the path with a quick sleep in between to "animate" their movement
-     - This has to be done quickly since the player will have no control while the projectile is moving, and slow would look weird
-       anyway
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
  - Spell optimizations:
