@@ -1,6 +1,7 @@
 import random
 from world.world_builder import World
 from creatures.creature import Creature
+from helpers import get_line
 
 # Basic class to override
 class AI:
@@ -87,6 +88,12 @@ class Basic(AI):
     if p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
       if self.creature.ap >= self.creature.get_attack_cost():
         self.creature.attack_creature(p)
+
+        w = self.creature.get_main_hand()
+        if w:
+          if w.projectile:
+            attack_path = get_line(self.creature.x, self.creature.y, p.x, p.y)
+            self.creature.world.add_projectile_path(w.projectile, attack_path)
       else:
         return True
     else:

@@ -1,7 +1,4 @@
 Active Work:
- - Animated attacks:
-   - Figure out a way to not change game state (health and messages) until after the animation is done playing
-   - Currently this only works for player controlled characters, make it work for enemies too
 
 Unordered Roadmap:
  - Skills and Stats:
@@ -45,6 +42,7 @@ Unordered Roadmap:
  - We can possibly add a saving feature:
    - This will be a pain in the ass, but the way cached items work, it might not be that bad
  - Make party movement better to work with animations. Right now you all just teleport. Not sure how to pathfind properly
+ - Animated Attacks: Figure out a way to not change game state (health and messages) until after the animation is done playing
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
