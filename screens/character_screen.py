@@ -1,6 +1,6 @@
 import pygame
 from screens.screen import Screen, Button, write, write_centered, split_text_to_list
-from tileset import TileSet
+from sprites.tileset import TileSet
 from screens.subscreen import Subscreen
 from creatures.creature import Creature
 from creatures.skills_helper import ATTRIBUTE_LIST, SKILL_LIST

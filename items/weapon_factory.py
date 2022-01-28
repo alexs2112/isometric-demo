@@ -1,4 +1,4 @@
-from tileset import TileSet
+from sprites.tileset import TileSet
 from items.item import Weapon
 
 class WeaponFactory:
@@ -53,6 +53,7 @@ class WeaponFactory:
     item = Weapon(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Ranged")
     item.set_stats(attack_min=2, attack_max=3, range=5)
     item.set_description("Temp: A curved piece of wood and string, for shooting arrows.")
+    item.set_projectile(self.tileset.get_projectile("default_arrow"))
     self.cache[name] = item
     return item
   

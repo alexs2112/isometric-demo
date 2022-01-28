@@ -2,6 +2,7 @@ import random, pygame
 from world.combat_queue import CombatQueue
 import world.maze_gen as maze_gen
 import world.dungeon_gen as dungeon_gen
+from world.projectile_sequence import ProjectileSequence
 from world.tile import Tile
 from world.fov import FieldOfView
 from items.inventory import Inventory
@@ -21,6 +22,8 @@ class World:
     self.rooms = []
     self.items = {}     # A hash of location: inventory
     self.features = {}
+    self.projectiles = {} # A hash of location: projectile image, cleared every frame
+    self.projectile_sequence = None
     self.start_room = None
     self.end_room = None
     self.combat_queue = None
@@ -34,7 +37,7 @@ class World:
     self.feature_factory = factory
   
   def finalize_tiles(self, initial_array):
-    from tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
+    from sprites.tileset import FLOOR_TILESETS, WALL_TILESETS # Kind of lazy here
     tiles = []
     for x in range(self.width):
       col = []
@@ -256,6 +259,20 @@ class World:
     if not self.movement_queue:
       self.movement_queue = MovementQueue()
     self.movement_queue.add_movement([Move(creature, point) for point in path])
+
+  def add_projectile_path(self, projectile, path):
+    if not self.projectile_sequence:
+      self.projectile_sequence = ProjectileSequence()
+    self.projectile_sequence.add_projectile_path(projectile, path)
+
+  def iterate_projectiles(self):
+    self.projectiles = {}
+    curr = self.projectile_sequence.get_iteration()
+    if not curr:
+      self.projectile_sequence = None
+      return
+    for ((x,y), image) in curr:
+      self.projectiles[(x,y)] = image
 
   # Simply print the world to the terminal
   def print_world(self):

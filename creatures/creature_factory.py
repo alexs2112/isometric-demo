@@ -2,7 +2,7 @@ import random
 import creatures.ai as ai
 from creatures.creature import Creature
 from items.item_factory import ItemFactory
-from tileset import TileSet
+from sprites.tileset import TileSet
 from world.world_builder import World
 
 class CreatureFactory:

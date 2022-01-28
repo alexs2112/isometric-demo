@@ -2,7 +2,7 @@ import pygame
 from creatures.creature import Creature
 from world.world_builder import World
 from screens.screen import Screen
-from tileset import TileSet
+from sprites.tileset import TileSet
 from helpers import get_tile_position, is_ne_wall, is_nw_wall, is_outer_corner
 
 def initialize_screen(width, height):
@@ -97,6 +97,8 @@ def draw_world(screen: Screen, world: World):
             creature = creature_locations[(x,y)]
             screen.blit(creature.sprite, (sx + 16, sy - 16))
             draw_healthbar(screen, creature, sx, sy)
+          if (x,y) in world.projectiles:
+            screen.blit(world.projectiles[(x,y)], (sx+24, sy+8))
         else:
           screen.blit(screen.tileset.get_shadow("floor"), (sx, sy))
       else:

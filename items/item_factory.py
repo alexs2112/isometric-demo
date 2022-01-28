@@ -8,7 +8,7 @@ from items.weapon_factory import WeaponFactory
 from items.potion_factory import PotionFactory
 from spells.spell_factory import SpellFactory
 from world.world_builder import World
-from tileset import TileSet
+from sprites.tileset import TileSet
 
 def get_item_image_ids():
   # Similar to creatures, these are also stored by type

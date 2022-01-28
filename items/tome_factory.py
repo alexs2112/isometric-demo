@@ -1,6 +1,6 @@
 from items.item import Tome
 from spells.spell_factory import SpellFactory
-from tileset import TileSet
+from sprites.tileset import TileSet
 
 class TomeFactory:
   def __init__(self, tileset: TileSet, spell_factory: SpellFactory):

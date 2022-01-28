@@ -1,8 +1,7 @@
 Active Work:
  - Animated attacks:
-   - We probably want to store animations in World, similar to movement
-   - Stores a list of lists, each time a call is made then it takes the first image of each list and draws it where it needs to
-     be. We probably want to store a hash in World of {location: Image} and just write to this and clear it each iteration
+   - Figure out a way to not change game state (health and messages) until after the animation is done playing
+   - Currently this only works for player controlled characters, make it work for enemies too
 
 Unordered Roadmap:
  - Skills and Stats:

@@ -1,4 +1,4 @@
-from tileset import TileSet
+from sprites.tileset import TileSet
 from world.features import *
 
 class FeatureFactory:

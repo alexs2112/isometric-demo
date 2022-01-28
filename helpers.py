@@ -1,3 +1,4 @@
+from typing_extensions import Annotated
 from creatures.pathfinder import Path
 
 def get_isometric_position(cart_x, cart_y):
@@ -93,3 +94,38 @@ def get_line_no_diagonal(x0, y0, x1, y1):
       err += dx
       y0 += sy
   return points
+
+# Using a projectile and a tile path, return a list of tuples of [((x,y), projectile.image)]
+# To be fed into world so we can get the correct "image" at each frame
+def get_projectile_path(projectile, tile_path):
+  result = []
+  for i in range(len(tile_path)):
+    (x,y) = tile_path[i]
+    if projectile.all:
+      result.append(((x,y), projectile.all))
+    elif i == len(tile_path) - 1:
+      if projectile.target:
+        result.append(((x,y), projectile.target))
+    else:
+      (x2,y2) = tile_path[i+1]
+      if x == x2:
+        if y > y2:
+          result.append(((x,y), projectile.ne))
+        else:
+          result.append(((x,y), projectile.sw))
+      elif y == y2:
+        if x > x2:
+          result.append(((x,y), projectile.nw))
+        else:
+          result.append(((x,y), projectile.se))
+      elif x > x2:
+        if y > y2:
+          result.append(((x,y), projectile.n))
+        else:
+          result.append(((x,y), projectile.w))
+      else:
+        if y > y2:
+          result.append(((x,y), projectile.e))
+        else:
+          result.append(((x,y), projectile.s))
+  return result

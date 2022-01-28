@@ -72,6 +72,7 @@ class Weapon(Equipment):
   def __init__(self, name, icon, sprite, type):
     super().__init__(name, icon, sprite, "Main")  # For now weapons can only be equipped in the main hand
     self.set_stats(0,1)
+    self.projectile = None
 
     if type in Weapon.VALID_TYPES:
       self.type = type
@@ -93,6 +94,9 @@ class Weapon(Equipment):
 
   def weapon_string(self):
     return str(self.attack_min) + "-" + str(self.attack_max) + " " + self.damage_type + " damage. " + "[RANGE=" + str(self.range) + "] [COST=" + str(self.cost) + "]"
+  
+  def set_projectile(self, projectile):
+    self.projectile = projectile
 
 class Potion(Item):
   def __init__(self, name, icon):

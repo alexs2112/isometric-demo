@@ -1,4 +1,5 @@
 import pygame
+import sprites.projectile as projectile
 
 # Keep track of how many are even available in the files
 WALL_TILESETS = 8
@@ -6,7 +7,6 @@ FLOOR_TILESETS = 5
 
 # Load all relevant images and assets at the start and store them here so that we can quickly access them without
 # reloading images all the time
-# Using Dungeon Crawl Stone Soup tiles for creatures and items: https://crawl.develz.org/
 class TileSet:
   WHITE = (255, 255, 255)
   HP_RED = (172, 50, 50)
@@ -43,6 +43,8 @@ class TileSet:
     self.initialize_misc()
     self.features = {}
     self.initialize_features()
+    self.projectiles = {}
+    self.initialize_projectiles()
 
     # Some subscreen related inits that don't have specific image hashes
     self.initialize_character_screen()
@@ -74,6 +76,10 @@ class TileSet:
 
   def get_item_sprite(self, item_name):
     return self.item_sprites[item_name]
+  
+  def get_projectile(self, projectile_name):
+    # Returns a projectile.Projectile object instead of just an image
+    return self.projectiles[projectile_name]
 
   def get_misc(self, image_id):
     return self.misc[image_id]
@@ -278,3 +284,6 @@ class TileSet:
     self.features["door_open_west"] = full.subsurface((40,52,40,52))
     self.shadows["door_east"] = full.subsurface((0,104,40,35))
     self.shadows["door_west"] = full.subsurface((40,104,40,35))
+
+  def initialize_projectiles(self):
+    self.projectiles["default_arrow"] = projectile.init_default_arrow()

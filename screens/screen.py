@@ -1,5 +1,5 @@
 import helpers
-from tileset import TileSet
+from sprites.tileset import TileSet
 from pygame import Surface
 
 # A simple object to hold a bunch of useful information for the screen

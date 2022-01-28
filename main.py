@@ -75,20 +75,23 @@ class Game:
       else:
         keys = pygame.key.get_pressed()
 
-        # If we are waiting for movement, or for AI
+        # If we are waiting for movement, projetiles, or for AI
         if self.world.movement_in_progress():
           if frame_counter == 0:
             self.world.apply_next_move()
             self.screen.center_offset_on_creature(active)
+        elif self.world.projectile_sequence:
+          self.world.iterate_projectiles()
         elif not active.is_player():
-          done_turn = active.take_turn()
-          self.screen.center_offset_on_creature(active)
-          if done_turn:
-            active = self.world.get_next_active_creature()
-          while not self.world.can_see(active.x, active.y):
+          if frame_counter == 0:
             done_turn = active.take_turn()
+            self.screen.center_offset_on_creature(active)
             if done_turn:
               active = self.world.get_next_active_creature()
+            while not self.world.can_see(active.x, active.y):
+              done_turn = active.take_turn()
+              if done_turn:
+                active = self.world.get_next_active_creature()
         else:
           # Take player input
           for event in pygame.event.get():
@@ -105,9 +108,9 @@ class Game:
               elif self.world.in_combat():
                 c = self.world.get_creature_at_location(tile_x, tile_y)
                 if c:
-                  _, target = active.get_attack_line(tile_x, tile_y)
+                  path, target = active.get_attack_line(tile_x, tile_y)
                   if target and active.ap >= active.get_attack_cost():
-                    self.attack_target(active, target)
+                    self.attack_target(path, active, target)
                   else:
                     path = active.get_path_to(tile_x, tile_y)
                     active.move_along_path(path[:-1])
@@ -227,7 +230,7 @@ class Game:
 
       pygame.display.update()
       pygame.time.delay(FRAME_DELAY)
-      
+
       # For now the frame counter just flips a bit
       if frame_counter == 0:
         frame_counter = 1
@@ -261,7 +264,11 @@ class Game:
     active.loaded_spell.cast(active, targets)
     active.loaded_spell = None
 
-  def attack_target(self, active: Creature, target: Creature):
+  def attack_target(self, attack_path, active: Creature, target: Creature):
+    w = active.get_main_hand()
+    if w:
+      if w.projectile:
+        self.world.add_projectile_path(w.projectile, attack_path)
     active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):

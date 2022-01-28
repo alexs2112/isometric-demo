@@ -4,7 +4,7 @@ from items.equipment_list import EquipmentList
 from items.inventory import Inventory
 import world.fov as fov
 from creatures.pathfinder import Path
-from creatures.creature_sprite import get_sprite
+from sprites.creature_sprite import get_sprite
 from creatures.skills_helper import *
 from world.world_builder import World
 

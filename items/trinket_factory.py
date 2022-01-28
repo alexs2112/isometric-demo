@@ -1,4 +1,4 @@
-from tileset import TileSet
+from sprites.tileset import TileSet
 from items.item import Equipment
 
 class TrinketFactory:
