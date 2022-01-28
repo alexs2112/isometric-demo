@@ -5,7 +5,7 @@ from items.inventory import Inventory
 import world.fov as fov
 from creatures.pathfinder import Path
 from sprites.creature_sprite import get_sprite
-from creatures.skills_helper import *
+from creatures.stats_helper import *
 from world.world_builder import World
 
 class Creature:
@@ -31,7 +31,7 @@ class Creature:
     self.spell_slots = 0
     self.loaded_spell = None
     self.attributes = {}
-    self.skills = {}
+    self.stats = {}
 
   def set_ai(self, ai):
     self.ai = ai
@@ -96,19 +96,19 @@ class Creature:
     # Dont need to check if attr exists since we should always call set_attributes() on a new creature
     return self.attributes[attr]
 
-  def modify_skill(self, skill, value):
-    if skill not in SKILL_LIST:
-      raise ValueError(skill + " is not a skill")
-    if skill in self.skills:
-      self.skills[skill] += value
+  def modify_stat(self, stat, value):
+    if stat not in STAT_LIST:
+      raise ValueError(stat + " is not a stat")
+    if stat in self.stats:
+      self.stats[stat] += value
     else:
-      self.skills[skill] = value
+      self.stats[stat] = value
 
-  def get_skill(self, skill):
-    if skill not in SKILL_LIST:
-      raise ValueError(skill + " is not a skill")
-    if skill in self.skills:
-      return self.skills[skill]
+  def get_stat(self, stat):
+    if stat not in STAT_LIST:
+      raise ValueError(stat + " is not a stat")
+    if stat in self.stats:
+      return self.stats[stat]
     return 0
 
   def get_max_hp(self):
@@ -445,19 +445,19 @@ class Creature:
     if w and w.is_weapon():
       source = w.name
       if w.get_type() == "Light Blade":
-        if random.random() * 10 < self.get_skill("Light Blades"):
+        if random.random() * 10 < self.get_stat("Light Blades"):
           critical = True
           damage = damage * 2
       if w.get_type() == "Heavy Blade":
-        damage += self.get_skill("Heavy Blades")
+        damage += self.get_stat("Heavy Blades")
       if w.get_type() == "Crushing":
-        piercing = self.get_skill("Crushing")
+        piercing = self.get_stat("Crushing")
       if w.get_type() == "Ranged":
         attacking_flavour = " shoots "
         getting_attacked_flavour = " gets shot by "
     else:
       source = "Unarmed"
-      damage += self.get_skill("Unarmed")
+      damage += self.get_stat("Unarmed")
 
     self_string = self.name + attacking_flavour + target.name + " for " + str(damage) + " " + damage_type + " damage!"
     target_string = target.name + getting_attacked_flavour + self.name + " for " + str(damage) + " " + damage_type + " damage!"
@@ -506,7 +506,7 @@ class Creature:
 
   def can_prepare(self, spell):
     if spell in self.spells and not self.spells[spell]:
-      if self.get_skill(spell.get_type()) >= spell.get_level():
+      if self.get_stat(spell.get_type()) >= spell.get_level():
         if self.get_remaining_spell_slots() >= spell.get_level():
           return True
     return False

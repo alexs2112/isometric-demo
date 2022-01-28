@@ -1,11 +1,11 @@
-# A place to organize all skills and attributes and how they affect creature stats
+# A place to organize all stats and attributes and how they affect creatures
 
 ATTRIBUTE_LIST = {
   "Brawn": "Increases HP (2 HP per point), !NOT IMPLEMENTED! Inventory Limit, Minor Melee Damage",
   "Agility": "Increases Initiative (1 Initiative per point), !NOT IMPLEMENTED! Evasion, Accuracy, Minor Ranged and Light Weapon Damage",
   "Will": "Increases Mana (2 Mana per point), Spell Slots (1 slot per point), !NOT IMPLEMENTED! Resistance to Magical Effects, Minor Magical Damage"
 }
-SKILL_LIST = {
+STAT_LIST = {
   # Generic
   "Endurance": "Minorly Increases HP (1 HP per point), !NOT IMPLEMENTED! Increases inventory limit",
   "Awareness": "Increases Initiative (1 Initiative per point)",
@@ -32,11 +32,11 @@ SKILL_LIST = {
 
 def get_hp_bonus(creature):
   x = creature.get_attribute("Brawn")
-  y = creature.get_skill("Endurance")
+  y = creature.get_stat("Endurance")
   return x * 2 + y
 
 def get_initiative_bonus(creature):
-  return creature.get_attribute("Agility") + creature.get_skill("Awareness")
+  return creature.get_attribute("Agility") + creature.get_stat("Awareness")
 
 def get_mana_bonus(creature):
   x = creature.get_attribute("Will")
@@ -44,5 +44,5 @@ def get_mana_bonus(creature):
 
 def get_spell_slots_bonus(creature):
   x = creature.get_attribute("Will")
-  y = creature.get_skill("Memory")
+  y = creature.get_stat("Memory")
   return x + y

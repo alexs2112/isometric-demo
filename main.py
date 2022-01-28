@@ -128,9 +128,9 @@ class Game:
                   if c.is_player():
                     active = c
                   else:
-                    _, target = active.get_attack_line(tile_x, tile_y)
+                    attack_path, target = active.get_attack_line(tile_x, tile_y)
                     if target:
-                      self.attack_target(active, target)
+                      self.attack_target(attack_path, active, target)
                     else:
                       path = active.get_path_to(tile_x, tile_y)
                       active.move_along_path(path[:-1])

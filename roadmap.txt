@@ -1,12 +1,12 @@
 Active Work:
-
-Unordered Roadmap:
  - Skills and Stats:
    - Retheme spell tomes as skill tomes, can have any skill as a requirement (martial ones)
    - With reduced scope, we want a way to make skill tomes unique and fit certain characters better than others
    - We won't have conventional leveling up so we probably don't need to display all of the skills at once
    - Make martial skills provide a more powerful buff to using those weapons, to account for being essentially immutable
    - Possibly a skill tree for each character? "Level Up" per dungeon floor
+
+Unordered Roadmap:
  - Dungeon Overhaul:
    - Up to 3 floors with increasing difficulty. Use staircases to traverse from one "world" to the next
    - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations

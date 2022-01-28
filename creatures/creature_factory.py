@@ -53,7 +53,7 @@ class CreatureFactory:
     creature.set_unarmed_stats(min=3, max=5, type="magical")
     creature.add_and_equip(self.items.equipment.wizard_hat())
     creature.add_and_equip(self.items.equipment.robe())
-    creature.modify_skill("Fire", 1)
+    creature.modify_stat("Fire", 1)
     creature.update_sprite()
     creature.add_item(self.items.potion.potion_minor_healing())
     creature.add_spell(self.items.spells.embers())

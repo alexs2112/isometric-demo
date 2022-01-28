@@ -3,7 +3,7 @@ from screens.screen import Screen, Button, write, write_centered, split_text_to_
 from sprites.tileset import TileSet
 from screens.subscreen import Subscreen
 from creatures.creature import Creature
-from creatures.skills_helper import ATTRIBUTE_LIST, SKILL_LIST
+from creatures.stats_helper import ATTRIBUTE_LIST, STAT_LIST
 from pygame.locals import (
   MOUSEBUTTONDOWN,
   KEYDOWN,
@@ -85,7 +85,7 @@ class CharacterScreen(Subscreen):
     self.write_item_description(screen)
 
   def update_player_stats(self):
-    # Left: All stats, attributes, and skills. Increase them on level up here
+    # Left: All stats, attributes, and statss. Increase them on level up here
     self.stats_cache_surface = pygame.Surface((420, 800))
     self.stats_cache_surface.blit(self.stats_block, (0,0))
     write_centered(self.stats_cache_surface, "Stats (Temporary)", (210, 12), self.font)
@@ -104,9 +104,9 @@ class CharacterScreen(Subscreen):
     ]
     for attribute in ATTRIBUTE_LIST.keys():
       text.append("   " + attribute + ": " + str(self.creature.get_attribute(attribute)))
-    text.append("Skills:")
-    for skill in SKILL_LIST.keys():
-      text.append("   " + skill + ": " + str(self.creature.get_skill(skill)))
+    text.append("Stats:")
+    for stat in STAT_LIST.keys():
+      text.append("   " + stat + ": " + str(self.creature.get_stat(stat)))
 
     x = 12
     y = 28
