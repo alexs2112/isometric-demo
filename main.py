@@ -3,9 +3,9 @@ import init
 from items.inventory import Inventory
 from items.item_factory import ItemFactory
 from screens.character_screen import CharacterScreen
-from screens.spell_screen import SpellScreen
-from spells.effect_factory import EffectFactory
-from spells.spell_factory import SpellFactory
+from screens.skill_screen import SkillScreen
+from skills.effect_factory import EffectFactory
+from skills.skill_factory import SkillFactory
 from creatures.creature_factory import CreatureFactory
 from world.feature_factory import FeatureFactory
 from screens.help_screen import HelpScreen
@@ -45,8 +45,8 @@ class Game:
     self.feature_factory = FeatureFactory(self.screen.tileset)
     self.world = init.create_world(args, self.feature_factory)
     self.effect_factory = EffectFactory()
-    self.spell_factory = SpellFactory(self.effect_factory)
-    self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.spell_factory)
+    self.skill_factory = SkillFactory(self.effect_factory)
+    self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.skill_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
 
     self.messages = [] # Keep track of all the notifications each turn
@@ -100,9 +100,9 @@ class Game:
               sys.exit(0)
 
             if event.type == MOUSEBUTTONDOWN:
-              # If we are casting a spell
-              if active.loaded_spell:
-                self.cast_loaded_spell(active, tile_x, tile_y)
+              # If we are activating a skill
+              if active.loaded_skill:
+                self.activate_loaded_skill(active, tile_x, tile_y)
 
               # If we are in combat
               elif self.world.in_combat():
@@ -175,8 +175,8 @@ class Game:
                 else:
                   self.messages.clear()
               elif event.key == K_ESCAPE:
-                if active.loaded_spell:
-                  active.loaded_spell = None
+                if active.loaded_skill:
+                  active.loaded_skill = None
                 else:
                   # Preferably open a game menu here instead of just ending the game lol
                   running = False
@@ -195,10 +195,10 @@ class Game:
                 i.add_item(self.item_factory.tomes.tome_of_embers(), 3)
                 self.subscreen = InventoryScreen(self.world.players, i)
               elif event.key == K_s:
-                if active.spells:
-                  self.subscreen = SpellScreen(active)
+                if active.skills:
+                  self.subscreen = SkillScreen(active)
                 else:
-                  active.notify(active.name + " has no spells to cast.")
+                  active.notify(active.name + " has no skills to activate.")
               elif event.key == K_c:
                 if active.is_player():
                   self.subscreen = CharacterScreen(self.screen.tileset, active, self.world.players)
@@ -215,7 +215,7 @@ class Game:
           self.screen.offset_y += 15
 
         draw_world(self.screen, self.world)
-        if active.loaded_spell:
+        if active.loaded_skill:
           highlight_ability_target(self.screen, active, tile_x, tile_y)
           path = None
           target = None
@@ -248,8 +248,8 @@ class Game:
         self.screen.center_offset_on_creature(active)
         return active
   
-  def cast_loaded_spell(self, active: Creature, tile_x, tile_y):
-    tiles = active.loaded_spell.get_target_tiles(active.x, active.y, tile_x, tile_y)
+  def activate_loaded_skill(self, active: Creature, tile_x, tile_y):
+    tiles = active.loaded_skill.get_target_tiles(active.x, active.y, tile_x, tile_y)
     if not tiles:
       return
     creatures = self.world.creature_location_dict()
@@ -257,12 +257,12 @@ class Game:
     for t in tiles:
       if t in creatures:
         c = creatures[t]
-        if not active.loaded_spell.friendly_fire:
+        if not active.loaded_skill.friendly_fire:
           if c.faction == active.faction:
             continue
         targets.append(creatures[t])
-    active.loaded_spell.cast(active, targets)
-    active.loaded_spell = None
+    active.loaded_skill.cast(active, targets)
+    active.loaded_skill = None
 
   def attack_target(self, attack_path, active: Creature, target: Creature):
     w = active.get_main_hand()

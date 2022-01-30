@@ -1,6 +1,6 @@
 import helpers
 
-# A way to get specific arrays of points for different target types for spells and abilities
+# A way to get specific arrays of points for different target types for skills
 class Target:
   def __init__(self, range):
     self.range = range

@@ -15,7 +15,7 @@ class Projectile:
     self.se = se
     self.sw = sw
 
-# A bunch of factory functions to cache projectiles in TileSet for weapons and spells that need them
+# A bunch of factory functions to cache projectiles in TileSet for weapons and skills that need them
 def init_default_arrow():
   full = pygame.image.load("assets/projectiles.png")
   n = full.subsurface((0,0,16,16))

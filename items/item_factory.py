@@ -1,12 +1,12 @@
 import random
 from items.item import Item
 from items.tome_factory import TomeFactory
-from spells.effect_factory import EffectFactory
+from skills.effect_factory import EffectFactory
 from items.equipment_factory import EquipmentFactory
 from items.trinket_factory import TrinketFactory
 from items.weapon_factory import WeaponFactory
 from items.potion_factory import PotionFactory
-from spells.spell_factory import SpellFactory
+from skills.skill_factory import SkillFactory
 from world.world_builder import World
 from sprites.tileset import TileSet
 
@@ -33,13 +33,13 @@ def get_item_image_ids():
     # Potions
     ["Potion of Minor Healing", "Potion of Regeneration"],
 
-    # Spell Tomes
+    # Skill Tomes
     ["Tome of Embers", "Tome of Flame Lash"]
   ]
   return image_ids
 
 class ItemFactory:
-  def __init__(self, world: World, tileset: TileSet, effect: EffectFactory, spell: SpellFactory):
+  def __init__(self, world: World, tileset: TileSet, effect: EffectFactory, skill: SkillFactory):
     self.world = world
     self.tileset = tileset
 
@@ -48,12 +48,12 @@ class ItemFactory:
 
     # To make file less huge and verbose, break each item type into its own factory
     self.effect = effect
-    self.spells = spell
+    self.skills = skill
     self.equipment = EquipmentFactory(tileset)
     self.trinket = TrinketFactory(tileset)
     self.weapon = WeaponFactory(tileset)
     self.potion = PotionFactory(tileset, self.effect)
-    self.tomes = TomeFactory(tileset, spell)
+    self.tomes = TomeFactory(tileset, skill)
 
     self.item_functions = [
       self.equipment.robe,

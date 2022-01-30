@@ -17,9 +17,9 @@ def write_active_player(screen: Screen, active: Creature):
   if active.ap == 0 and active.free_movement == 0:
     y += 26
     screen.write("Out of AP, press Enter to end turn", (x, y), screen.tileset.get_font())
-  if active.loaded_spell:
+  if active.loaded_skill:
     y += 26
-    screen.write("Casting " + active.loaded_spell.name, (x, y), screen.tileset.get_font())
+    screen.write("Casting " + active.loaded_skill.name, (x, y), screen.tileset.get_font())
   
   if not active.world.no_active_enemies():
     screen.write_centered("Combat!", (screen.width/2, 2), screen.tileset.get_font(), screen.tileset.HP_RED)
@@ -32,8 +32,8 @@ def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creatur
   screen.blit(screen.tileset.get_ui("player_action_points"), (x, y))
 
   if active.world.in_combat():
-    if active.loaded_spell:
-      cost = active.loaded_spell.ap_cost
+    if active.loaded_skill:
+      cost = active.loaded_skill.ap_cost
       free_movement = active.free_movement
     elif target:
       cost = active.get_attack_cost()
@@ -244,12 +244,12 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
   return path, None
 
 def highlight_ability_target(screen: Screen, creature: Creature, tile_x, tile_y):
-  tiles = creature.loaded_spell.get_target_tiles(creature.x, creature.y, tile_x, tile_y)
+  tiles = creature.loaded_skill.get_target_tiles(creature.x, creature.y, tile_x, tile_y)
   creatures = creature.world.creature_location_dict()
   for x,y in tiles:
     if creature.world.is_floor(x,y):
       if (x,y) in creatures:
-        if not creature.loaded_spell.friendly_fire:
+        if not creature.loaded_skill.friendly_fire:
           if creatures[(x,y)].faction == creature.faction:
             continue
         highlight = screen.tileset.get_ui("floor_highlight_red")

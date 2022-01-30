@@ -1,8 +1,8 @@
-from spells.effect import Effect
-from spells.target import Target
+from skills.effect import Effect
+from skills.target import Target
 from creatures.creature import Creature
 
-class Spell:
+class Skill:
   def __init__(self, name, level, type, ap_cost, mana_cost, cooldown):
     self.name = name
     self.level = level
@@ -44,7 +44,7 @@ class Spell:
     self.downtime = 0
 
   def is_castable(self, caster: Creature):
-    if not caster.spell_prepared(self) or \
+    if not caster.skill_prepared(self) or \
        self.ap_cost > caster.ap or \
        self.mana_cost > caster.mana or \
        self.downtime > 0:
@@ -72,7 +72,7 @@ class Spell:
       c.add_effect(self.target_effect)
 
   def clone(self):
-    new = Spell(self.name, self.level, self.type, self.ap_cost, self.mana_cost, self.cooldown)
+    new = Skill(self.name, self.level, self.type, self.ap_cost, self.mana_cost, self.cooldown)
     new.set_target_type(self.get_target_type())
     new.set_caster_effect(self.caster_effect)
     new.set_target_effect(self.target_effect)

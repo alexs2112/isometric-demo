@@ -1,5 +1,4 @@
-import random
-from spells.effect_factory import EffectFactory
+from skills.effect_factory import EffectFactory
 from sprites.tileset import TileSet
 from items.item import Potion
 from creatures.creature import Creature

@@ -1,6 +1,6 @@
-from spells.effect import Effect
+from skills.effect import Effect
 from creatures.creature import Creature
-import spells.effect_functions as func
+import skills.effect_functions as func
 
 class EffectFactory:
   def minor_heal(self, multiple_of_max):

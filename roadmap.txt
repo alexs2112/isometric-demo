@@ -14,13 +14,12 @@ Unordered Roadmap:
    - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Prettier subscreens and UI
    - New pickup subscreen
-   - New spell subscreen
+   - New skill subscreen
    - Escape key menu that doesn't immediately kill the game
    - UI buttons on the main screen to simulate keypresses
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
  - Skills and Stats:
-   - Retheme spell tomes as skill tomes, can have any skill as a requirement (martial ones)
    - With reduced scope, we want a way to make skill tomes unique and fit certain characters better than others
    - We won't have conventional leveling up so we probably don't need to display all of the skills at once
    - Make martial skills provide a more powerful buff to using those weapons, to account for being essentially immutable
@@ -28,13 +27,11 @@ Unordered Roadmap:
  - Better Ranged Weapons:
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
- - Spell optimizations:
-   - Needing to prepare spells is probably obsolete with new scope
-   - Spellbook Icons:
-     - I think we should do one book icon for each magic school/type/whatever, then have the spell icon in the bottom corner of the
+ - Skill optimizations:
+   - Skill Tome Icons:
+     - I think we should do one book icon for each magic school/type/whatever, then have the skill icon in the bottom corner of the
        book icon
-   - Spells with cooldowns, this is mostly ignored for now
-   - Spells and effects need icons and indicators
+   - Skills and effects need icons and indicators
  - Shadow optimizations:
    - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
      do to walls having thickness

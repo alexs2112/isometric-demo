@@ -1,5 +1,5 @@
 import random
-from spells.effect import Effect
+from skills.effect import Effect
 from creatures.creature import Creature
 
 # All functions should take exactly two parameters

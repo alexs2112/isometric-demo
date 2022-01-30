@@ -10,7 +10,7 @@ from pygame.locals import (
   K_ESCAPE
 )
 
-class SpellScreen(Subscreen):
+class SkillScreen(Subscreen):
   def __init__(self, creature: Creature):
     self.creature = creature
     self.index = 0
@@ -18,8 +18,8 @@ class SpellScreen(Subscreen):
     self.initialize_lists(creature)
     
   def initialize_lists(self, creature: Creature):
-    self.prepared = creature.get_prepared_spells()
-    self.unprepared = creature.get_unprepared_spells()
+    self.prepared = creature.get_prepared_skills()
+    self.unprepared = creature.get_unprepared_skills()
     if self.section == 1 and self.index == 0 and len(self.unprepared) == 0:
       self.section = 0
       self.index = len(self.prepared) - 1
@@ -125,10 +125,10 @@ class SpellScreen(Subscreen):
         elif event.key == K_RETURN:
           if self.section == 0:
             if self.prepared[self.index].is_castable(self.creature):
-              self.creature.load_spell(self.prepared[self.index])
+              self.creature.load_skill(self.prepared[self.index])
               return None
           else:
             if self.creature.can_prepare(self.unprepared[self.index]):
-              self.creature.prepare_spell(self.unprepared[self.index])
+              self.creature.prepare_skill(self.unprepared[self.index])
               self.initialize_lists(self.creature)
     return self

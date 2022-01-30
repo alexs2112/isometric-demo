@@ -20,7 +20,7 @@ class HelpScreen(Subscreen):
       "[m] to show the map view to travel and rest",
       "[c] to show the inventory and stats of your current character",
       "[p] to show the stats of your party members (temporary)",
-      "[s] to select a spell to cast if the active player knows any",
+      "[s] to select a skill to activate",
       "Escape to close this menu",
     ]:
       if line:

@@ -10,6 +10,7 @@ class CreatureFactory:
     self.world = world
     self.tileset = tileset
     self.items = item_factory
+    self.skills = self.items.skills
 
   def new_edward(self, x, y):
     name = "Edward"
@@ -21,8 +22,8 @@ class CreatureFactory:
     creature.move_to(x, y)
     creature.add_and_equip(self.items.weapon.shortbow())
     creature.add_and_equip(self.items.equipment.leather_armor())
-    creature.add_spell(self.items.spells.stun())
-    creature.prepare_spell(creature.spell_list()[0])
+    creature.add_skill(self.items.skills.stun())
+    creature.prepare_skill(creature.skill_list()[0])
     creature.update_sprite()
     self.world.add_creature(creature)
     self.world.update_fov(creature)
@@ -58,8 +59,8 @@ class CreatureFactory:
     creature.modify_stat("Fire", 1)
     creature.update_sprite()
     creature.add_item(self.items.potion.potion_minor_healing())
-    creature.add_spell(self.items.spells.embers())
-    creature.prepare_spell(creature.spell_list()[0])
+    creature.add_skill(self.items.skills.embers())
+    creature.prepare_skill(creature.skill_list()[0])
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature

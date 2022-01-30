@@ -27,9 +27,9 @@ class Creature:
     self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
-    self.spells = {}  # Spells are stored in a hash of {Spell: Prepared}
-    self.spell_slots = 0
-    self.loaded_spell = None
+    self.skills = {}  # Skills are stored in a hash of {Skill: Prepared}
+    self.skill_slots = 0
+    self.loaded_skill = None
     self.attributes = {}
     self.stats = {}
 
@@ -123,8 +123,8 @@ class Creature:
   def get_initiative(self):
     return self.base_initiative + self.equipment.get_bonus("INITIATIVE") + get_initiative_bonus(self)
   
-  def get_spell_slots(self):
-    return self.spell_slots + self.equipment.get_bonus("SPELL_SLOTS") + get_spell_slots_bonus(self)
+  def get_skill_slots(self):
+    return self.skill_slots + self.equipment.get_bonus("SKILL_SLOTS") + get_skill_slots_bonus(self)
 
   def get_attack_min(self):
     i = self.get_main_hand()
@@ -214,7 +214,7 @@ class Creature:
 # TURN RELATED STUFF #
 ######################
   def upkeep(self):
-    self.loaded_spell = None
+    self.loaded_skill = None
 
     if self.is_stunned():
       self.ap = 0
@@ -226,7 +226,7 @@ class Creature:
     for e in self.effects:
       e.update(self)
     
-    for s in self.spell_list():
+    for s in self.skill_list():
       s.tick_downtime()
 
   def full_rest(self):
@@ -238,7 +238,7 @@ class Creature:
     self.m_armor = self.get_m_armor_cap()
     self.p_armor = self.get_p_armor_cap()
     self.mana = self.get_max_mana()
-    self.reset_spell_cooldowns()
+    self.reset_skill_cooldowns()
     self.notify(self.name + " is feeling refreshed!")
 
   # Returns if this creatures turn is complete after making this move
@@ -247,8 +247,8 @@ class Creature:
       return self.ai.take_turn(self.world)
     return True
 
-  def reset_spell_cooldowns(self):
-    for s in self.spell_list():
+  def reset_skill_cooldowns(self):
+    for s in self.skill_list():
       s.reset_downtime()
 
 
@@ -502,57 +502,57 @@ class Creature:
 
 
 #######################
-# SPELL RELATED STUFF #
+# SKILL RELATED STUFF #
 #######################
-  def spell_list(self):
-    return list(self.spells.keys())
+  def skill_list(self):
+    return list(self.skills.keys())
 
-  def get_prepared_spells(self):
+  def get_prepared_skills(self):
     out = []
-    for s in self.spell_list():
-      if self.spell_prepared(s):
+    for s in self.skill_list():
+      if self.skill_prepared(s):
         out.append(s)
     return out
   
-  def get_unprepared_spells(self):
+  def get_unprepared_skills(self):
     out = []
-    for s in self.spell_list():
-      if not self.spell_prepared(s):
+    for s in self.skill_list():
+      if not self.skill_prepared(s):
         out.append(s)
     return out
   
-  def add_spell(self, spell):
-    if spell not in self.spells:
-      self.spells[spell] = False
+  def add_skill(self, skill):
+    if skill not in self.skills:
+      self.skills[skill] = False
 
-  def get_remaining_spell_slots(self):
-    v = self.get_spell_slots()
-    for spell in self.get_prepared_spells():
-      v -= spell.get_level()
+  def get_remaining_skill_slots(self):
+    v = self.get_skill_slots()
+    for skill in self.get_prepared_skills():
+      v -= skill.get_level()
     return v
 
-  def can_prepare(self, spell):
-    if spell in self.spells and not self.spells[spell]:
-      if self.get_stat(spell.get_type()) >= spell.get_level():
-        if self.get_remaining_spell_slots() >= spell.get_level():
+  def can_prepare(self, skill):
+    if skill in self.skills and not self.skills[skill]:
+      if self.get_stat(skill.get_type()) >= skill.get_level():
+        if self.get_remaining_skill_slots() >= skill.get_level():
           return True
     return False
 
-  def prepare_spell(self, spell):
-    if spell in self.spells:
-      self.spells[spell] = True
+  def prepare_skill(self, skill):
+    if skill in self.skills:
+      self.skills[skill] = True
 
-  def unprepare_spell(self, spell):
-    if spell in self.spells:
-      self.spells[spell] = False
+  def unprepare_skill(self, skill):
+    if skill in self.skills:
+      self.skills[skill] = False
 
-  def spell_prepared(self, spell):
-    if spell in self.spells:
-      return self.spells[spell]
+  def skill_prepared(self, skill):
+    if skill in self.skills:
+      return self.skills[skill]
     return False
 
-  def load_spell(self, spell):
-    self.loaded_spell = spell
+  def load_skill(self, skill):
+    self.loaded_skill = skill
 
-  def knows_spell(self, spell_name):
-    return spell_name in self.spells
+  def knows_skill(self, skill_name):
+    return skill_name in self.skills
