@@ -458,6 +458,9 @@ class Creature:
     if self.world.in_combat():
       self.ap -= self.get_attack_cost()
 
+    self.force_attack(target)
+
+  def force_attack(self, target):
     atk_min = self.get_attack_min()
     atk_max = self.get_attack_max()
     damage = random.randint(atk_min, atk_max)

@@ -27,3 +27,10 @@ class SkillFactory:
     skill.set_target_type(Target(5))
     skill.set_target_effect(self.effects.stunned(1))
     return skill
+  
+  def cleave(self):
+    name = "Cleave"
+    skill = Skill(name, 0, "Cleaving", 2, 0, 2)
+    skill.set_target_type(AdjacentTarget(0))
+    skill.basic_attack = True
+    return skill

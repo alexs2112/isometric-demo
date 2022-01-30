@@ -15,6 +15,7 @@ class Skill:
     self.caster_effect = None
     self.target_effect = None
     self.friendly_fire = False
+    self.basic_attack = False     # For now if this is true just call attack on each target
 
   def get_type(self):
     return self.type
@@ -66,10 +67,12 @@ class Skill:
       caster.ap -= self.ap_cost
     caster.mana -= self.mana_cost
     self.downtime = self.cooldown
-    caster.notify_player(caster.name + " casts " + self.name)
+    caster.notify_player(caster.name + " uses " + self.name)
     caster.add_effect(self.caster_effect)
     for c in target_list:
       c.add_effect(self.target_effect)
+      if self.basic_attack:
+        caster.force_attack(c)
 
   def clone(self):
     new = Skill(self.name, self.level, self.type, self.ap_cost, self.mana_cost, self.cooldown)
