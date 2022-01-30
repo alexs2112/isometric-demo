@@ -87,7 +87,10 @@ class SkillScreen(Subscreen):
         y = self.write_spell(screen, s, line_height, y, x1, x2, x3, x4, x5, x6, colour)
     
   def write_spell(self, screen, spell, line_height, y, x1, x2, x3, x4, x5, x6, colour):
-    screen.write(spell.name, (x1, y), screen.tileset.get_font(), colour)
+    t = spell.name
+    if spell.downtime > 0:
+      t += "(" + str(spell.downtime) + ")"
+    screen.write(t, (x1, y), screen.tileset.get_font(), colour)
 
     if spell.cooldown > 0:
       cd = str(spell.cooldown)

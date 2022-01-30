@@ -168,12 +168,12 @@ class Game:
                 self.screen.center_offset_on_creature(active)
               elif event.key == K_RETURN:
                 self.messages.clear()
-                if self.world.in_combat():
+                if active.loaded_skill:
+                  self.activate_loaded_skill(active, tile_x, tile_y)
+                elif self.world.in_combat():
                   active = self.world.get_next_active_creature()
                   if self.world.can_see(active.x, active.y):
                     self.screen.center_offset_on_creature(active)
-                else:
-                  self.messages.clear()
               elif event.key == K_ESCAPE:
                 if active.loaded_skill:
                   active.loaded_skill = None
