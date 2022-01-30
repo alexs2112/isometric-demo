@@ -30,3 +30,11 @@ class EffectFactory:
     effect.add_tick(lambda _, creature: creature.notify_player(creature.name + " is stunned!"))
     effect.add_end(lambda _, creature: creature.notify_player(creature.name + " shakes off the stun."))
     return effect
+
+  def rapid_slashes(self, duration):
+    effect = Effect("Rapid Slashes", duration)
+    effect.add_start(lambda _, creature: creature.modify_unarmed_cost(-1))
+    effect.add_start(lambda _, creature: creature.notify_player(creature.name + "'s unarmed attacks quicken"))
+    effect.add_end(lambda _, creature: creature.modify_unarmed_cost(1))
+    effect.add_end(lambda _, creature: creature.notify_player(creature.name + "'s unarmed attacks return to normal"))
+    return effect

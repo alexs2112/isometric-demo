@@ -31,6 +31,14 @@ class SkillFactory:
   def cleave(self):
     name = "Cleave"
     skill = Skill(name, 0, "Cleaving", 2, 0, 2)
-    skill.set_target_type(AdjacentTarget(0))
+    skill.set_target_type(AdjacentTarget(1))
     skill.basic_attack = True
+    return skill
+
+  def rapid_slashes(self):
+    name = "Rapid Slashes"
+    skill = Skill(name, 0, "Unarmed", 0, 0, 2)
+    skill.set_target_type(SelfTarget())
+    skill.set_target_effect(self.effects.rapid_slashes(1))
+    skill.friendly_fire = True
     return skill

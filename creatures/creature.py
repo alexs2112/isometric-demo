@@ -146,9 +146,13 @@ class Creature:
     i = self.get_main_hand()
     if i:
       if i.is_weapon():
-        return i.cost
+        return max(1, i.cost)
     
-    return self.unarmed_cost
+    return max(1, self.unarmed_cost)
+
+  # Temporary for Goobert, until we add a bonuses hash that can hold temporary buffs
+  def modify_unarmed_cost(self, value):
+    self.unarmed_cost += value
   
   def get_damage_type(self):
     i = self.get_main_hand()
@@ -526,7 +530,7 @@ class Creature:
   
   def add_skill(self, skill):
     if skill not in self.skills:
-      self.skills[skill] = False
+      self.skills[skill] = True     # Default to true for now until we fix preparing skills
 
   def get_remaining_skill_slots(self):
     v = self.get_skill_slots()

@@ -10,6 +10,13 @@ class Target:
       return []
     return [(dx,dy)]
 
+class SelfTarget(Target):
+  def __init__(self):
+    super().__init__(0)
+
+  def get_points(self, sx, sy, dx, dy):
+    return [(sx, sy)]
+
 class LineTarget(Target):
   def get_points(self, sx, sy, dx, dy):
     return helpers.get_line(sx, sy, dx, dy)[1:self.range]
@@ -17,8 +24,8 @@ class LineTarget(Target):
 class AdjacentTarget(Target):
   def get_points(self, sx, sy, dx, dy):
     out = []
-    for x in range(-1, 2):
-      for y in range(-1, 2):
+    for x in range(-self.range, self.range+1):
+      for y in range(-self.range, self.range+1):
         if x == 0 and y == 0:
           continue
         out.append((sx + x, sy + y))
