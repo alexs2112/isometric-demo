@@ -1,10 +1,12 @@
 Active Work:
- - Skills and Stats:
-   - Retheme spell tomes as skill tomes, can have any skill as a requirement (martial ones)
-   - With reduced scope, we want a way to make skill tomes unique and fit certain characters better than others
-   - We won't have conventional leveling up so we probably don't need to display all of the skills at once
-   - Make martial skills provide a more powerful buff to using those weapons, to account for being essentially immutable
-   - Possibly a skill tree for each character? "Level Up" per dungeon floor
+ - Skills and Stats Prework:
+   - Refactor Spells to Skills
+   - Give each character a starting skill and buff/change the wizards
+   - Implement initial action bar to map skills to number keys
+ - Edward: Smite targeted, stun an enemy for their next turn, cost 3, cooldown 2
+ - Goobert: Make attack speed normal, ability reduces cost of attacks by 1 (to min of 1) until end of turn, cost 0, cooldown 3?
+ - Wizard: Smite targeted, makes target more vulnerable to fire damage for a few turns. Cost 1, cooldown 3?
+ - Harold: Make his AP and everything normal, Attack and knock back each adjacent enemy, cost 2, cooldown 3
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -17,6 +19,12 @@ Unordered Roadmap:
    - UI buttons on the main screen to simulate keypresses
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
+ - Skills and Stats:
+   - Retheme spell tomes as skill tomes, can have any skill as a requirement (martial ones)
+   - With reduced scope, we want a way to make skill tomes unique and fit certain characters better than others
+   - We won't have conventional leveling up so we probably don't need to display all of the skills at once
+   - Make martial skills provide a more powerful buff to using those weapons, to account for being essentially immutable
+   - Possibly a skill tree for each character? "Level Up" per dungeon floor
  - Better Ranged Weapons:
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
@@ -43,6 +51,8 @@ Unordered Roadmap:
    - This will be a pain in the ass, but the way cached items work, it might not be that bad
  - Make party movement better to work with animations. Right now you all just teleport. Not sure how to pathfind properly
  - Animated Attacks: Figure out a way to not change game state (health and messages) until after the animation is done playing
+   - Maybe cache changes and messages until after, then apply them?
+ - Limit the number of messages that show up when out of combat
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
@@ -53,4 +63,5 @@ Tech Debt:
     - Small example with stats in the character screen
 
 Known Bugs:
- - :)
+ - Starting combat with a player that is not edward sometimes fucks up
+ - Health potions display the wrong number of added health to the messages... (increased by one, trivial fix)

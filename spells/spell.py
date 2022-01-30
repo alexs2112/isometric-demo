@@ -37,6 +37,12 @@ class Spell:
   def set_target_effect(self, effect: Effect):
     self.target_effect = effect
 
+  def tick_downtime(self):
+    self.downtime = max(0, self.downtime - 1)
+  
+  def reset_downtime(self):
+    self.downtime = 0
+
   def is_castable(self, caster: Creature):
     if not caster.spell_prepared(self) or \
        self.ap_cost > caster.ap or \

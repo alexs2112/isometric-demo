@@ -18,10 +18,12 @@ class CreatureFactory:
     creature.set_base_stats(max_hp=10, max_mana=2, p_armor=1, m_armor=1)
     creature.set_attributes(1,2,1)
     creature.set_misc_stats()
+    creature.move_to(x, y)
     creature.add_and_equip(self.items.weapon.shortbow())
     creature.add_and_equip(self.items.equipment.leather_armor())
+    creature.add_spell(self.items.spells.stun())
+    creature.prepare_spell(creature.spell_list()[0])
     creature.update_sprite()
-    creature.move_to(x, y)
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -57,6 +59,7 @@ class CreatureFactory:
     creature.update_sprite()
     creature.add_item(self.items.potion.potion_minor_healing())
     creature.add_spell(self.items.spells.embers())
+    creature.prepare_spell(creature.spell_list()[0])
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature

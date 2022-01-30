@@ -20,3 +20,10 @@ class SpellFactory:
     spell.set_target_effect(self.effects.burning())
     spell.friendly_fire = True
     return spell
+
+  def stun(self):
+    name = "Stun"
+    spell = Spell(name, 0, "Accuracy", 3, 0, 3)
+    spell.set_target_type(Target(5))
+    spell.set_target_effect(self.effects.stunned(1))
+    return spell

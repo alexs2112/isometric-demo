@@ -215,11 +215,19 @@ class Creature:
 ######################
   def upkeep(self):
     self.loaded_spell = None
-    self.ap = self.max_ap
-    self.free_movement = 0
+
+    if self.is_stunned():
+      self.ap = 0
+      self.free_movement = 0
+    else:
+      self.ap = self.max_ap
+      self.free_movement = 0
 
     for e in self.effects:
       e.update(self)
+    
+    for s in self.spell_list():
+      s.tick_downtime()
 
   def full_rest(self):
     self.rest()
@@ -230,6 +238,7 @@ class Creature:
     self.m_armor = self.get_m_armor_cap()
     self.p_armor = self.get_p_armor_cap()
     self.mana = self.get_max_mana()
+    self.reset_spell_cooldowns()
     self.notify(self.name + " is feeling refreshed!")
 
   # Returns if this creatures turn is complete after making this move
@@ -237,10 +246,28 @@ class Creature:
     if self.ai:
       return self.ai.take_turn(self.world)
     return True
-  
+
+  def reset_spell_cooldowns(self):
+    for s in self.spell_list():
+      s.reset_downtime()
+
+
+########################
+# EFFECT RELATED STUFF #
+########################
   def add_effect(self, effect):
     if effect:
       effect.apply(self)
+
+  def is_affected_by(self, effect_name):
+    for e in self.effects:
+      if e.name == effect_name:
+        return True
+    return False
+
+  def is_stunned(self):
+    # Its own method here because I have a feeling it will be called often
+    return self.is_affected_by("Stunned")
 
 
 ########################

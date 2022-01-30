@@ -6,11 +6,6 @@ from creatures.creature import Creature
 # effect: Effect
 # creature: Creature
 
-def get_notify_function(string):
-  def func(effect: Effect, creature: Creature):
-    creature.notify_player(string)
-  return func
-
 # Heals a creature for a multiple of their max HP
 def get_heal_function(max_health_multiple):
   def func(effect: Effect, creature: Creature):
