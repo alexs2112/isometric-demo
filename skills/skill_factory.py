@@ -35,7 +35,7 @@ class SkillFactory:
 
   def fire_vulnerability(self):
     name = "Fire Vulnerability"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 1, "Fire", 1, 1, 4)
+    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Fire", 1, 1, 4)
     skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.modify_resistance("fire", -2, 3))
     return skill
@@ -49,7 +49,7 @@ class SkillFactory:
 
   def embers(self):
     name = "Embers"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 1, "Fire", 2, 2, 0)
+    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Fire", 2, 2, 0)
     skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.burning())
     return skill
