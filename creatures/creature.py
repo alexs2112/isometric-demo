@@ -27,6 +27,7 @@ class Creature:
     self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
+    self.resistances = {}   # modifies typed damage by a flat rate of {damage type: bonus}
     self.skills = {}  # Skills are stored in a hash of {Skill: Prepared}
     self.skill_slots = 0
     self.loaded_skill = None
@@ -61,7 +62,7 @@ class Creature:
     self.free_movement = 0  # The remaining moves after moving, so moves arent "wasted"
     self.base_initiative = initiative
   
-  def set_unarmed_stats(self, min=0, max=1, type="physical", cost=2, range=1):
+  def set_unarmed_stats(self, min=0, max=1, type="crushing", cost=2, range=1):
     self.unarmed_min = min
     self.unarmed_max = max
     self.unarmed_type = type
@@ -412,14 +413,27 @@ class Creature:
     self.hp = min(self.get_max_hp(), self.hp + random.randint(3, 8))
     self.notify_player(self.name + " heals " + str(amount) + " HP!")
 
+  def modify_resistance(self, type, value):
+    if type in self.resistances:
+      self.resistances[type] += value
+    else:
+      self.resistances[type] = value
+    if self.resistances[type] == 0:
+      self.resistances.pop(type)
+  
+  def get_resistance(self, type):
+    if type in self.resistances:
+      return self.resistances[type]
+    return 0
+
   def take_damage(self, damage, type, piercing=0):
-    if piercing > 0:  # Ignores armor
+    damage = max(0, damage - self.get_resistance(type))
+    if piercing > 0:  # Punctures armor
       self.hp -= min(damage, piercing)
-      damage -= min(damage, piercing)
-    if type == "physical":
+    if is_damage_physical(type):
       amount = max(0, damage - self.p_armor)
       self.p_armor = max(0, self.p_armor - damage)
-    elif type == "magical":
+    elif is_damage_magical(type):
       amount = max(0, damage - self.m_armor)
       self.m_armor = max(0, self.m_armor - damage)
     self.hp -= amount
@@ -493,8 +507,9 @@ class Creature:
       source = "Unarmed"
       damage += self.get_stat("Unarmed")
 
-    self_string = self.name + attacking_flavour + target.name + " for " + str(damage) + " " + damage_type + " damage!"
-    target_string = target.name + getting_attacked_flavour + self.name + " for " + str(damage) + " " + damage_type + " damage!"
+    damage_value = damage - target.get_resistance(damage_type)
+    self_string = self.name + attacking_flavour + target.name + " for " + str(damage_value) + " " + damage_type + " damage!"
+    target_string = target.name + getting_attacked_flavour + self.name + " for " + str(damage_value) + " " + damage_type + " damage!"
 
     self_string += " [" + source + "]"
     target_string += " [" + source + "]"

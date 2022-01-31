@@ -2,7 +2,7 @@ Active Work:
  - * marks complete
  - *Edward: Smite targeted, stun an enemy for their next turn, cost 3, cooldown 2
  - *Goobert: Make attack speed normal, ability reduces cost of attacks by 1 (to min of 1) until end of turn, cost 0, cooldown 3?
- - Wizard: Smite targeted, makes target more vulnerable to fire damage for a few turns. Cost 1, cooldown 3?
+ - *Wizard: Smite targeted, makes target more vulnerable to fire damage for a few turns. Cost 1, cooldown 3?
  - *Harold: Make his AP and everything normal, Attack each adjacent enemy, cost 2, cooldown 2
  - Implement initial action bar to map skills to number keys
 

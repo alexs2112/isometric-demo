@@ -79,7 +79,7 @@ class Weapon(Equipment):
     else:
       raise ValueError(type + " is not a valid weapon type!")
   
-  def set_stats(self, attack_min, attack_max, damage_type="physical", range=1, cost=2):
+  def set_stats(self, attack_min, attack_max, damage_type="crushing", range=1, cost=2):
     self.attack_min = attack_min
     self.attack_max = attack_max
     self.damage_type = damage_type

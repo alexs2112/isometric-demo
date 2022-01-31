@@ -46,3 +46,21 @@ def get_skill_slots_bonus(creature):
   x = creature.get_attribute("Will")
   y = creature.get_stat("Memory")
   return x + y
+
+PHYSICAL_DAMAGE = [
+  "slashing",
+  "piercing",
+  "crushing"
+]
+MAGICAL_DAMAGE = [
+  "fire",
+  "cold",
+  "air",
+  "poison",
+  "light",
+  "dark"
+]
+def is_damage_physical(type):
+  return type in PHYSICAL_DAMAGE
+def is_damage_magical(type):
+  return type in MAGICAL_DAMAGE

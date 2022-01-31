@@ -9,7 +9,7 @@ class SkillFactory:
   def embers(self):
     name = "Embers"
     skill = Skill(name, 1, "Fire", 2, 2, 0)
-    skill.set_target_type(Target(8))
+    skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.burning())
     return skill
 
@@ -41,4 +41,11 @@ class SkillFactory:
     skill.set_target_type(SelfTarget())
     skill.set_target_effect(self.effects.rapid_slashes(1))
     skill.friendly_fire = True
+    return skill
+
+  def fire_vulnerability(self):
+    name = "Fire Vulnerability"
+    skill = Skill(name, 1, "Fire", 1, 1, 4)
+    skill.set_target_type(Target(6))
+    skill.set_target_effect(self.effects.modify_resistance("fire", -2, 3))
     return skill
