@@ -5,7 +5,7 @@ Active Work:
  - *Wizard: Smite targeted, makes target more vulnerable to fire damage for a few turns. Cost 1, cooldown 3?
  - *Harold: Make his AP and everything normal, Attack each adjacent enemy, cost 2, cooldown 2
  - *Implement initial action bar to map skills to number keys
- - Action bar shows when skills are on cooldown/cannot be activated
+ - *Action bar shows when skills are on cooldown/cannot be activated
  - Testing before merge with master
 
 Unordered Roadmap:
@@ -50,7 +50,6 @@ Unordered Roadmap:
  - Animated Attacks: Figure out a way to not change game state (health and messages) until after the animation is done playing
    - Maybe cache changes and messages until after, then apply them?
  - Limit the number of messages that show up when out of combat
- - Mousing over a button shows a tooltip
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
@@ -64,3 +63,4 @@ Known Bugs:
  - Starting combat with a player that is not edward sometimes fucks up
  - Health potions display the wrong number of added health to the messages... (increased by one, trivial fix)
  - Enemies ranged attacks are not constrained by attack path, either fix that or just remove the attack path stuff...
+ - Have had an enemy die to burning and then still make an attack

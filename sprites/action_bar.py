@@ -54,18 +54,24 @@ class ActionBar:
         screen.blit(o.icon, (x+2, y+2))
         screen.blit(b.get_image(mouse_x, mouse_y), (x,y))
 
-        # Importing Skill breaks everything because of a circular import...
-        #if type(o) == Skill:
-          #if not o.is_castable(self.creature):
-            #screen.blit(self.dark_highlight, (x,y))
-          #if o.downtime > 0:
-            #screen.write_centered(str(o.downtime), (x + 26, y + 12, screen.tileset.get_font(32)))
+        # Another lazy solution using try/catch to differentiate between skills, consumables
+        # Can't import Skill here because of a circular import
+        try:
+          if not o.is_castable(self.creature):
+            screen.blit(self.dark_highlight, (x,y))
+          if o.downtime > 0:
+            screen.write_centered(str(o.downtime), (x + 26, y + 6), screen.tileset.get_font(32))
+        except:
+          pass
         
         if b.in_bounds(mouse_x, mouse_y):
           screen.write_centered(o.name, (x + 26, y - 18), screen.tileset.get_font(16))
       else:
         screen.blit(self.button_default, (x,y))
-      screen.write(str(i), (x + 36, y + 32), screen.tileset.get_font(16))
+
+      if i == 9: key = 0
+      else: key = i+1
+      screen.write(str(key), (x + 36, y + 32), screen.tileset.get_font(16))
       x += 52
   
   def activate(self, key):
