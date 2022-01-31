@@ -10,6 +10,7 @@ class CreatureFactory:
     self.world = world
     self.tileset = tileset
     self.items = item_factory
+    self.skills = self.items.skills
 
   def new_edward(self, x, y):
     name = "Edward"
@@ -18,10 +19,11 @@ class CreatureFactory:
     creature.set_base_stats(max_hp=10, max_mana=2, p_armor=1, m_armor=1)
     creature.set_attributes(1,2,1)
     creature.set_misc_stats()
+    creature.move_to(x, y)
     creature.add_and_equip(self.items.weapon.shortbow())
     creature.add_and_equip(self.items.equipment.leather_armor())
+    creature.add_skill(self.skills.stun())
     creature.update_sprite()
-    creature.move_to(x, y)
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -33,10 +35,11 @@ class CreatureFactory:
     creature.set_base_stats(max_hp=8, max_mana=1, p_armor=1, m_armor=1)
     creature.set_attributes(1,2,1)
     creature.set_misc_stats()
-    creature.set_unarmed_stats(min=2, max=3, cost=1)
+    creature.set_unarmed_stats(min=2, max=3, type="slashing")
     creature.move_to(x, y)
     creature.add_and_equip(self.items.equipment.cloak())
     creature.add_and_equip(self.items.equipment.shoes())
+    creature.add_skill(self.skills.rapid_slashes())
     creature.update_sprite()
     self.world.add_creature(creature)
     self.world.update_fov(creature)
@@ -50,13 +53,14 @@ class CreatureFactory:
     creature.set_attributes(1,1,2)
     creature.set_misc_stats()
     creature.move_to(x, y)
-    creature.set_unarmed_stats(min=3, max=5, type="magical")
+    creature.set_unarmed_stats(min=2, max=3, type="fire")
     creature.add_and_equip(self.items.equipment.wizard_hat())
     creature.add_and_equip(self.items.equipment.robe())
     creature.modify_stat("Fire", 1)
     creature.update_sprite()
     creature.add_item(self.items.potion.potion_minor_healing())
-    creature.add_spell(self.items.spells.embers())
+    creature.add_skill(self.skills.embers())
+    creature.add_skill(self.skills.fire_vulnerability())
     self.world.add_creature(creature)
     self.world.update_fov(creature)
     return creature
@@ -65,12 +69,13 @@ class CreatureFactory:
     name = "Harold"
     icon = self.tileset.get_creature(name)
     creature = Creature(name, icon, "Player", self.world)
-    creature.set_base_stats(max_hp=15, max_mana=0, p_armor=2, m_armor=1)
+    creature.set_base_stats(max_hp=13, max_mana=0, p_armor=2, m_armor=1)
     creature.set_attributes(2,1,1)
-    creature.set_misc_stats(max_ap=2)
+    creature.set_misc_stats()
     creature.move_to(x, y)
     creature.add_and_equip(self.items.weapon.hand_axe())
     creature.add_and_equip(self.items.equipment.leather_armor())
+    creature.add_skill(self.skills.cleave())
     creature.update_sprite()
     self.world.add_creature(creature)
     self.world.update_fov(creature)

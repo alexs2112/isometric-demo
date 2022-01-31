@@ -2,6 +2,7 @@ import math, random, pygame
 import helpers
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
+from sprites.action_bar import ActionBar
 import world.fov as fov
 from creatures.pathfinder import Path
 from sprites.creature_sprite import get_sprite
@@ -27,11 +28,13 @@ class Creature:
     self.effects = []
     self.inventory = Inventory()
     self.equipment = EquipmentList()
-    self.spells = {}  # Spells are stored in a hash of {Spell: Prepared}
-    self.spell_slots = 0
-    self.loaded_spell = None
+    self.resistances = {}   # modifies typed damage by a flat rate of {damage type: bonus}
+    self.skills = {}  # Skills are stored in a hash of {Skill: Prepared}
+    self.skill_slots = 0
+    self.loaded_skill = None
     self.attributes = {}
     self.stats = {}
+    self.action_bar = None
 
   def set_ai(self, ai):
     self.ai = ai
@@ -61,7 +64,7 @@ class Creature:
     self.free_movement = 0  # The remaining moves after moving, so moves arent "wasted"
     self.base_initiative = initiative
   
-  def set_unarmed_stats(self, min=0, max=1, type="physical", cost=2, range=1):
+  def set_unarmed_stats(self, min=0, max=1, type="crushing", cost=2, range=1):
     self.unarmed_min = min
     self.unarmed_max = max
     self.unarmed_type = type
@@ -78,6 +81,11 @@ class Creature:
     self.sprite = get_sprite(self)
     self.big_sprite = pygame.transform.scale(self.sprite, (86, 86))
 
+  def update_action_bar(self):
+    if self.is_player():
+      if not self.action_bar:
+        self.action_bar = ActionBar(self, 760, 748)
+      self.action_bar.update()
 
 #######################
 # GETTERS AND SETTERS #
@@ -123,8 +131,8 @@ class Creature:
   def get_initiative(self):
     return self.base_initiative + self.equipment.get_bonus("INITIATIVE") + get_initiative_bonus(self)
   
-  def get_spell_slots(self):
-    return self.spell_slots + self.equipment.get_bonus("SPELL_SLOTS") + get_spell_slots_bonus(self)
+  def get_skill_slots(self):
+    return self.skill_slots + self.equipment.get_bonus("SKILL_SLOTS") + get_skill_slots_bonus(self)
 
   def get_attack_min(self):
     i = self.get_main_hand()
@@ -146,9 +154,13 @@ class Creature:
     i = self.get_main_hand()
     if i:
       if i.is_weapon():
-        return i.cost
+        return max(1, i.cost)
     
-    return self.unarmed_cost
+    return max(1, self.unarmed_cost)
+
+  # Temporary for Goobert, until we add a bonuses hash that can hold temporary buffs
+  def modify_unarmed_cost(self, value):
+    self.unarmed_cost += value
   
   def get_damage_type(self):
     i = self.get_main_hand()
@@ -178,12 +190,16 @@ class Creature:
 ######################
   def add_item(self, item, quantity=1):
     self.inventory.add_item(item, quantity)
+    if item.is_consumable():
+      self.update_action_bar()
 
   def remove_item(self, item, quantity=1):
     remaining = self.inventory.remove_item(item, quantity)
-    if item.is_equipment() and self.equipment.is_equipped(item):
-      if remaining <= 0:
+    if remaining <= 0:
+      if item.is_equipment() and self.equipment.is_equipped(item):
         self.unequip(item)
+      if item.is_consumable():
+        self.update_action_bar()
   
   def unequip(self, item):
     self.equipment.remove(item)
@@ -214,12 +230,20 @@ class Creature:
 # TURN RELATED STUFF #
 ######################
   def upkeep(self):
-    self.loaded_spell = None
-    self.ap = self.max_ap
-    self.free_movement = 0
+    self.loaded_skill = None
+
+    if self.is_stunned():
+      self.ap = 0
+      self.free_movement = 0
+    else:
+      self.ap = self.max_ap
+      self.free_movement = 0
 
     for e in self.effects:
       e.update(self)
+    
+    for s in self.skill_list():
+      s.tick_downtime()
 
   def full_rest(self):
     self.rest()
@@ -230,6 +254,7 @@ class Creature:
     self.m_armor = self.get_m_armor_cap()
     self.p_armor = self.get_p_armor_cap()
     self.mana = self.get_max_mana()
+    self.reset_skill_cooldowns()
     self.notify(self.name + " is feeling refreshed!")
 
   # Returns if this creatures turn is complete after making this move
@@ -237,10 +262,28 @@ class Creature:
     if self.ai:
       return self.ai.take_turn(self.world)
     return True
-  
+
+  def reset_skill_cooldowns(self):
+    for s in self.skill_list():
+      s.reset_downtime()
+
+
+########################
+# EFFECT RELATED STUFF #
+########################
   def add_effect(self, effect):
     if effect:
       effect.apply(self)
+
+  def is_affected_by(self, effect_name):
+    for e in self.effects:
+      if e.name == effect_name:
+        return True
+    return False
+
+  def is_stunned(self):
+    # Its own method here because I have a feeling it will be called often
+    return self.is_affected_by("Stunned")
 
 
 ########################
@@ -381,14 +424,27 @@ class Creature:
     self.hp = min(self.get_max_hp(), self.hp + random.randint(3, 8))
     self.notify_player(self.name + " heals " + str(amount) + " HP!")
 
+  def modify_resistance(self, type, value):
+    if type in self.resistances:
+      self.resistances[type] += value
+    else:
+      self.resistances[type] = value
+    if self.resistances[type] == 0:
+      self.resistances.pop(type)
+  
+  def get_resistance(self, type):
+    if type in self.resistances:
+      return self.resistances[type]
+    return 0
+
   def take_damage(self, damage, type, piercing=0):
-    if piercing > 0:  # Ignores armor
+    damage = max(0, damage - self.get_resistance(type))
+    if piercing > 0:  # Punctures armor
       self.hp -= min(damage, piercing)
-      damage -= min(damage, piercing)
-    if type == "physical":
+    if is_damage_physical(type):
       amount = max(0, damage - self.p_armor)
       self.p_armor = max(0, self.p_armor - damage)
-    elif type == "magical":
+    elif is_damage_magical(type):
       amount = max(0, damage - self.m_armor)
       self.m_armor = max(0, self.m_armor - damage)
     self.hp -= amount
@@ -431,6 +487,9 @@ class Creature:
     if self.world.in_combat():
       self.ap -= self.get_attack_cost()
 
+    self.force_attack(target)
+
+  def force_attack(self, target):
     atk_min = self.get_attack_min()
     atk_max = self.get_attack_max()
     damage = random.randint(atk_min, atk_max)
@@ -459,8 +518,9 @@ class Creature:
       source = "Unarmed"
       damage += self.get_stat("Unarmed")
 
-    self_string = self.name + attacking_flavour + target.name + " for " + str(damage) + " " + damage_type + " damage!"
-    target_string = target.name + getting_attacked_flavour + self.name + " for " + str(damage) + " " + damage_type + " damage!"
+    damage_value = damage - target.get_resistance(damage_type)
+    self_string = self.name + attacking_flavour + target.name + " for " + str(damage_value) + " " + damage_type + " damage!"
+    target_string = target.name + getting_attacked_flavour + self.name + " for " + str(damage_value) + " " + damage_type + " damage!"
 
     self_string += " [" + source + "]"
     target_string += " [" + source + "]"
@@ -475,57 +535,60 @@ class Creature:
 
 
 #######################
-# SPELL RELATED STUFF #
+# SKILL RELATED STUFF #
 #######################
-  def spell_list(self):
-    return list(self.spells.keys())
+  def skill_list(self):
+    return list(self.skills.keys())
 
-  def get_prepared_spells(self):
+  def get_prepared_skills(self):
     out = []
-    for s in self.spell_list():
-      if self.spell_prepared(s):
+    for s in self.skill_list():
+      if self.skill_prepared(s):
         out.append(s)
     return out
   
-  def get_unprepared_spells(self):
+  def get_unprepared_skills(self):
     out = []
-    for s in self.spell_list():
-      if not self.spell_prepared(s):
+    for s in self.skill_list():
+      if not self.skill_prepared(s):
         out.append(s)
     return out
   
-  def add_spell(self, spell):
-    if spell not in self.spells:
-      self.spells[spell] = False
+  def add_skill(self, skill):
+    if skill not in self.skills:
+      self.skills[skill] = True     # Default to true for now until we fix preparing skills
+      self.update_action_bar()
 
-  def get_remaining_spell_slots(self):
-    v = self.get_spell_slots()
-    for spell in self.get_prepared_spells():
-      v -= spell.get_level()
+  def get_remaining_skill_slots(self):
+    v = self.get_skill_slots()
+    for skill in self.get_prepared_skills():
+      v -= skill.get_level()
     return v
 
-  def can_prepare(self, spell):
-    if spell in self.spells and not self.spells[spell]:
-      if self.get_stat(spell.get_type()) >= spell.get_level():
-        if self.get_remaining_spell_slots() >= spell.get_level():
+  def can_prepare(self, skill):
+    if skill in self.skills and not self.skills[skill]:
+      if self.get_stat(skill.get_type()) >= skill.get_level():
+        if self.get_remaining_skill_slots() >= skill.get_level():
           return True
     return False
 
-  def prepare_spell(self, spell):
-    if spell in self.spells:
-      self.spells[spell] = True
+  def prepare_skill(self, skill):
+    if skill in self.skills:
+      self.skills[skill] = True
+      self.update_action_bar()
 
-  def unprepare_spell(self, spell):
-    if spell in self.spells:
-      self.spells[spell] = False
+  def unprepare_skill(self, skill):
+    if skill in self.skills:
+      self.skills[skill] = False
+      self.update_action_bar()
 
-  def spell_prepared(self, spell):
-    if spell in self.spells:
-      return self.spells[spell]
+  def skill_prepared(self, skill):
+    if skill in self.skills:
+      return self.skills[skill]
     return False
 
-  def load_spell(self, spell):
-    self.loaded_spell = spell
+  def load_skill(self, skill):
+    self.loaded_skill = skill
 
-  def knows_spell(self, spell_name):
-    return spell_name in self.spells
+  def knows_skill(self, skill_name):
+    return skill_name in self.skills

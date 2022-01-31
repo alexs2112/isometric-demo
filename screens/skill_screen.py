@@ -10,7 +10,7 @@ from pygame.locals import (
   K_ESCAPE
 )
 
-class SpellScreen(Subscreen):
+class SkillScreen(Subscreen):
   def __init__(self, creature: Creature):
     self.creature = creature
     self.index = 0
@@ -18,8 +18,8 @@ class SpellScreen(Subscreen):
     self.initialize_lists(creature)
     
   def initialize_lists(self, creature: Creature):
-    self.prepared = creature.get_prepared_spells()
-    self.unprepared = creature.get_unprepared_spells()
+    self.prepared = creature.get_prepared_skills()
+    self.unprepared = creature.get_unprepared_skills()
     if self.section == 1 and self.index == 0 and len(self.unprepared) == 0:
       self.section = 0
       self.index = len(self.prepared) - 1
@@ -87,7 +87,10 @@ class SpellScreen(Subscreen):
         y = self.write_spell(screen, s, line_height, y, x1, x2, x3, x4, x5, x6, colour)
     
   def write_spell(self, screen, spell, line_height, y, x1, x2, x3, x4, x5, x6, colour):
-    screen.write(spell.name, (x1, y), screen.tileset.get_font(), colour)
+    t = spell.name
+    if spell.downtime > 0:
+      t += "(" + str(spell.downtime) + ")"
+    screen.write(t, (x1, y), screen.tileset.get_font(), colour)
 
     if spell.cooldown > 0:
       cd = str(spell.cooldown)
@@ -125,10 +128,10 @@ class SpellScreen(Subscreen):
         elif event.key == K_RETURN:
           if self.section == 0:
             if self.prepared[self.index].is_castable(self.creature):
-              self.creature.load_spell(self.prepared[self.index])
+              self.creature.load_skill(self.prepared[self.index])
               return None
           else:
             if self.creature.can_prepare(self.unprepared[self.index]):
-              self.creature.prepare_spell(self.unprepared[self.index])
+              self.creature.prepare_skill(self.unprepared[self.index])
               self.initialize_lists(self.creature)
     return self

@@ -1,5 +1,4 @@
-import random
-from spells.effect_factory import EffectFactory
+from skills.effect_factory import EffectFactory
 from sprites.tileset import TileSet
 from items.item import Potion
 from creatures.creature import Creature
@@ -16,7 +15,7 @@ class PotionFactory:
       return self.cache[name]
     item = Potion(name, self.tileset.get_item(name))
     item.set_description("A magical healing elixir which causes minor wounds to close and heal almost instantly, doing little to heal more extensive injury.")
-    item.set_effect(self.effect.minor_heal())
+    item.set_effect(self.effect.minor_heal(0.35))
     self.cache[name] = item
     return item
   
@@ -26,7 +25,7 @@ class PotionFactory:
       return self.cache[name]
     item = Potion(name, self.tileset.get_item(name))
     item.set_description("A glittering potion that increases the rate of ones natural healing ability, removing injury over a far shorter time period than one would expect.")
-    item.set_effect(self.effect.regenerate())
+    item.set_effect(self.effect.regenerate(8, 0.1))
     self.cache[name] = item
     return item
   

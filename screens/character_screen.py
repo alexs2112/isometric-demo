@@ -126,7 +126,6 @@ class CharacterScreen(Subscreen):
       if c == self.creature:
         continue
       y = self.draw_player_inventory(screen, c, x, y)
-      
 
   def draw_player_inventory(self, screen: Screen, creature:  Creature, x, y):
     screen.write_centered(creature.name, (x+210, y+4), screen.tileset.get_font())
@@ -318,9 +317,7 @@ class CharacterScreen(Subscreen):
           creature.add_item(item)
         creature.equip(item)
     elif item.is_consumable():
-      worked = item.consume(creature)
-      if worked:
-        owner.remove_item(item)
+      item.consume(creature)
     if owner.inventory.get_quantity(item) <= 0:
       self.clicked_item = None
       self.clicked_player = None

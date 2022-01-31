@@ -79,7 +79,7 @@ class Weapon(Equipment):
     else:
       raise ValueError(type + " is not a valid weapon type!")
   
-  def set_stats(self, attack_min, attack_max, damage_type="physical", range=1, cost=2):
+  def set_stats(self, attack_min, attack_max, damage_type="crushing", range=1, cost=2):
     self.attack_min = attack_min
     self.attack_max = attack_max
     self.damage_type = damage_type
@@ -111,21 +111,20 @@ class Potion(Item):
   def consume(self, creature):
     creature.notify_player(creature.name + " drinks the " + self.name)
     creature.add_effect(self.effect)
-    return True
+    creature.remove_item(self)
 
 class Tome(Item):
-  def __init__(self, name, icon, spell):
+  def __init__(self, name, icon, skill):
     super().__init__(name, icon)
-    self.spell = spell
+    self.skill = skill
 
   def is_consumable(self):
     return True
 
   def consume(self, creature):
-    if creature.knows_spell(self.spell.name):
-      creature.notify(creature.name + " already knows " + self.spell.name + ".")
-      return False
+    if creature.knows_skill(self.skill.name):
+      creature.notify(creature.name + " already knows " + self.skill.name + ".")
     else:
       creature.notify_player(creature.name + " absorbs the magical knowledge of " + self.name + "!")
-      creature.add_spell(self.spell.clone())
-      return True
+      creature.add_skill(self.skill.clone())
+      creature.remove_item(self)
