@@ -88,16 +88,15 @@ class Button:
     return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
 
   def get_image(self, mouse_x, mouse_y):
-    if self.in_bounds(mouse_x, mouse_y):
-      if self.click_frames > 0 and self.click_image:
-        self.click_frames -= 1
-        return self.click_image
-      elif self.mouse_image:
-        return self.mouse_image
+    if self.click_frames > 0 and self.click_image:
+      self.click_frames -= 1
+      return self.click_image
+    if self.in_bounds(mouse_x, mouse_y) and self.mouse_image:
+      return self.mouse_image
     return self.default_image
 
   def click(self, *args):
     if self.click_image:
-      self.click_frames = 1
+      self.click_frames = 2
     if self.func:
       return self.func(*args)

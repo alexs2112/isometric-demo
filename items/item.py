@@ -111,7 +111,7 @@ class Potion(Item):
   def consume(self, creature):
     creature.notify_player(creature.name + " drinks the " + self.name)
     creature.add_effect(self.effect)
-    return True
+    creature.remove_item(self)
 
 class Tome(Item):
   def __init__(self, name, icon, skill):
@@ -124,8 +124,7 @@ class Tome(Item):
   def consume(self, creature):
     if creature.knows_skill(self.skill.name):
       creature.notify(creature.name + " already knows " + self.skill.name + ".")
-      return False
     else:
       creature.notify_player(creature.name + " absorbs the magical knowledge of " + self.name + "!")
       creature.add_skill(self.skill.clone())
-      return True
+      creature.remove_item(self)

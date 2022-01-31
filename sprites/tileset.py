@@ -45,6 +45,8 @@ class TileSet:
     self.initialize_features()
     self.projectiles = {}
     self.initialize_projectiles()
+    self.skill_icons = {}
+    self.initialize_skill_icons()
 
     # Some subscreen related inits that don't have specific image hashes
     self.initialize_character_screen()
@@ -76,6 +78,9 @@ class TileSet:
 
   def get_item_sprite(self, item_name):
     return self.item_sprites[item_name]
+  
+  def get_skill_icon(self, skill_name):
+    return self.skill_icons[skill_name]
   
   def get_projectile(self, projectile_name):
     # Returns a projectile.Projectile object instead of just an image
@@ -185,7 +190,6 @@ class TileSet:
         if (i % 10) == 0:
           y += image_height
         image = items_full.subsurface((x, y, image_width, image_height))
-
         self.item_icons[type[i]] = pygame.transform.scale(image, (48,48))
 
     y = 0
@@ -215,6 +219,16 @@ class TileSet:
       sprite = sprites_full.subsurface((x, y, image_width, image_height))
       self.item_sprites[image_ids[item_type_index][i]] = sprite
     return y + image_height
+
+  def initialize_skill_icons(self):
+    from skills.skill_factory import ALL_SKILLS
+    full = pygame.image.load("assets/skill_icons.png")
+    width, height = 48, 48
+    skills = ALL_SKILLS
+    for i in range(len(skills)):
+      x = (i % 10) * width
+      y = (i // 10) * width
+      self.skill_icons[skills[i]] = full.subsurface((x, y, width, height))
   
   def initialize_misc(self):
     base = pygame.image.load("assets/misc.png")

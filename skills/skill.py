@@ -1,10 +1,10 @@
 from skills.effect import Effect
 from skills.target import Target
-from creatures.creature import Creature
 
 class Skill:
-  def __init__(self, name, level, type, ap_cost, mana_cost, cooldown):
+  def __init__(self, name, icon, level, type, ap_cost, mana_cost, cooldown):
     self.name = name
+    self.icon = icon
     self.level = level
     self.type = type
     self.ap_cost = ap_cost
@@ -44,7 +44,7 @@ class Skill:
   def reset_downtime(self):
     self.downtime = 0
 
-  def is_castable(self, caster: Creature):
+  def is_castable(self, caster):
     if not caster.skill_prepared(self) or \
        self.ap_cost > caster.ap or \
        self.mana_cost > caster.mana or \
@@ -52,17 +52,9 @@ class Skill:
        return False
     return True
 
-  def cast(self, caster: Creature, target_list):
-    if self.ap_cost > caster.ap:
-      caster.notify(caster.name + " does not have enough action points to cast " + self.name + ".")
+  def cast(self, caster, target_list):
+    if not self.cast_check(caster):
       return
-    if self.mana_cost > caster.mana:
-      caster.notify(caster.name + " does not have enough mana to cast " + self.name + ".")
-      return
-    if self.downtime > 0:
-      caster.notify(self.name + " is still on cooldown.")
-      return
-    
     if caster.world.in_combat():
       caster.ap -= self.ap_cost
     caster.mana -= self.mana_cost
@@ -73,6 +65,21 @@ class Skill:
       c.add_effect(self.target_effect)
       if self.basic_attack:
         caster.force_attack(c)
+  
+  def cast_check(self, caster):
+    if self.ap_cost > caster.ap:
+      caster.notify(caster.name + " does not have enough action points to cast " + self.name + ".")
+      return False
+    elif self.mana_cost > caster.mana:
+      caster.notify(caster.name + " does not have enough mana to cast " + self.name + ".")
+      return False
+    elif self.downtime > 0:
+      caster.notify(self.name + " is still on cooldown.")
+      return False
+    elif not self.is_castable(caster):
+      caster.notify(self.name + " cannot be activated.")
+      return False
+    return True
 
   def clone(self):
     new = Skill(self.name, self.level, self.type, self.ap_cost, self.mana_cost, self.cooldown)

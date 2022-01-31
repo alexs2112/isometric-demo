@@ -2,6 +2,7 @@ import math, random, pygame
 import helpers
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
+from sprites.action_bar import ActionBar
 import world.fov as fov
 from creatures.pathfinder import Path
 from sprites.creature_sprite import get_sprite
@@ -33,6 +34,7 @@ class Creature:
     self.loaded_skill = None
     self.attributes = {}
     self.stats = {}
+    self.action_bar = None
 
   def set_ai(self, ai):
     self.ai = ai
@@ -79,6 +81,11 @@ class Creature:
     self.sprite = get_sprite(self)
     self.big_sprite = pygame.transform.scale(self.sprite, (86, 86))
 
+  def update_action_bar(self):
+    if self.is_player():
+      if not self.action_bar:
+        self.action_bar = ActionBar(self, 760, 748)
+      self.action_bar.update()
 
 #######################
 # GETTERS AND SETTERS #
@@ -183,12 +190,16 @@ class Creature:
 ######################
   def add_item(self, item, quantity=1):
     self.inventory.add_item(item, quantity)
+    if item.is_consumable():
+      self.update_action_bar()
 
   def remove_item(self, item, quantity=1):
     remaining = self.inventory.remove_item(item, quantity)
-    if item.is_equipment() and self.equipment.is_equipped(item):
-      if remaining <= 0:
+    if remaining <= 0:
+      if item.is_equipment() and self.equipment.is_equipped(item):
         self.unequip(item)
+      if item.is_consumable():
+        self.update_action_bar()
   
   def unequip(self, item):
     self.equipment.remove(item)
@@ -546,6 +557,7 @@ class Creature:
   def add_skill(self, skill):
     if skill not in self.skills:
       self.skills[skill] = True     # Default to true for now until we fix preparing skills
+      self.update_action_bar()
 
   def get_remaining_skill_slots(self):
     v = self.get_skill_slots()
@@ -563,10 +575,12 @@ class Creature:
   def prepare_skill(self, skill):
     if skill in self.skills:
       self.skills[skill] = True
+      self.update_action_bar()
 
   def unprepare_skill(self, skill):
     if skill in self.skills:
       self.skills[skill] = False
+      self.update_action_bar()
 
   def skill_prepared(self, skill):
     if skill in self.skills:

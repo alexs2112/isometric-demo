@@ -24,6 +24,7 @@ from pygame.locals import (
     K_SPACE,
     K_RETURN,
     K_m, K_i, K_s, K_h, K_g, K_p, K_c,
+    K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     K_LSHIFT,
@@ -45,7 +46,7 @@ class Game:
     self.feature_factory = FeatureFactory(self.screen.tileset)
     self.world = init.create_world(args, self.feature_factory)
     self.effect_factory = EffectFactory()
-    self.skill_factory = SkillFactory(self.effect_factory)
+    self.skill_factory = SkillFactory(self.screen.tileset, self.effect_factory)
     self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.skill_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
 
@@ -100,8 +101,12 @@ class Game:
               sys.exit(0)
 
             if event.type == MOUSEBUTTONDOWN:
+              # If we are clicking a button
+              if mouse_x > active.action_bar.screen_x and mouse_y > active.action_bar.screen_y:
+                active.action_bar.mouse_click(mouse_x, mouse_y)
+
               # If we are activating a skill
-              if active.loaded_skill:
+              elif active.loaded_skill:
                 self.activate_loaded_skill(active, tile_x, tile_y)
 
               # If we are in combat
@@ -202,6 +207,8 @@ class Game:
               elif event.key == K_c:
                 if active.is_player():
                   self.subscreen = CharacterScreen(self.screen.tileset, active, self.world.players)
+              elif event.key in [K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0]:
+                active.action_bar.activate(event.key)
         # OUT OF FOR LOOP
 
         # Not sure if we need to be able to scroll anymore
@@ -222,8 +229,9 @@ class Game:
         else:
           path, target = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
 
-        if active.is_player:
+        if active.is_player():
           draw_player_stats(self.screen, active, path, target)
+          active.action_bar.draw(self.screen, mouse_x, mouse_y)
         show_mouse_tooltips(self.screen, self.world, mouse_x, mouse_y, tile_x, tile_y)
         display_messages(self.screen, self.messages)
         write_active_player(self.screen, active)

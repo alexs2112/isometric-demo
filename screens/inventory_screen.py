@@ -146,9 +146,7 @@ class InventoryScreen(Subscreen):
               else:
                 p.equip(i)
             elif i.is_consumable():
-              worked = i.consume(p)
-              if worked:
-                p.remove_item(i)
+              i.consume(p)
               self.cleanup()
               return None     # After drinking a potion, immediately return to the main screen
           else:
