@@ -55,3 +55,16 @@ class EffectFactory:
     effect.add_end(lambda _, creature: creature.notify_player(creature.name + s2))
     effect.add_end(lambda _, creature: creature.modify_resistance(type, -value))
     return effect
+  
+  def poisoned(self, duration):
+    effect = Effect("Poisoned", duration)
+    effect.add_start(lambda _, creature: creature.notify_player(creature.name + " is poisoned!"))
+    effect.add_tick(func.get_damage_function(1, 2, "poison", "Poisoned"))
+    effect.add_end(lambda _, creature: creature.notify_player(creature.name + " is no longer poisoned"))
+    return effect
+
+  def toxic_spores(self, duration):
+    effect = Effect("Spores", duration)
+    effect.add_start(lambda _, creature: creature.notify_player(creature.name + " inhales the spores!"))
+    effect.add_tick(func.get_damage_function(1, 2, "poison", "Spores"))
+    return effect

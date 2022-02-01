@@ -2,6 +2,7 @@ from skills.skill import Skill
 from skills.effect_factory import EffectFactory
 from skills.target import *
 from sprites.tileset import TileSet
+from sprites.projectile import Projectile
 
 ALL_SKILLS = [
 # Comment hashes denote icons used from https://game-icons.net/ for temporary use
@@ -20,7 +21,7 @@ class SkillFactory:
 
   def stun(self):
     name = "Stun"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Accuracy", 3, 0, 3)
+    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Accuracy", 2, 0, 3)
     skill.set_target_type(Target(5))
     skill.set_target_effect(self.effects.stunned(1))
     return skill
@@ -52,6 +53,7 @@ class SkillFactory:
     skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Fire", 2, 2, 0)
     skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.burning())
+    skill.set_projectile(self.tileset.get_projectile("fire_cloud"))
     return skill
 
   def flame_lash(self):
@@ -59,5 +61,22 @@ class SkillFactory:
     skill = Skill(name, self.tileset.get_skill_icon(name), 1, "Fire", 2, 2, 0)
     skill.set_target_type(LineTarget(4))
     skill.set_target_effect(self.effects.burning())
+    skill.set_projectile(self.tileset.get_projectile("fire_cloud"))
     skill.friendly_fire = True
     return skill  
+
+  def poison_bite(self):
+    name = "Bite"
+    skill = Skill(name, None, 0, "Unarmed", 2, 0, 2)
+    skill.set_target_type(Target(1))
+    skill.set_target_effect(self.effects.poisoned(3))
+    skill.basic_attack = True
+    return skill
+  
+  def toxic_spores(self):
+    name = "Toxic Spores"
+    skill = Skill(name, None, 0, "Poison", 2, 0, 1)
+    skill.set_target_type(Target(1))
+    skill.set_target_effect(self.effects.toxic_spores(2))
+    skill.set_projectile(self.tileset.get_projectile("poison_cloud"))
+    return skill

@@ -105,7 +105,11 @@ def get_projectile_path(projectile, tile_path):
       result.append(((x,y), projectile.all))
     elif i == len(tile_path) - 1:
       if projectile.target:
-        result.append(((x,y), projectile.target))
+        if type(projectile.target) == list:
+          for image in projectile.target:
+            result.append(((x,y), image))
+        else:
+          result.append(((x,y), projectile.target))
     else:
       (x2,y2) = tile_path[i+1]
       if x == x2:

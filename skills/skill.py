@@ -16,6 +16,7 @@ class Skill:
     self.target_effect = None
     self.friendly_fire = False
     self.basic_attack = False     # For now if this is true just call attack on each target
+    self.projectile = None
 
   def get_type(self):
     return self.type
@@ -31,12 +32,18 @@ class Skill:
 
   def get_target_type(self):
     return self.target_type
+  
+  def get_range(self):
+    return self.target_type.range
 
   def set_caster_effect(self, effect: Effect):
     self.caster_effect = effect
   
   def set_target_effect(self, effect: Effect):
     self.target_effect = effect
+  
+  def set_projectile(self, projectile):
+    self.projectile = projectile
 
   def tick_downtime(self):
     self.downtime = max(0, self.downtime - 1)
@@ -52,7 +59,7 @@ class Skill:
        return False
     return True
 
-  def cast(self, caster, target_list):
+  def cast(self, caster, tile_list):
     if not self.cast_check(caster):
       return
     if caster.world.in_combat():
@@ -61,10 +68,35 @@ class Skill:
     self.downtime = self.cooldown
     caster.notify_player(caster.name + " uses " + self.name)
     caster.add_effect(self.caster_effect)
-    for c in target_list:
-      c.add_effect(self.target_effect)
+
+    targets = []
+    if len(tile_list) < 4:
+      # For small lists, dont bother getting the location dict
+      for (x,y) in tile_list:
+        c = caster.world.get_creature_at_location(x,y)
+        if c:
+          if not self.friendly_fire:
+            if c.faction == caster.faction:
+              continue
+          targets.append(c)
+    else:
+      creatures = caster.world.creature_location_dict()
+      for t in tile_list:
+        if t in creatures:
+          c = creatures[t]
+          if not self.friendly_fire:
+            if c.faction == caster.faction:
+              continue
+          targets.append(creatures[t])
+
+    for c in targets:
       if self.basic_attack:
         caster.force_attack(c)
+      c.add_effect(self.target_effect)
+
+    # This gets super messed up if the target path isn't a line or target, and if the projectile doesnt have `target` or `all`
+    if self.projectile:
+      caster.world.add_projectile_path(self.projectile, tile_list)
   
   def cast_check(self, caster):
     if self.ap_cost > caster.ap:
@@ -86,4 +118,5 @@ class Skill:
     new.set_target_type(self.get_target_type())
     new.set_caster_effect(self.caster_effect)
     new.set_target_effect(self.target_effect)
+    new.set_projectile(self.projectile)
     return new

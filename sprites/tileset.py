@@ -153,7 +153,7 @@ class TileSet:
     
     # Images are stored in rows of 10, this will hopefully keep it organized
     image_ids = [
-      'Mushroom', 'Skeleton'
+      'Rat', 'Mushroom', 'Skeleton', 'Ghoul'
     ]
 
     for i in range(len(image_ids)):
@@ -300,4 +300,7 @@ class TileSet:
     self.shadows["door_west"] = full.subsurface((40,104,40,35))
 
   def initialize_projectiles(self):
-    self.projectiles["default_arrow"] = projectile.init_default_arrow()
+    full = pygame.image.load("assets/projectiles.png")
+    self.projectiles["default_arrow"] = projectile.init_default_arrow(full)
+    self.projectiles["poison_cloud"] = projectile.init_poison_cloud(full)
+    self.projectiles["fire_cloud"] = projectile.init_fire_cloud(full)

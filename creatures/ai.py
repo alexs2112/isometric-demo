@@ -61,13 +61,17 @@ class AI:
     else:
       return None
 
-# Does nothing each turn
-class Plant(AI):
-  def can_activate(self):
-    return False
+  def get_skills_in_range(self, range):
+    if range < 0:
+      return []
+    out = []
+    for s in self.creature.get_castable_skills():
+      if s.get_range() >= range:
+        out.append(s)
+    return out
 
 # Simple turn logic:
-# - If we can see a player, move as close as possible and try to attack it if we have AP
+# - If we can see a player, move within range of our basic attack or ability and try to attack or cast if able
 # - If we can't see a player, move to where we last saw the player
 # - If we can't and haven't seen a player, move back home
 # If we can see or are pursuing a player, we are active
@@ -85,7 +89,13 @@ class Basic(AI):
       if not self.move_to:
         return True
 
-    if p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
+    # Try to cast a skill if we can
+    if p: skills = self.get_skills_in_range(self.creature.simple_distance_to(p.x, p.y))
+    if p and skills:
+      s = random.choice(skills)
+      tiles = s.get_target_tiles(self.creature.x, self.creature.y, p.x, p.y)
+      s.cast(self.creature, tiles)
+    elif p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
       if self.creature.ap >= self.creature.get_attack_cost():
         self.creature.attack_creature(p)
 
@@ -102,7 +112,7 @@ class Basic(AI):
         return True
       x,y = path[0]
       self.creature.move(x,y)
-    
+
     if self.creature.free_movement == 0 and self.creature.ap == 0:
       return True
     return False
@@ -112,5 +122,19 @@ class Basic(AI):
 
     if creature:
       self.move_to = (creature.x, creature.y)
-      
 
+class Mushroom(AI):
+  def take_turn(self, world: World):
+    p: Creature = self.get_closest_player(world)
+    if p:
+      self.active = True
+      skills = self.get_skills_in_range(self.creature.simple_distance_to(p.x, p.y))
+      if skills:
+        s = skills[0]
+        s.cast(self.creature, [(p.x, p.y)])
+      else:
+        # Random flavour when the mushroom doesn't do anything on its turn
+        self.creature.notify_player(self.creature.name + " " + random.choice(["shudders", "quivers", "trembles", "shakes", "vibrates", "jerks", "twitches", "spasms"]))
+    else:
+      self.active = False
+    return True

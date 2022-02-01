@@ -12,6 +12,17 @@ class CreatureFactory:
     self.items = item_factory
     self.skills = self.items.skills
 
+  def new_enemy(self, x, y):
+    roll = random.random()
+    if roll < 0.2:
+      return self.new_mushroom(x,y)
+    elif roll < 0.5:
+      return self.new_rat(x,y)
+    elif roll < 0.75:
+      return self.new_skeleton(x,y)
+    else:
+      return self.new_ghoul(x,y)
+
   def new_edward(self, x, y):
     name = "Edward"
     icon = self.tileset.get_creature(name)
@@ -81,14 +92,28 @@ class CreatureFactory:
     self.world.update_fov(creature)
     return creature
 
+  def new_rat(self, x, y):
+    name = "Rat"
+    icon = self.tileset.get_creature(name)
+    creature = Creature(name, icon, "Vermin", self.world)
+    creature.set_ai(ai.Basic(creature))
+    creature.set_base_stats(max_hp=4, max_mana=0, p_armor=1, m_armor=0)
+    creature.set_attributes(0,1,0)
+    creature.set_misc_stats(speed=4, initiative=4)
+    creature.set_unarmed_stats(min=1, max=2, type="slashing")
+    creature.move_to(x, y)
+    self.world.add_creature(creature)
+    return creature
+
   def new_mushroom(self, x, y):
     name = "Mushroom"
     icon = self.tileset.get_creature(name)
-    creature = Creature(name, icon, "Plant", self.world)
-    creature.set_ai(ai.Plant(creature))
+    creature = Creature(name, icon, "Fungus", self.world)
+    creature.set_ai(ai.Mushroom(creature))
     creature.set_base_stats(max_hp=5, max_mana=0, p_armor=0, m_armor=0)
     creature.set_attributes(0,0,0)
-    creature.set_misc_stats(max_ap=0, speed=0, vision_radius=0)
+    creature.set_misc_stats(max_ap=2, speed=0)
+    creature.add_skill(self.skills.toxic_spores())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature
@@ -102,7 +127,7 @@ class CreatureFactory:
     creature.set_attributes(1,1,1)
     creature.set_misc_stats(speed=2, initiative=2)
     creature.set_unarmed_stats(min=2, max=3)
-    if random.random() < 0.3:
+    if random.random() < 0.4:
       i = random.random()
       if i < 0.1:
         creature.add_and_equip(self.items.weapon.dagger())
@@ -111,11 +136,35 @@ class CreatureFactory:
       elif i < 0.3:
         creature.add_and_equip(self.items.weapon.spear())
       elif i < 0.4:
-        creature.add_and_equip(self.items.weapon.shortbow())
-      elif i < 0.5:
         creature.add_and_equip(self.items.weapon.hand_axe())
+      elif i < 0.6:
+        creature.add_and_equip(self.items.weapon.shortbow())
       else:
         creature.add_and_equip(self.items.weapon.wooden_club())
+    if random.random() < 0.2:
+      i = random.random()
+      if i < 0.25:
+        creature.add_and_equip(self.items.equipment.cloak())
+      elif i < 0.5:
+        creature.add_and_equip(self.items.equipment.leather_armor())
+      elif i < 0.75:
+        creature.add_and_equip(self.items.equipment.gloves())
+      else:
+        creature.add_and_equip(self.items.equipment.basic_helm())
+    creature.move_to(x, y)
+    self.world.add_creature(creature)
+    return creature
+  
+  def new_ghoul(self, x, y):
+    name = "Ghoul"
+    icon = self.tileset.get_creature(name)
+    creature = Creature(name, icon, "Undead", self.world)
+    creature.set_ai(ai.Basic(creature))
+    creature.set_base_stats(max_hp=6, max_mana=40, p_armor=1, m_armor=1)
+    creature.set_attributes(1,1,0)
+    creature.set_misc_stats(initiative=2)
+    creature.set_unarmed_stats(min=2, max=3)
+    creature.add_skill(self.skills.poison_bite())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature

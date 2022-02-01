@@ -16,8 +16,7 @@ class Projectile:
     self.sw = sw
 
 # A bunch of factory functions to cache projectiles in TileSet for weapons and skills that need them
-def init_default_arrow():
-  full = pygame.image.load("assets/projectiles.png")
+def init_default_arrow(full):
   n = full.subsurface((0,0,16,16))
   e = full.subsurface((16,0,16,16))
   s = full.subsurface((32,0,16,16))
@@ -27,3 +26,17 @@ def init_default_arrow():
   se = full.subsurface((32,16,16,16))
   sw = full.subsurface((48,16,16,16))
   return Projectile(n, e, s, w, ne, nw, se, sw)
+
+def init_poison_cloud(full):
+  target = [
+    full.subsurface((0,32,32,32)),
+    full.subsurface((32,32,32,32))
+  ]
+  return Projectile(target=target)
+
+def init_fire_cloud(full):
+  target = [
+    full.subsurface((0,64,32,32)),
+    full.subsurface((32,64,32,32))
+  ]
+  return Projectile(target=target)
