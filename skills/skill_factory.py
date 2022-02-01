@@ -2,6 +2,7 @@ from skills.skill import Skill
 from skills.effect_factory import EffectFactory
 from skills.target import *
 from sprites.tileset import TileSet
+from sprites.projectile import Projectile
 
 ALL_SKILLS = [
 # Comment hashes denote icons used from https://game-icons.net/ for temporary use
@@ -52,6 +53,7 @@ class SkillFactory:
     skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Fire", 2, 2, 0)
     skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.burning())
+    skill.set_projectile(self.tileset.get_projectile("fire_cloud"))
     return skill
 
   def flame_lash(self):
@@ -59,6 +61,7 @@ class SkillFactory:
     skill = Skill(name, self.tileset.get_skill_icon(name), 1, "Fire", 2, 2, 0)
     skill.set_target_type(LineTarget(4))
     skill.set_target_effect(self.effects.burning())
+    skill.set_projectile(self.tileset.get_projectile("fire_cloud"))
     skill.friendly_fire = True
     return skill  
 
@@ -75,4 +78,5 @@ class SkillFactory:
     skill = Skill(name, None, 0, "Poison", 2, 0, 1)
     skill.set_target_type(Target(1))
     skill.set_target_effect(self.effects.toxic_spores(2))
+    skill.set_projectile(self.tileset.get_projectile("poison_cloud"))
     return skill

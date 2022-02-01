@@ -4,9 +4,9 @@ Active Work:
      - * Rat: Small, fast, weak, half XP value
      - * Let mushrooms release poison spores to adjacent player characters, otherwise the don't do anything still (maybe on their
        turn, Mushroom releases poison spores at a random tile if they have no targets)
-        - Change the `Target` sprite in projectile to take a list of images instead of a single image, to "animate" smaller things
+        - * Change the `Target` sprite in projectile to take a list of images instead of a single image, to "animate" smaller things
           like this
-        - Also allow projectiles in skills...
+        - * Also allow projectiles in skills...
      - * Ghoul: Don't have a lot of health, have the 'bite' ability to heal the ghoul and inflict poison (low cooldown)
      - Skeleton: Most likely to spawn with equipment, maybe add some skeleton specific equipment that is just weaker variants of 
        their regular counterparts

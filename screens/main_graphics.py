@@ -98,7 +98,11 @@ def draw_world(screen: Screen, world: World):
             screen.blit(creature.sprite, (sx + 16, sy - 16))
             draw_healthbar(screen, creature, sx, sy)
           if (x,y) in world.projectiles:
-            screen.blit(world.projectiles[(x,y)], (sx+24, sy+8))
+            image = world.projectiles[(x,y)]
+            
+            offset_x = (64 - image.get_width()) // 2
+            offset_y = (24 - image.get_height())
+            screen.blit(world.projectiles[(x,y)], (sx + offset_x, sy + offset_y))
         else:
           screen.blit(screen.tileset.get_shadow("floor"), (sx, sy))
       else:

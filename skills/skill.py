@@ -16,6 +16,7 @@ class Skill:
     self.target_effect = None
     self.friendly_fire = False
     self.basic_attack = False     # For now if this is true just call attack on each target
+    self.projectile = None
 
   def get_type(self):
     return self.type
@@ -40,6 +41,9 @@ class Skill:
   
   def set_target_effect(self, effect: Effect):
     self.target_effect = effect
+  
+  def set_projectile(self, projectile):
+    self.projectile = projectile
 
   def tick_downtime(self):
     self.downtime = max(0, self.downtime - 1)
@@ -89,6 +93,10 @@ class Skill:
       if self.basic_attack:
         caster.force_attack(c)
       c.add_effect(self.target_effect)
+
+    # This gets super messed up if the target path isn't a line or target, and if the projectile doesnt have `target` or `all`
+    if self.projectile:
+      caster.world.add_projectile_path(self.projectile, tile_list)
   
   def cast_check(self, caster):
     if self.ap_cost > caster.ap:
@@ -110,4 +118,5 @@ class Skill:
     new.set_target_type(self.get_target_type())
     new.set_caster_effect(self.caster_effect)
     new.set_target_effect(self.target_effect)
+    new.set_projectile(self.projectile)
     return new
