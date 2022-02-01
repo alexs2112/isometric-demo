@@ -94,16 +94,7 @@ class Basic(AI):
     if p and skills:
       s = random.choice(skills)
       tiles = s.get_target_tiles(self.creature.x, self.creature.y, p.x, p.y)
-      creatures = self.creature.world.creature_location_dict()
-      targets = []
-      for t in tiles:
-        if t in creatures:
-          c = creatures[t]
-          if not s.friendly_fire:
-            if not c.is_player:
-              continue
-          targets.append(creatures[t])
-      s.cast(self.creature, targets)
+      s.cast(self.creature, tiles)
     elif p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
       if self.creature.ap >= self.creature.get_attack_cost():
         self.creature.attack_creature(p)
@@ -140,7 +131,7 @@ class Mushroom(AI):
       skills = self.get_skills_in_range(self.creature.simple_distance_to(p.x, p.y))
       if skills:
         s = skills[0]
-        s.cast(self.creature, [p])
+        s.cast(self.creature, [(p.x, p.y)])
       else:
         # Random flavour when the mushroom doesn't do anything on its turn
         self.creature.notify_player(self.creature.name + " " + random.choice(["shudders", "quivers", "trembles", "shakes", "vibrates", "jerks", "twitches", "spasms"]))

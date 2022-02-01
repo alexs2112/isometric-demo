@@ -55,7 +55,7 @@ class Skill:
        return False
     return True
 
-  def cast(self, caster, target_list):
+  def cast(self, caster, tile_list):
     if not self.cast_check(caster):
       return
     if caster.world.in_combat():
@@ -64,7 +64,28 @@ class Skill:
     self.downtime = self.cooldown
     caster.notify_player(caster.name + " uses " + self.name)
     caster.add_effect(self.caster_effect)
-    for c in target_list:
+
+    targets = []
+    if len(tile_list) < 4:
+      # For small lists, dont bother getting the location dict
+      for (x,y) in tile_list:
+        c = caster.world.get_creature_at_location(x,y)
+        if c:
+          if not self.friendly_fire:
+            if c.faction == caster.faction:
+              continue
+          targets.append(c)
+    else:
+      creatures = self.world.creature_location_dict()
+      for t in tile_list:
+        if t in creatures:
+          c = creatures[t]
+          if not self.friendly_fire:
+            if c.faction == caster.faction:
+              continue
+          targets.append(creatures[t])
+
+    for c in targets:
       if self.basic_attack:
         caster.force_attack(c)
       c.add_effect(self.target_effect)

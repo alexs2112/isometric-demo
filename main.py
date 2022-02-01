@@ -260,16 +260,7 @@ class Game:
     tiles = active.loaded_skill.get_target_tiles(active.x, active.y, tile_x, tile_y)
     if not tiles:
       return
-    creatures = self.world.creature_location_dict()
-    targets = []
-    for t in tiles:
-      if t in creatures:
-        c = creatures[t]
-        if not active.loaded_skill.friendly_fire:
-          if c.faction == active.faction:
-            continue
-        targets.append(creatures[t])
-    active.loaded_skill.cast(active, targets)
+    active.loaded_skill.cast(active, tiles)
     active.loaded_skill = None
 
   def attack_target(self, attack_path, active: Creature, target: Creature):

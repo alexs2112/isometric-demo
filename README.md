@@ -6,6 +6,7 @@ A simple prototype to learn the basics of an isometric viewpoint for a dungeon c
 
 ### Dependencies:
 The only external library in use is Pygame. https://www.pygame.org/wiki/GettingStarted
+
 `python3 -m pip install -U pygame --user`
 
 ### Screenshots (as of 2022-01-16)
