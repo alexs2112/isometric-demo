@@ -20,7 +20,7 @@ class SkillFactory:
 
   def stun(self):
     name = "Stun"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Accuracy", 3, 0, 3)
+    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Accuracy", 2, 0, 3)
     skill.set_target_type(Target(5))
     skill.set_target_effect(self.effects.stunned(1))
     return skill
@@ -61,3 +61,18 @@ class SkillFactory:
     skill.set_target_effect(self.effects.burning())
     skill.friendly_fire = True
     return skill  
+
+  def poison_bite(self):
+    name = "Bite"
+    skill = Skill(name, None, 0, "Unarmed", 2, 0, 2)
+    skill.set_target_type(Target(1))
+    skill.set_target_effect(self.effects.poisoned(3))
+    skill.basic_attack = True
+    return skill
+  
+  def toxic_spores(self):
+    name = "Toxic Spores"
+    skill = Skill(name, None, 0, "Poison", 2, 0, 1)
+    skill.set_target_type(Target(1))
+    skill.set_target_effect(self.effects.poisoned(2))
+    return skill

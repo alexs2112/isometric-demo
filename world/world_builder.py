@@ -168,6 +168,8 @@ class World:
       c.upkeep()
       if not self.in_combat():
         return self.players[0]
+      if c.hp <= 0:
+        return self.get_next_active_creature()
       return c
     else:
       return self.players[0]

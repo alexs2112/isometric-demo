@@ -1,4 +1,18 @@
 Active Work:
+ - Combat Balance Fix:
+   - Add new enemies, with abilities, ranged weapons, etc
+     - * Rat: Small, fast, weak, half XP value
+     - Let mushrooms release poison spores to adjacent player characters, otherwise the don't do anything still (maybe on their
+       turn, Mushroom releases poison spores at a random tile if they have no targets)
+        - Change the `Target` sprite in projectile to take a list of images instead of a single image, to "animate" smaller things
+          like this
+     - * Ghoul: Don't have a lot of health, have the 'bite' ability to heal the ghoul and inflict poison (low cooldown)
+     - Skeleton: Most likely to spawn with equipment, maybe add some skeleton specific equipment that is just weaker variants of 
+       their regular counterparts
+   - Give each enemy an XP value, doesn't do anything now but lets us gauge the difficulty
+   - Each room should have enemies with total expected XP, to make them all balanced
+   - Get rid of the attack path stuff for ranged attacks, its really derpy and enabling it for enemies will be a pain
+   - Update readme screenshots
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -11,11 +25,9 @@ Unordered Roadmap:
    - UI buttons on the main screen to simulate keypresses
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
- - Skills and Stats:
-   - With reduced scope, we want a way to make skill tomes unique and fit certain characters better than others
-   - We won't have conventional leveling up so we probably don't need to display all of the skills at once
-   - Make martial skills provide a more powerful buff to using those weapons, to account for being essentially immutable
-   - Possibly a skill tree for each character? "Level Up" per dungeon floor
+ - Combat Turn Order:
+   - Display the turn order as a queue for the players and active enemies at the top of the screen
+   - Maybe just have the entire list from 0 to end, then highlight the one who's currently active
  - Better Ranged Weapons:
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
@@ -23,15 +35,20 @@ Unordered Roadmap:
    - Skill Tome Icons:
      - I think we should do one book icon for each magic school/type/whatever, then have the skill icon in the bottom corner of the
        book icon
-   - Skills and effects need icons and indicators
+   - Probably redo how memorizing skills and preparing them work? Might be able to just remove the preparing system and only
+     memorize skills that you have the stats for.
+     - We can have items increase stats, so maybe also add this stat check in the `can_cast` method for skills
+   - Reflavour cast to activate or something?
+ - Effects:
+   - Icons and indicators for active effects on creatures
+   - Figure out how to make effects and cooldowns expire when out of combat. Maybe every X frames?
+ - Action Bar Optimization:
+   - Allow the player to rearrange stuff and assign other things to hotkeys
  - Shadow optimizations:
    - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
      do to walls having thickness
    - Door shadows, only show shadow on one side of the door if you can't see the other
    - We might want to add shadows to creatures again if it looks kind of funky without them
- - Character rework:
-   - At the start of the game the player can select up to 4 available characters to make their party
-   - Each character should have a set of unique skills. Perhaps unlock more each floor.
  - Chests:
    - A static inventory, needs to stay in the world even if empty
    - Maybe a closed icon for items, and an open icon if it is empty?
@@ -42,6 +59,10 @@ Unordered Roadmap:
  - Animated Attacks: Figure out a way to not change game state (health and messages) until after the animation is done playing
    - Maybe cache changes and messages until after, then apply them?
  - Limit the number of messages that show up when out of combat
+ - Allow the player to build their party of 4 out of a pool of available characters in the beginning
+ - Different variations of base enemy sprites to make it a bit more unique
+ - Clean up how enemies use skills to make it more elegant and powerful
+ - Make equipping/unequipping stuff cost AP in combat
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
@@ -53,6 +74,7 @@ Tech Debt:
 
 Known Bugs:
  - Starting combat with a player that is not edward sometimes fucks up
- - Health potions display the wrong number of added health to the messages... (increased by one, trivial fix)
- - Enemies ranged attacks are not constrained by attack path, either fix that or just remove the attack path stuff...
  - Have had an enemy die to burning and then still make an attack
+    - Possibly fixed now
+ - Enemies that have lost the player no longer end their turn and deactivate, game just loops...
+ - Sometimes the game randomly freezes in combat, not sure if it is a loop or if it will break out of it

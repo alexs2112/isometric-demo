@@ -31,6 +31,9 @@ class Skill:
 
   def get_target_type(self):
     return self.target_type
+  
+  def get_range(self):
+    return self.target_type.range
 
   def set_caster_effect(self, effect: Effect):
     self.caster_effect = effect
@@ -62,9 +65,9 @@ class Skill:
     caster.notify_player(caster.name + " uses " + self.name)
     caster.add_effect(self.caster_effect)
     for c in target_list:
-      c.add_effect(self.target_effect)
       if self.basic_attack:
         caster.force_attack(c)
+      c.add_effect(self.target_effect)
   
   def cast_check(self, caster):
     if self.ap_cost > caster.ap:

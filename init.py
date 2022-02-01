@@ -64,10 +64,7 @@ def create_creatures(args, world: world_builder.World, cf: CreatureFactory, mess
 
     for _ in range(3):
       x, y = world.get_random_floor_in_room(room)
-      if random.random() < 0.3:
-        c = cf.new_mushroom(x,y)
-      else:
-        c = cf.new_skeleton(x,y)
+      c = cf.new_enemy(x,y)
       c.set_home_room(room)
 
 def create_items(world: world_builder.World, f: ItemFactory):

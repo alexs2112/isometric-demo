@@ -3,3 +3,4 @@ workspace.code-workspace
 assets/obsolete
 test.py
 assets/body_base.aseprite
+.VSCodeCounter

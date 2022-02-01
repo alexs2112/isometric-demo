@@ -61,13 +61,22 @@ class AI:
     else:
       return None
 
+  def get_skills_in_range(self, range):
+    if range < 0:
+      return []
+    out = []
+    for s in self.creature.get_castable_skills():
+      if s.get_range() >= range:
+        out.append(s)
+    return out
+
 # Does nothing each turn
 class Plant(AI):
   def can_activate(self):
     return False
 
 # Simple turn logic:
-# - If we can see a player, move as close as possible and try to attack it if we have AP
+# - If we can see a player, move within range of our basic attack or ability and try to attack or cast if able
 # - If we can't see a player, move to where we last saw the player
 # - If we can't and haven't seen a player, move back home
 # If we can see or are pursuing a player, we are active
@@ -85,7 +94,22 @@ class Basic(AI):
       if not self.move_to:
         return True
 
-    if p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
+    # Try to cast a skill if we can
+    if p: skills = self.get_skills_in_range(self.creature.simple_distance_to(p.x, p.y))
+    if p and skills:
+      s = random.choice(skills)
+      tiles = s.get_target_tiles(self.creature.x, self.creature.y, p.x, p.y)
+      creatures = self.creature.world.creature_location_dict()
+      targets = []
+      for t in tiles:
+        if t in creatures:
+          c = creatures[t]
+          if not s.friendly_fire:
+            if not c.is_player:
+              continue
+          targets.append(creatures[t])
+      s.cast(self.creature, targets)
+    elif p and self.creature.simple_distance_to(p.x, p.y) <= self.creature.get_attack_range():
       if self.creature.ap >= self.creature.get_attack_cost():
         self.creature.attack_creature(p)
 
@@ -102,7 +126,7 @@ class Basic(AI):
         return True
       x,y = path[0]
       self.creature.move(x,y)
-    
+
     if self.creature.free_movement == 0 and self.creature.ap == 0:
       return True
     return False
@@ -112,5 +136,3 @@ class Basic(AI):
 
     if creature:
       self.move_to = (creature.x, creature.y)
-      
-

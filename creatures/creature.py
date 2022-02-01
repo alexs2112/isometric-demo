@@ -421,7 +421,7 @@ class Creature:
 # ATTACK RELATED STUFF #
 ########################
   def heal(self, amount):
-    self.hp = min(self.get_max_hp(), self.hp + random.randint(3, 8))
+    self.hp = min(self.get_max_hp(), self.hp + amount)
     self.notify_player(self.name + " heals " + str(amount) + " HP!")
 
   def modify_resistance(self, type, value):
@@ -544,6 +544,13 @@ class Creature:
     out = []
     for s in self.skill_list():
       if self.skill_prepared(s):
+        out.append(s)
+    return out
+  
+  def get_castable_skills(self):
+    out = []
+    for s in self.get_prepared_skills():
+      if s.is_castable(self):
         out.append(s)
     return out
   

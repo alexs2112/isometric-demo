@@ -153,7 +153,7 @@ class TileSet:
     
     # Images are stored in rows of 10, this will hopefully keep it organized
     image_ids = [
-      'Mushroom', 'Skeleton'
+      'Rat', 'Mushroom', 'Skeleton', 'Ghoul'
     ]
 
     for i in range(len(image_ids)):
