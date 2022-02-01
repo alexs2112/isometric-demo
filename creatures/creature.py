@@ -296,7 +296,9 @@ class Creature:
     return False
   
   def can_be_activated(self):
-    return self.faction not in ["Player", "Plant"]
+    if self.ai:
+      return self.ai.can_activate()
+    return False
 
   def activate(self, creature=None):
     if self.ai.can_activate():

@@ -70,11 +70,6 @@ class AI:
         out.append(s)
     return out
 
-# Does nothing each turn
-class Plant(AI):
-  def can_activate(self):
-    return False
-
 # Simple turn logic:
 # - If we can see a player, move within range of our basic attack or ability and try to attack or cast if able
 # - If we can't see a player, move to where we last saw the player
@@ -136,3 +131,19 @@ class Basic(AI):
 
     if creature:
       self.move_to = (creature.x, creature.y)
+
+class Mushroom(AI):
+  def take_turn(self, world: World):
+    p: Creature = self.get_closest_player(world)
+    if p:
+      self.active = True
+      skills = self.get_skills_in_range(self.creature.simple_distance_to(p.x, p.y))
+      if skills:
+        s = skills[0]
+        s.cast(self.creature, [p])
+      else:
+        # Random flavour when the mushroom doesn't do anything on its turn
+        self.creature.notify_player(self.creature.name + " " + random.choice(["shudders", "quivers", "trembles", "shakes", "vibrates", "jerks", "twitches", "spasms"]))
+    else:
+      self.active = False
+    return True

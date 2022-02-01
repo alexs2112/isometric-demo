@@ -74,5 +74,5 @@ class SkillFactory:
     name = "Toxic Spores"
     skill = Skill(name, None, 0, "Poison", 2, 0, 1)
     skill.set_target_type(Target(1))
-    skill.set_target_effect(self.effects.poisoned(2))
+    skill.set_target_effect(self.effects.toxic_spores(2))
     return skill

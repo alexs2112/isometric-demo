@@ -108,11 +108,12 @@ class CreatureFactory:
   def new_mushroom(self, x, y):
     name = "Mushroom"
     icon = self.tileset.get_creature(name)
-    creature = Creature(name, icon, "Plant", self.world)
-    creature.set_ai(ai.Plant(creature))
+    creature = Creature(name, icon, "Fungus", self.world)
+    creature.set_ai(ai.Mushroom(creature))
     creature.set_base_stats(max_hp=5, max_mana=0, p_armor=0, m_armor=0)
     creature.set_attributes(0,0,0)
-    creature.set_misc_stats(max_ap=0, speed=0, vision_radius=0)
+    creature.set_misc_stats(max_ap=2, speed=0)
+    creature.add_skill(self.skills.toxic_spores())
     creature.move_to(x, y)
     self.world.add_creature(creature)
     return creature
