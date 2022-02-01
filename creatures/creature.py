@@ -6,6 +6,7 @@ from sprites.action_bar import ActionBar
 import world.fov as fov
 from creatures.pathfinder import Path
 from sprites.creature_sprite import get_sprite
+from helpers import get_line
 from creatures.stats_helper import *
 from world.world_builder import World
 
@@ -459,18 +460,15 @@ class Creature:
       self.world.add_item(item, (self.x, self.y), quantity)
     self.world.remove_creature(self)
 
-  # Get a line constrained by our range that stops before a wall or at another creature
-  def get_attack_line(self, tile_x, tile_y):
-    path = []
-    l = helpers.get_line(self.x, self.y, tile_x, tile_y)
-    for (x,y) in l[1:self.get_attack_range() + 1]:
-      if not self.world.is_floor(x,y):
-        return path, None
-      path.append((x,y))
-      c = self.world.get_creature_at_location(x,y)
-      if c:
-        return path, c
-    return path, None
+  def can_attack(self, tile_x, tile_y):
+    if self.ap >= self.get_attack_cost() and \
+    self.simple_distance_to(tile_x, tile_y) <= self.get_attack_range():
+      line = get_line(self.x, self.y, tile_x, tile_y)
+      for tx,ty in line:
+        if self.world.is_wall(tx,ty):
+          return False
+      return True
+    return False
 
   def attack_creature(self, target):
     if self.is_player() and target.is_player():

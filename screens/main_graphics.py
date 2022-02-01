@@ -3,7 +3,7 @@ from creatures.creature import Creature
 from world.world_builder import World
 from screens.screen import Screen
 from sprites.tileset import TileSet
-from helpers import get_tile_position, is_ne_wall, is_nw_wall, is_outer_corner
+from helpers import get_line, get_tile_position, is_ne_wall, is_nw_wall, is_outer_corner
 
 def initialize_screen(width, height):
   display = pygame.display.set_mode((width, height))
@@ -226,17 +226,22 @@ def draw_path_to_mouse(screen: Screen, creature: Creature, x, y):
         screen.blit(screen.tileset.get_ui("floor_highlight_purple"), (iso_x, iso_y))
         return [], None
 
-    attack_path, target = creature.get_attack_line(x,y)
-    if target and creature.ap >= creature.get_attack_cost():
-      for (dx,dy) in attack_path:
+    if creature.can_attack(c.x, c.y):
+      path = get_line(creature.x, creature.y, c.x, c.y)
+      for (dx,dy) in path[1:-1]:
         iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, dx * 32, dy * 32)
-        screen.blit(screen.tileset.get_ui("floor_highlight_red"), (iso_x, iso_y))
-      return [], target
+        screen.blit(screen.tileset.get_ui("floor_highlight_yellow"), (iso_x, iso_y))
+      dx,dy = path[-1]
+      iso_x, iso_y = get_tile_position(screen.offset_x, screen.offset_y, dx * 32, dy * 32)
+      screen.blit(screen.tileset.get_ui("floor_highlight_red"), (iso_x, iso_y))
+      return [], c
 
   path = creature.get_path_to(x, y)
 
   # If we mouse over something and are not in range to attack/interact with it, show movement next to it
   if c or i or f:
+    path = path[:-creature.get_attack_range()]
+  elif i or f:
     path = path[:-1]
 
   # Highlight the tiles in green to move to the location

@@ -113,12 +113,12 @@ class Game:
               elif self.world.in_combat():
                 c = self.world.get_creature_at_location(tile_x, tile_y)
                 if c:
-                  path, target = active.get_attack_line(tile_x, tile_y)
-                  if target and active.ap >= active.get_attack_cost():
-                    self.attack_target(path, active, target)
+                  if active.can_attack(c.x, c.y):
+                    attack_path = get_line(active.x, active.y, tile_x, tile_y)
+                    self.attack_target(attack_path, active, c)
                   else:
-                    path = active.get_path_to(tile_x, tile_y)
-                    active.move_along_path(path[:-1])
+                    path = active.get_path_to(c.x, c.y)
+                    active.move_along_path(path[:-active.get_attack_range()])
                 else:
                   path = active.get_path_to(tile_x, tile_y)
                   active.move_along_path(path)
@@ -133,12 +133,12 @@ class Game:
                   if c.is_player():
                     active = c
                   else:
-                    attack_path, target = active.get_attack_line(tile_x, tile_y)
-                    if target:
-                      self.attack_target(attack_path, active, target)
+                    if active.can_attack(c.x, c.y):
+                      attack_path = get_line(active.x, active.y, tile_x, tile_y)
+                      self.attack_target(attack_path, active, c)
                     else:
-                      path = active.get_path_to(tile_x, tile_y)
-                      active.move_along_path(path[:-1])
+                      path = active.get_path_to(c.x, c.y)
+                      active.move_along_path(path[:-active.get_attack_range()])
                 elif i:
                   if active.simple_distance_to(tile_x, tile_y) <= 1:
                     self.loot_inventory_at(tile_x, tile_y)
@@ -263,11 +263,11 @@ class Game:
     active.loaded_skill.cast(active, tiles)
     active.loaded_skill = None
 
-  def attack_target(self, attack_path, active: Creature, target: Creature):
+  def attack_target(self,path, active: Creature, target: Creature):
     w = active.get_main_hand()
     if w:
       if w.projectile:
-        self.world.add_projectile_path(w.projectile, attack_path)
+        self.world.add_projectile_path(w.projectile, path)
     active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):

@@ -80,7 +80,7 @@ class Skill:
               continue
           targets.append(c)
     else:
-      creatures = self.world.creature_location_dict()
+      creatures = caster.world.creature_location_dict()
       for t in tile_list:
         if t in creatures:
           c = creatures[t]

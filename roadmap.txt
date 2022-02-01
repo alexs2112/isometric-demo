@@ -1,19 +1,4 @@
 Active Work:
- - Combat Balance Fix:
-   - Add new enemies, with abilities, ranged weapons, etc
-     - * Rat: Small, fast, weak, half XP value
-     - * Let mushrooms release poison spores to adjacent player characters, otherwise the don't do anything still (maybe on their
-       turn, Mushroom releases poison spores at a random tile if they have no targets)
-        - * Change the `Target` sprite in projectile to take a list of images instead of a single image, to "animate" smaller things
-          like this
-        - * Also allow projectiles in skills...
-     - * Ghoul: Don't have a lot of health, have the 'bite' ability to heal the ghoul and inflict poison (low cooldown)
-     - Skeleton: Most likely to spawn with equipment, maybe add some skeleton specific equipment that is just weaker variants of 
-       their regular counterparts
-   - Give each enemy an XP value, doesn't do anything now but lets us gauge the difficulty
-   - Each room should have enemies with total expected XP, to make them all balanced
-   - Get rid of the attack path stuff for ranged attacks, its really derpy and enabling it for enemies will be a pain
-   - Update readme screenshots
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -75,7 +60,5 @@ Tech Debt:
 
 Known Bugs:
  - Starting combat with a player that is not edward sometimes fucks up
- - Have had an enemy die to burning and then still make an attack
-    - Possibly fixed now
  - Enemies that have lost the player no longer end their turn and deactivate, game just loops...
  - Sometimes the game randomly freezes in combat, not sure if it is a loop or if it will break out of it
