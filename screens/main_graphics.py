@@ -58,6 +58,12 @@ def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creatur
     colour = screen.tileset.HP_RED
   screen.write_centered(str(free_movement), (x + 238, y + 4), screen.tileset.get_font(20), colour)
 
+  x = screen.width - 48 - 4
+  y += 33
+  for e in active.effects:
+    screen.blit(e.icon, (x, y))
+    screen.write_right_aligned(e.name + " [" + str(e.duration) + "]", (x - 8, y + 14), screen.tileset.get_font(20))
+
 def display_messages(screen: Screen, messages):
   y = screen.height - 30
   message_height = 20
@@ -96,6 +102,12 @@ def draw_world(screen: Screen, world: World):
           if (x,y) in creature_locations:
             creature = creature_locations[(x,y)]
             screen.blit(creature.sprite, (sx + 16, sy - 16))
+            ex = sx + 48
+            ey = sy - 16
+            for e in creature.effects:
+              screen.blit(e.sprite, (ex,ey))
+              ey += 16
+            
             draw_healthbar(screen, creature, sx, sy)
           if (x,y) in world.projectiles:
             image = world.projectiles[(x,y)]

@@ -239,7 +239,10 @@ class Creature:
     else:
       self.ap = self.max_ap
       self.free_movement = 0
+    
+    self.tick_time()
 
+  def tick_time(self):
     for e in self.effects:
       e.update(self)
     

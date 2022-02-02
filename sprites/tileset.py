@@ -47,6 +47,9 @@ class TileSet:
     self.initialize_projectiles()
     self.skill_icons = {}
     self.initialize_skill_icons()
+    self.effect_icons = {}
+    self.effect_sprites = {}
+    self.initialize_effect()
 
     # Some subscreen related inits that don't have specific image hashes
     self.initialize_character_screen()
@@ -79,8 +82,14 @@ class TileSet:
   def get_item_sprite(self, item_name):
     return self.item_sprites[item_name]
   
-  def get_skill_icon(self, skill_name):
+  def get_skill_icons(self, skill_name):
     return self.skill_icons[skill_name]
+
+  def get_effect_icons(self, effect_name):
+    return self.effect_icons[effect_name]
+  
+  def get_effect_sprites(self, effect_name):
+    return self.effect_sprites[effect_name]
   
   def get_projectile(self, projectile_name):
     # Returns a projectile.Projectile object instead of just an image
@@ -227,8 +236,31 @@ class TileSet:
     skills = ALL_SKILLS
     for i in range(len(skills)):
       x = (i % 10) * width
-      y = (i // 10) * width
+      y = (i // 10) * height
       self.skill_icons[skills[i]] = full.subsurface((x, y, width, height))
+  
+  def initialize_effect(self):
+    effect_names = [
+      "Stunned",
+      "Rapid Slashes",
+      "Fire Vulnerability",
+      "Regenerating",
+      "Burning",
+      "Poisoned",
+      "Spores"
+    ]
+
+    icons = pygame.image.load("assets/effect_icons.png")
+    w_i, h_i = 48, 48
+    sprites = pygame.image.load("assets/effect_sprites.png")
+    w_s, h_s = 16, 16
+    for i in range(len(effect_names)):
+      x = (i % 10) * w_i
+      y = (i // 10) * h_i
+      self.effect_icons[effect_names[i]] = icons.subsurface((x, y, w_i, h_i))
+      x = i * w_s
+      y = 0
+      self.effect_sprites[effect_names[i]] = sprites.subsurface((x,y,w_s,h_s))
   
   def initialize_misc(self):
     base = pygame.image.load("assets/misc.png")

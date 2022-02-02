@@ -21,14 +21,14 @@ class SkillFactory:
 
   def stun(self):
     name = "Stun"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Accuracy", 2, 0, 3)
+    skill = Skill(name, self.tileset.get_skill_icons(name), 0, "Accuracy", 2, 0, 3)
     skill.set_target_type(Target(5))
     skill.set_target_effect(self.effects.stunned(1))
     return skill
   
   def rapid_slashes(self):
     name = "Rapid Slashes"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Unarmed", 0, 0, 2)
+    skill = Skill(name, self.tileset.get_skill_icons(name), 0, "Unarmed", 0, 0, 2)
     skill.set_target_type(SelfTarget())
     skill.set_target_effect(self.effects.rapid_slashes(1))
     skill.friendly_fire = True
@@ -36,21 +36,21 @@ class SkillFactory:
 
   def fire_vulnerability(self):
     name = "Fire Vulnerability"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Fire", 1, 1, 4)
+    skill = Skill(name, self.tileset.get_skill_icons(name), 0, "Fire", 1, 1, 4)
     skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.modify_resistance("fire", -2, 3))
     return skill
   
   def cleave(self):
     name = "Cleave"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Cleaving", 2, 0, 2)
+    skill = Skill(name, self.tileset.get_skill_icons(name), 0, "Cleaving", 2, 0, 2)
     skill.set_target_type(AdjacentTarget(1))
     skill.basic_attack = True
     return skill
 
   def embers(self):
     name = "Embers"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 0, "Fire", 2, 2, 0)
+    skill = Skill(name, self.tileset.get_skill_icons(name), 0, "Fire", 2, 2, 0)
     skill.set_target_type(Target(6))
     skill.set_target_effect(self.effects.burning())
     skill.set_projectile(self.tileset.get_projectile("fire_cloud"))
@@ -58,7 +58,7 @@ class SkillFactory:
 
   def flame_lash(self):
     name = "Flame Lash"
-    skill = Skill(name, self.tileset.get_skill_icon(name), 1, "Fire", 2, 2, 0)
+    skill = Skill(name, self.tileset.get_skill_icons(name), 1, "Fire", 2, 2, 0)
     skill.set_target_type(LineTarget(4))
     skill.set_target_effect(self.effects.burning())
     skill.set_projectile(self.tileset.get_projectile("fire_cloud"))

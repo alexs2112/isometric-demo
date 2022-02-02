@@ -25,9 +25,6 @@ Unordered Roadmap:
      memorize skills that you have the stats for.
      - We can have items increase stats, so maybe also add this stat check in the `can_cast` method for skills
    - Reflavour cast to activate or something?
- - Effects:
-   - Icons and indicators for active effects on creatures
-   - Figure out how to make effects and cooldowns expire when out of combat. Maybe every X frames?
  - Action Bar Optimization:
    - Allow the player to rearrange stuff and assign other things to hotkeys
  - Shadow optimizations:
@@ -49,6 +46,7 @@ Unordered Roadmap:
  - Different variations of base enemy sprites to make it a bit more unique
  - Clean up how enemies use skills to make it more elegant and powerful
  - Make equipping/unequipping stuff cost AP in combat
+ - Make custom skill icons, effect icons, effect sprites
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this

@@ -31,6 +31,9 @@ class Screen:
   def write_centered(self, text, coords, font, colour=(255,255,255)):
     write_centered(self.display, text, coords, font, colour)
   
+  def write_right_aligned(self, text, coords, font, colour=(255,255,255)):
+    write_right_aligned(self.display, text, coords, font, colour)
+  
   def write_list(self, text_list, coords, font, colour=(255,255,255)):
     x, y = coords
     if not text_list:
@@ -49,6 +52,12 @@ def write_centered(surface, text, coords, font, colour=(255,255,255)):
   width, _ = font.size(text)
   (x,y) = coords
   x -= width / 2
+  write(surface, text, (x,y), font, colour)
+
+def write_right_aligned(surface, text, coords, font, colour=(255,255,255)):
+  width, _ = font.size(text)
+  (x,y) = coords
+  x -= width
   write(surface, text, (x,y), font, colour)
 
 def split_text_to_list(text, width, font):

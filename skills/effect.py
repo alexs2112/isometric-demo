@@ -3,12 +3,14 @@ from world.world_builder import World
 
 # A way to collect a bunch of different methods to affect a creature over time
 class Effect:
-  def __init__(self, name, duration):
+  def __init__(self, name, icon, sprite, duration):
     self.name = name
     self.duration = duration
     self.start = []
     self.end = []
     self.tick = []
+    self.icon = icon
+    self.sprite = sprite
   
   def add_start(self, func):
     self.start.append(func)
@@ -20,7 +22,7 @@ class Effect:
     self.tick.append(func)
   
   def clone(self):
-    new = Effect(self.name, self.duration)
+    new = Effect(self.name, self.icon, self.sprite, self.duration)
     new.start = self.start
     new.end = self.end
     new.tick = self.tick

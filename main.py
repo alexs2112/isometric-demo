@@ -45,7 +45,7 @@ class Game:
 
     self.feature_factory = FeatureFactory(self.screen.tileset)
     self.world = init.create_world(args, self.feature_factory)
-    self.effect_factory = EffectFactory()
+    self.effect_factory = EffectFactory(self.screen.tileset)
     self.skill_factory = SkillFactory(self.screen.tileset, self.effect_factory)
     self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.skill_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
@@ -59,6 +59,7 @@ class Game:
   def main(self):
     running = True
     frame_counter = 0
+    out_of_combat_counter = 0   # Keep track of how many frames are out of combat, to tick cooldowns and effects
     active: Creature = self.world.players[0]
     self.screen.center_offset_on_creature(active)
     while running:
@@ -244,6 +245,17 @@ class Game:
         frame_counter = 1
       else:
         frame_counter = 0
+      
+      if self.world.in_combat():
+        out_of_combat_counter = 0
+      else:
+        out_of_combat_counter += 1
+
+        # Each turn is 1.5 seconds
+        if out_of_combat_counter >= 30:
+          out_of_combat_counter = 0
+          for c in self.world.players:
+            c.tick_time()
 
   # Move to the next active creature and keep taking their turn until it is a human player
   def take_turns(self):
