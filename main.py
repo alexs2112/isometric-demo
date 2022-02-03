@@ -230,6 +230,9 @@ class Game:
         else:
           path, target = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
 
+        if self.world.in_combat():
+          self.world.combat_queue.draw(self.screen, 200, 0)
+
         if active.is_player():
           draw_player_stats(self.screen, active, path, target)
           active.action_bar.draw(self.screen, mouse_x, mouse_y)
@@ -255,7 +258,7 @@ class Game:
         if out_of_combat_counter >= 30:
           out_of_combat_counter = 0
           for c in self.world.players:
-            c.tick_time()
+            c.tick_out_of_combat()
 
   # Move to the next active creature and keep taking their turn until it is a human player
   def take_turns(self):
@@ -275,11 +278,11 @@ class Game:
     active.loaded_skill.cast(active, tiles)
     active.loaded_skill = None
 
-  def attack_target(self,path, active: Creature, target: Creature):
+  def attack_target(self, path, active: Creature, target: Creature):
     w = active.get_main_hand()
     if w:
       if w.projectile:
-        self.world.add_projectile_path(w.projectile, path)
+        self.world.add_projectile_path(w.projectile, path[1:])
     active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):

@@ -20,7 +20,8 @@ class Creature:
     self.name = name
     self.base_sprite = base_sprite
     self.sprite = base_sprite
-    self.big_sprite = self.sprite
+    self.sprite_86 = None
+    self.sprite_64 = None
     self.faction = faction
     self.world = world
     self.ai = None
@@ -78,9 +79,23 @@ class Creature:
     else:
       return False
   
+  def get_sprite(self, size=32):
+    # Only sizes are 32, 64, 86
+    if size == 32:
+      return self.sprite
+    elif size == 64:
+      if not self.sprite_64:
+        self.update_sprite()
+      return self.sprite_64
+    elif size == 86:
+      if not self.sprite_64:
+        self.update_sprite()
+      return self.sprite_86
+
   def update_sprite(self):
     self.sprite = get_sprite(self)
-    self.big_sprite = pygame.transform.scale(self.sprite, (86, 86))
+    self.sprite_86 = pygame.transform.scale(self.sprite, (86, 86))
+    self.sprite_64 = pygame.transform.scale(self.sprite, (64, 64))
 
   def update_action_bar(self):
     if self.is_player():
@@ -248,6 +263,26 @@ class Creature:
     
     for s in self.skill_list():
       s.tick_downtime()
+  
+  def tick_out_of_combat(self):
+    self.tick_time()
+    m_cap = self.get_m_armor_cap()
+    if self.m_armor < m_cap:
+      self.m_armor += 1
+    elif self.m_armor > m_cap:
+      self.m_armor -= 1
+    
+    p_cap = self.get_p_armor_cap()
+    if self.p_armor < p_cap:
+      self.p_armor += 1
+    elif self.p_armor > p_cap:
+      self.p_armor -= 1
+    
+    cap = self.get_max_mana()
+    if self.mana < cap:
+      self.mana += 1
+    elif self.mana > cap:
+      self.mana -= 1
 
   def full_rest(self):
     self.rest()

@@ -170,7 +170,7 @@ class CharacterScreen(Subscreen):
   def draw_player_equipment(self, screen: Screen):
     x, y = EQUIPMENT_START_X, 0
     screen.blit(self.equipment_block, (x,y))
-    screen.blit(self.creature.big_sprite, (x + 338, y + 15))
+    screen.blit(self.creature.get_sprite(86), (x + 338, y + 15))
     x += 12
     y += 6
     screen.write(self.creature.name, (x,y), screen.tileset.get_font(26))

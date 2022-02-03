@@ -38,3 +38,24 @@ class CombatQueue:
 
   def is_valid(self, creature):
     return creature.is_player() or creature.is_active()
+
+  def draw(self, screen, x, y):
+    player_box = screen.tileset.get_ui("queue_box_player")
+    enemy_box = screen.tileset.get_ui("queue_box_enemy")
+    active_box = screen.tileset.get_ui("queue_box_active")
+    unknown = screen.tileset.get_misc("unknown_creature_sprite")
+
+    for i in range(len(self.creatures)):
+      c = self.creatures[i]
+      if i == self.index:
+        screen.blit(active_box, (x, y))
+      elif c.is_player():
+        screen.blit(player_box, (x, y))
+      else:
+        screen.blit(enemy_box, (x, y))
+
+      if c.world.can_see(c.x, c.y):
+        screen.blit(c.get_sprite(64), (x+4, y+4))
+      else:
+        screen.blit(unknown, (x+4, y+4))
+      x += 72

@@ -268,6 +268,8 @@ class TileSet:
 
     win_con = base.subsurface((32,0,32,32))
     self.item_icons["Stone of Power"] = pygame.transform.scale(win_con, (48,48))
+
+    self.misc["unknown_creature_sprite"] = base.subsurface((64,0,64,64))
       
   def initialize_ui(self):
     main_icons = pygame.image.load("assets/ui/main_icons.png")
@@ -307,6 +309,12 @@ class TileSet:
     self.ui["ap_active"] = ui_icons.subsurface((0, y, image_width, image_height))
     self.ui["ap_cost"] = ui_icons.subsurface((image_width, y, image_width, image_height))
     self.ui["ap_inactive"] = ui_icons.subsurface((image_width * 2, y, image_width, image_height))
+    image_width = 72
+    image_height = 72
+    y = 50
+    self.ui["queue_box_player"] = ui_icons.subsurface((0,y,image_width,image_height))
+    self.ui["queue_box_enemy"] = ui_icons.subsurface((image_width,y,image_width,image_height))
+    self.ui["queue_box_active"] = ui_icons.subsurface((image_width * 2,y,image_width,image_height))
 
     map_icons = pygame.image.load("assets/ui/map_icons.png")
     self.ui["map_player_dot"] = map_icons.subsurface((0,0,24,8))

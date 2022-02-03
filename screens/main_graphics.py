@@ -11,18 +11,14 @@ def initialize_screen(width, height):
   return Screen(width, height, display, tileset)
 
 def write_active_player(screen: Screen, active: Creature):
-  x = 12
-  y = 2
-  screen.write(active.name + "'s Turn", (x, y), screen.tileset.get_font())
+  x = screen.width - 24
+  y = screen.height - 64
   if active.ap == 0 and active.free_movement == 0:
-    y += 26
-    screen.write("Out of AP, press Enter to end turn", (x, y), screen.tileset.get_font())
+    y -= 26
+    screen.write_right_aligned("Out of AP, press Enter to end turn", (x, y), screen.tileset.get_font())
   if active.loaded_skill:
-    y += 26
-    screen.write("Casting " + active.loaded_skill.name, (x, y), screen.tileset.get_font())
-  
-  if not active.world.no_active_enemies():
-    screen.write_centered("Combat!", (screen.width/2, 2), screen.tileset.get_font(), screen.tileset.HP_RED)
+    y -= 26
+    screen.write_right_aligned("Casting " + active.loaded_skill.name, (x, y), screen.tileset.get_font())
 
 def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creature = None):
   x, y = screen.width - 256, 0
@@ -63,6 +59,7 @@ def draw_player_stats(screen: Screen, active: Creature, path=[], target: Creatur
   for e in active.effects:
     screen.blit(e.icon, (x, y))
     screen.write_right_aligned(e.name + " [" + str(e.duration) + "]", (x - 8, y + 14), screen.tileset.get_font(20))
+    y += 22
 
 def display_messages(screen: Screen, messages):
   y = screen.height - 30
