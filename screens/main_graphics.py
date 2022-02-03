@@ -3,7 +3,7 @@ from creatures.creature import Creature
 from world.world_builder import World
 from screens.screen import Screen
 from sprites.tileset import TileSet
-from helpers import get_line, get_tile_position, is_ne_wall, is_nw_wall, is_outer_corner
+from misc.helpers import get_line, get_tile_position, is_ne_wall, is_nw_wall, is_outer_corner
 
 def initialize_screen(width, height):
   display = pygame.display.set_mode((width, height))
@@ -67,7 +67,7 @@ def display_messages(screen: Screen, messages):
   y -= message_height * len(messages)
   for i in range(len(messages)):
     message = messages[i]
-    screen.write(message, (12, y + i * message_height), screen.tileset.get_font(18))
+    screen.write(message.text, (12, y + i * message_height), screen.tileset.get_font(18), message.colour)
 
 def draw_world(screen: Screen, world: World):
   width, height = world.dimensions()

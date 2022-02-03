@@ -1,4 +1,4 @@
-import helpers
+import misc.helpers as helpers
 
 # A way to get specific arrays of points for different target types for skills
 class Target:

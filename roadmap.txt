@@ -37,15 +37,12 @@ Unordered Roadmap:
  - Make party movement better to work with animations. Right now you all just teleport. Not sure how to pathfind properly
  - Animated Attacks: Figure out a way to not change game state (health and messages) until after the animation is done playing
    - Maybe cache changes and messages until after, then apply them?
- - Limit the number of messages that show up when out of combat
-   - Instead of limiting them, just pop the oldest ones after a few seconds
  - Allow the player to build their party of 4 out of a pool of available characters in the beginning
  - Different variations of base enemy sprites to make it a bit more unique
  - Clean up how enemies use skills to make it more elegant and powerful
  - Make equipping/unequipping stuff cost AP in combat
  - Make custom skill icons, effect icons, effect sprites
  - Add a few frames of delay at the end of AI turns
- - Coloured messages
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this

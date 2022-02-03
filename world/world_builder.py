@@ -146,14 +146,14 @@ class World:
 
   def start_combat(self):
     self.combat_queue = CombatQueue(self.creatures)
-    self.players[0].notify("Start of combat!")
+    self.players[0].notify("Start of combat!", (180, 32, 42))
   
   def add_creature_to_combat(self, creature):
     self.combat_queue.add_creature(creature)
 
   def end_combat(self):
     self.combat_queue = None
-    self.players[0].notify("End of combat.")
+    self.players[0].notify("End of combat.", (180, 32, 42))
     for p in self.players:
       p.ap = p.max_ap
       p.free_movement = 0

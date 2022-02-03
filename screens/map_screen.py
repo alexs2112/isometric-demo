@@ -4,7 +4,7 @@ from screens.screen import Screen
 from screens.main_graphics import draw_player_name_box, draw_player_health_mana_armor
 from world.world_builder import Room, World
 from creatures.creature import Creature
-from helpers import get_tile_position, get_cartesian_position
+from misc.helpers import get_tile_position, get_cartesian_position
 from pygame.locals import (
   MOUSEBUTTONDOWN,
   KEYDOWN,

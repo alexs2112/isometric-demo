@@ -1,12 +1,13 @@
 import math, random, pygame
-import helpers
+import misc.helpers as helpers
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
 from sprites.action_bar import ActionBar
 import world.fov as fov
 from creatures.pathfinder import Path
 from sprites.creature_sprite import get_sprite
-from helpers import get_line
+from misc.helpers import get_line
+from misc.message import Message
 from creatures.stats_helper import *
 from world.world_builder import World
 
@@ -446,15 +447,15 @@ class Creature:
   def has_seen(self, to_x, to_y):
     return self.world.has_seen(to_x, to_y)
 
-  def notify(self, message):
+  def notify(self, message, colour=(255,255,255)):
     if self.messages != None:
       print(message)
-      self.messages.append(message)
+      self.messages.append(Message(message, colour))
     
-  def notify_player(self, message):
+  def notify_player(self, message, colour=(255,255,255)):
     for p in self.world.players:
       if p.can_see(self.x, self.y):
-        p.notify(message)
+        p.notify(message, colour)
         break
 
 

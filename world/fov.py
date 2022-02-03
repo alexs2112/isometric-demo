@@ -1,4 +1,4 @@
-import helpers
+import misc.helpers as helpers
 
 # A 2d list that simply stores True if a tile has been seen, or False if it has not
 class FieldOfView(list):

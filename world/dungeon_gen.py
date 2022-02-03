@@ -1,4 +1,4 @@
-import random, math, helpers
+import random, math, misc.helpers as helpers
 import world.dfs as dfs
 
 FLOOR = 0

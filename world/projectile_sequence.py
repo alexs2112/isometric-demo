@@ -1,4 +1,4 @@
-from helpers import get_projectile_path
+from misc.helpers import get_projectile_path
 
 class ProjectileSequence:
   def __init__(self):

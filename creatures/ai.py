@@ -1,7 +1,7 @@
 import random
 from world.world_builder import World
 from creatures.creature import Creature
-from helpers import get_line
+from misc.helpers import get_line
 
 # Basic class to override
 class AI:
@@ -134,7 +134,7 @@ class Mushroom(AI):
         s.cast(self.creature, [(p.x, p.y)])
       else:
         # Random flavour when the mushroom doesn't do anything on its turn
-        self.creature.notify_player(self.creature.name + " " + random.choice(["shudders", "quivers", "trembles", "shakes", "vibrates", "jerks", "twitches", "spasms"]))
+        self.creature.notify_player(self.creature.name + " " + random.choice(["shudders", "quivers", "trembles", "shakes", "vibrates", "jerks", "twitches", "spasms"]), (179, 185, 209))
     else:
       self.active = False
     return True

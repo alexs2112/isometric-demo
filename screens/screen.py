@@ -1,5 +1,5 @@
 from msilib.schema import TextStyle
-import helpers
+import misc.helpers as helpers
 from sprites.tileset import TileSet
 from pygame import Surface
 

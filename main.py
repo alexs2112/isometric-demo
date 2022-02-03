@@ -1,5 +1,5 @@
 import pygame, sys
-import init
+import misc.init as init
 from items.item_factory import ItemFactory
 from screens.character_screen import CharacterScreen
 from screens.screen import Button
@@ -14,7 +14,7 @@ from screens.party_screen import PartyScreen
 from screens.subscreen import StartScreen
 from screens.map_screen import MapScreen
 from screens.main_graphics import *
-from helpers import *
+from misc.helpers import *
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -256,10 +256,16 @@ class Game:
         out_of_combat_counter += 1
 
         # Each turn is 1.5 seconds
-        if out_of_combat_counter >= 30:
-          out_of_combat_counter = 0
+        if out_of_combat_counter % 30 == 0:
           for c in self.world.players:
             c.tick_out_of_combat()
+
+        if out_of_combat_counter % 15 == 0:
+          if len(self.messages) > 0:
+            self.messages.pop(0)
+
+        if out_of_combat_counter >= 30:
+          out_of_combat_counter = 0
   
   def end_player_turn(self):
     if self.world.in_combat():
