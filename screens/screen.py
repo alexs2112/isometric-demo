@@ -1,3 +1,4 @@
+from msilib.schema import TextStyle
 import helpers
 from sprites.tileset import TileSet
 from pygame import Surface
@@ -93,6 +94,15 @@ class Button:
     # How many frames we want to show the click_image for after being clicked
     self.click_frames = 0
 
+    self.tooltip = None
+    self.tooltip_delay = 0
+    self.tooltip_size = 0
+    self.tooltip_frames = 0
+    self.active = True
+
+    self.text = None
+    self.text_size = 0
+
   def in_bounds(self, mouse_x, mouse_y):
     return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
 
@@ -104,8 +114,44 @@ class Button:
       return self.mouse_image
     return self.default_image
 
+  def set_tooltip(self, text, delay=0, size=16):
+    self.tooltip = text
+    self.tooltip_delay = delay
+    self.tooltip_size = size
+  
+  def set_text(self, text, size=24):
+    self.text = text
+    self.text_size = size
+
   def click(self, *args):
+    if not self.active:
+      return
+
     if self.click_image:
       self.click_frames = 2
     if self.func:
       return self.func(*args)
+  
+  def click_if_in_bounds(self, mouse_x, mouse_y, *args):
+    if self.in_bounds(mouse_x, mouse_y):
+      self.click(*args)
+
+  def draw(self, screen: Screen, mouse_x, mouse_y):
+    if not self.active:
+      return
+
+    screen.blit(self.get_image(mouse_x, mouse_y), (self.x, self.y))
+
+    if self.text:
+      screen.write_centered(self.text, (self.x + self.width // 2, self.y + (self.height - self.text_size) // 2), screen.tileset.get_font(self.text_size))
+
+    if self.tooltip:
+      bounds = self.in_bounds(mouse_x, mouse_y)
+      if self.tooltip_delay > 0:
+        if bounds:
+          self.tooltip_frames += 1
+        else:
+          self.tooltip_frames = 0
+
+      if bounds and self.tooltip_frames >= self.tooltip_delay:
+        screen.write_centered(self.tooltip, (self.x + self.width // 2, self.y - self.tooltip_size - 2), screen.tileset.get_font(self.tooltip_size))

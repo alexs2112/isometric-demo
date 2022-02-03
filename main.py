@@ -1,8 +1,8 @@
 import pygame, sys
 import init
-from items.inventory import Inventory
 from items.item_factory import ItemFactory
 from screens.character_screen import CharacterScreen
+from screens.screen import Button
 from screens.skill_screen import SkillScreen
 from skills.effect_factory import EffectFactory
 from skills.skill_factory import SkillFactory
@@ -23,7 +23,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m, K_i, K_s, K_h, K_g, K_p, K_c,
+    K_m, K_i, K_s, K_h, K_p, K_c,
     K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0,
     KEYDOWN,
     MOUSEBUTTONDOWN,
@@ -55,13 +55,17 @@ class Game:
     init.create_items(self.world, self.item_factory)
     self.subscreen = StartScreen()
 
+    self.buttons = [] # Keep track of all the buttons in the main screen
+    self.end_turn_button = None
+    self.initialize_buttons(760 - 4*32, self.screen.height - 52)
+
   # Run the main game loop
   def main(self):
     running = True
     frame_counter = 0
     out_of_combat_counter = 0   # Keep track of how many frames are out of combat, to tick cooldowns and effects
-    active: Creature = self.world.players[0]
-    self.screen.center_offset_on_creature(active)
+    self.active: Creature = self.world.players[0]
+    self.screen.center_offset_on_creature(self.active)
     while running:
       self.screen.clear()
       mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -71,9 +75,9 @@ class Game:
         self.subscreen.draw(self.screen)
         self.subscreen = self.subscreen.respond_to_events(pygame.event.get())
 
-        # If we move from a subscreen back to main, refocus on the active player
+        # If we move from a subscreen back to main, refocus on the self.active player
         if not self.subscreen:
-          self.screen.center_offset_on_creature(active)
+          self.screen.center_offset_on_creature(self.active)
       else:
         keys = pygame.key.get_pressed()
 
@@ -81,19 +85,19 @@ class Game:
         if self.world.movement_in_progress():
           if frame_counter == 0:
             self.world.apply_next_move()
-            self.screen.center_offset_on_creature(active)
+            self.screen.center_offset_on_creature(self.active)
         elif self.world.projectile_sequence:
           self.world.iterate_projectiles()
-        elif not active.is_player():
+        elif not self.active.is_player():
           if frame_counter == 0:
-            done_turn = active.take_turn()
-            self.screen.center_offset_on_creature(active)
+            done_turn = self.active.take_turn()
+            self.screen.center_offset_on_creature(self.active)
             if done_turn:
-              active = self.world.get_next_active_creature()
-            while not self.world.can_see(active.x, active.y):
-              done_turn = active.take_turn()
+              self.active = self.world.get_next_active_creature()
+            while not self.world.can_see(self.active.x, self.active.y):
+              done_turn = self.active.take_turn()
               if done_turn:
-                active = self.world.get_next_active_creature()
+                self.active = self.world.get_next_active_creature()
         else:
           # Take player input
           for event in pygame.event.get():
@@ -103,26 +107,28 @@ class Game:
 
             if event.type == MOUSEBUTTONDOWN:
               # If we are clicking a button
-              if mouse_x > active.action_bar.screen_x and mouse_y > active.action_bar.screen_y:
-                active.action_bar.mouse_click(mouse_x, mouse_y)
+              if mouse_x > self.active.action_bar.screen_x and mouse_y > self.active.action_bar.screen_y:
+                self.active.action_bar.mouse_click(mouse_x, mouse_y)
+              elif self.clicking_button(self.buttons + [self.end_turn_button], mouse_x, mouse_y):
+                pass
 
               # If we are activating a skill
-              elif active.loaded_skill:
-                self.activate_loaded_skill(active, tile_x, tile_y)
+              elif self.active.loaded_skill:
+                self.activate_loaded_skill(tile_x, tile_y)
 
               # If we are in combat
               elif self.world.in_combat():
                 c = self.world.get_creature_at_location(tile_x, tile_y)
                 if c:
-                  if active.can_attack(c.x, c.y):
-                    attack_path = get_line(active.x, active.y, tile_x, tile_y)
-                    self.attack_target(attack_path, active, c)
+                  if self.active.can_attack(c.x, c.y):
+                    attack_path = get_line(self.active.x, self.active.y, tile_x, tile_y)
+                    self.attack_target(attack_path, c)
                   else:
-                    path = active.get_path_to(c.x, c.y)
-                    active.move_along_path(path[:-active.get_attack_range()])
+                    path = self.active.get_path_to(c.x, c.y)
+                    self.active.move_along_path(path[:-self.active.get_attack_range()])
                 else:
-                  path = active.get_path_to(tile_x, tile_y)
-                  active.move_along_path(path)
+                  path = self.active.get_path_to(tile_x, tile_y)
+                  self.active.move_along_path(path)
               
               # If we aren't in combat
               else:
@@ -132,84 +138,76 @@ class Game:
 
                 if c:
                   if c.is_player():
-                    active = c
+                    self.active = c
                   else:
-                    if active.can_attack(c.x, c.y):
-                      attack_path = get_line(active.x, active.y, tile_x, tile_y)
-                      self.attack_target(attack_path, active, c)
+                    if self.active.can_attack(c.x, c.y):
+                      attack_path = get_line(self.active.x, self.active.y, tile_x, tile_y)
+                      self.attack_target(attack_path, c)
                     else:
-                      path = active.get_path_to(c.x, c.y)
-                      active.move_along_path(path[:-active.get_attack_range()])
+                      path = self.active.get_path_to(c.x, c.y)
+                      self.active.move_along_path(path[:-self.active.get_attack_range()])
                 elif i:
-                  if active.simple_distance_to(tile_x, tile_y) <= 1:
+                  if self.active.simple_distance_to(tile_x, tile_y) <= 1:
                     self.loot_inventory_at(tile_x, tile_y)
                   else:
-                    path = active.get_path_to(tile_x, tile_y)
-                    active.move_along_path(path[:-1])
+                    path = self.active.get_path_to(tile_x, tile_y)
+                    self.active.move_along_path(path[:-1])
                 elif f:
-                  if active.simple_distance_to(tile_x, tile_y) <= 1:
-                    self.subscreen = f.interact(active)
+                  if self.active.simple_distance_to(tile_x, tile_y) <= 1:
+                    self.subscreen = f.interact(self.active)
                   else:
-                    path = active.get_path_to(tile_x, tile_y)
-                    active.move_along_path(path[:-1])
+                    path = self.active.get_path_to(tile_x, tile_y)
+                    self.active.move_along_path(path[:-1])
                 else:
                   if keys[K_LSHIFT]:
-                    start = active.x, active.y
-                    path = active.get_path_to(tile_x, tile_y)
-                    active.move_along_path_old(path)
-                    end = active.x, active.y
-                    self.move_party(active, start, end)
+                    start = self.active.x, self.active.y
+                    path = self.active.get_path_to(tile_x, tile_y)
+                    self.active.move_along_path_old(path)
+                    end = self.active.x, self.active.y
+                    self.move_party(start, end)
                   else:
-                    path = active.get_path_to(tile_x, tile_y)
-                    active.move_along_path(path)
+                    path = self.active.get_path_to(tile_x, tile_y)
+                    self.active.move_along_path(path)
               
-                # At the end of a turn, if a combat has started during that turn reset active
+                # At the end of a turn, if a combat has started during that turn reset self.active
                 if self.world.in_combat():
-                  active = self.world.get_current_active_creature()
-                  if self.world.can_see(active.x, active.y):
-                    self.screen.center_offset_on_creature(active)
+                  self.active = self.world.get_current_active_creature()
+                  if self.world.can_see(self.active.x, self.active.y):
+                    self.screen.center_offset_on_creature(self.active)
 
             if event.type == KEYDOWN:
               if event.key == K_SPACE:
-                self.screen.center_offset_on_creature(active)
+                self.screen.center_offset_on_creature(self.active)
               elif event.key == K_RETURN:
                 self.messages.clear()
-                if active.loaded_skill:
-                  self.activate_loaded_skill(active, tile_x, tile_y)
+                if self.active.loaded_skill:
+                  self.activate_loaded_skill(tile_x, tile_y)
                 elif self.world.in_combat():
-                  active = self.world.get_next_active_creature()
-                  if self.world.can_see(active.x, active.y):
-                    self.screen.center_offset_on_creature(active)
+                  self.end_player_turn()
               elif event.key == K_ESCAPE:
-                if active.loaded_skill:
-                  active.loaded_skill = None
+                if self.active.loaded_skill:
+                  self.active.loaded_skill = None
                 else:
                   # Preferably open a game menu here instead of just ending the game lol
                   running = False
               elif event.key == K_m:
-                self.messages.clear()
-                self.subscreen = MapScreen(self.world, self.screen, active)
+                self.subscreen = MapScreen(self.world, self.screen, self.active)
               elif event.key == K_i:
                 self.subscreen = InventoryScreen(self.world.players)
               elif event.key == K_p:
                 self.subscreen = PartyScreen(self.world.players)
               elif event.key == K_h:
                 self.subscreen = HelpScreen()
-              elif event.key == K_g:
-                i = Inventory()
-                i.add_item(self.item_factory.equipment.wizard_hat())
-                i.add_item(self.item_factory.tomes.tome_of_embers(), 3)
-                self.subscreen = InventoryScreen(self.world.players, i)
               elif event.key == K_s:
-                if active.skills:
-                  self.subscreen = SkillScreen(active)
+                if self.active.skills:
+                  self.subscreen = SkillScreen(self.active)
                 else:
-                  active.notify(active.name + " has no skills to activate.")
+                  self.active.notify(self.active.name + " has no skills to activate.")
               elif event.key == K_c:
-                if active.is_player():
-                  self.subscreen = CharacterScreen(self.screen.tileset, active, self.world.players)
+                if self.active.is_player():
+                  self.subscreen = CharacterScreen(self.screen.tileset, self.active, self.world.players)
               elif event.key in [K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0]:
-                active.action_bar.activate(event.key)
+                self.active.action_bar.activate(event.key)
         # OUT OF FOR LOOP
 
         # Not sure if we need to be able to scroll anymore
@@ -223,22 +221,25 @@ class Game:
           self.screen.offset_y += 15
 
         draw_world(self.screen, self.world)
-        if active.loaded_skill:
-          highlight_ability_target(self.screen, active, tile_x, tile_y)
+        if self.active.loaded_skill:
+          highlight_ability_target(self.screen, self.active, tile_x, tile_y)
           path = None
           target = None
         else:
-          path, target = draw_path_to_mouse(self.screen, active, tile_x, tile_y)
+          path, target = draw_path_to_mouse(self.screen, self.active, tile_x, tile_y)
 
         if self.world.in_combat():
           self.world.combat_queue.draw(self.screen, 200, 0)
 
-        if active.is_player():
-          draw_player_stats(self.screen, active, path, target)
-          active.action_bar.draw(self.screen, mouse_x, mouse_y)
+        if self.active.is_player():
+          draw_player_stats(self.screen, self.active, path, target)
+          self.active.action_bar.draw(self.screen, mouse_x, mouse_y)
+        draw_buttons(self.screen, self.buttons, mouse_x, mouse_y)
+        if self.world.in_combat() and self.active.is_player():
+          draw_end_turn_button(self.screen, self.end_turn_button, self.active, mouse_x, mouse_y)
         show_mouse_tooltips(self.screen, self.world, mouse_x, mouse_y, tile_x, tile_y)
         display_messages(self.screen, self.messages)
-        write_active_player(self.screen, active)
+        write_active_player(self.screen, self.active)
 
       pygame.display.update()
       pygame.time.delay(FRAME_DELAY)
@@ -259,36 +260,38 @@ class Game:
           out_of_combat_counter = 0
           for c in self.world.players:
             c.tick_out_of_combat()
-
-  # Move to the next active creature and keep taking their turn until it is a human player
-  def take_turns(self):
-    while len(self.world.creatures) > 0:
-      if len(self.world.players) == 0:
-        return None
-      active = self.world.get_next_active_creature()
-      active.take_turn()
-      if active.is_player():
-        self.screen.center_offset_on_creature(active)
-        return active
   
-  def activate_loaded_skill(self, active: Creature, tile_x, tile_y):
-    tiles = active.loaded_skill.get_target_tiles(active.x, active.y, tile_x, tile_y)
+  def end_player_turn(self):
+    if self.world.in_combat():
+      self.messages.clear()
+      self.active = self.world.get_next_active_creature()
+      self.screen.center_offset_on_creature(self.active)
+
+  def clicking_button(self, buttons, mouse_x, mouse_y):
+    for b in buttons:
+      if b.in_bounds(mouse_x, mouse_y):
+        b.click()
+        return True
+    return False 
+  
+  def activate_loaded_skill(self, tile_x, tile_y):
+    tiles = self.active.loaded_skill.get_target_tiles(self.active.x, self.active.y, tile_x, tile_y)
     if not tiles:
       return
-    active.loaded_skill.cast(active, tiles)
-    active.loaded_skill = None
+    self.active.loaded_skill.cast(self.active, tiles)
+    self.active.loaded_skill = None
 
-  def attack_target(self, path, active: Creature, target: Creature):
-    w = active.get_main_hand()
+  def attack_target(self, path, target: Creature):
+    w = self.active.get_main_hand()
     if w:
       if w.projectile:
         self.world.add_projectile_path(w.projectile, path[1:])
-    active.attack_creature(target)
+    self.active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):
     self.subscreen = InventoryScreen(self.world.players, self.world.get_inventory(tile_x, tile_y))
 
-  def move_party(self, active, start, end):
+  def move_party(self, start, end):
     # If we arent in combat, we want the party to all follow the active player
     # Draw a 3x3 rectangle behind the player and randomly select tiles in there for the others to be in
     sx, sy = start
@@ -317,7 +320,7 @@ class Game:
         tiles.append((x,y))
 
     for c in self.world.players:
-      if c == active or (c.x, c.y) in tiles:
+      if c == self.active or (c.x, c.y) in tiles:
         continue
       try:
         px, py = self.world.get_random_floor_from_set(tiles)
@@ -326,6 +329,74 @@ class Game:
       except:
         # Just dont move the creature if we can't find a valid tile
         pass
+  
+  def initialize_buttons(self, x, y):
+    # This needs to go here instead of in init because we need access to instance variables
+    self.buttons = []
+
+    button_full = pygame.image.load("assets/ui/main_buttons.png")
+    base_x, base_y = 0, 52
+    width = 32
+    height = 52
+
+    def help_func():
+      self.subscreen = HelpScreen()
+    help_button = Button((x,y,width,height), 
+      button_full.subsurface((base_x,base_y,width,height)),
+      button_full.subsurface((base_x,base_y+height,width,height)),
+      button_full.subsurface((base_x,base_y+height+height,width,height)),
+      help_func
+    )
+    help_button.set_tooltip("H: Help")
+    self.buttons.append(help_button)
+    base_x += width
+    x += width
+
+    def character_func():
+      self.subscreen = CharacterScreen(self.screen.tileset, self.active, self.world.players)
+    character_button = Button((x,y,width,height), 
+      button_full.subsurface((base_x,base_y,width,height)),
+      button_full.subsurface((base_x,base_y+height,width,height)),
+      button_full.subsurface((base_x,base_y+height+height,width,height)),
+      character_func
+    )
+    character_button.set_tooltip("C: Character")
+    self.buttons.append(character_button)
+    base_x += width
+    x += width
+
+    def skill_func():
+      self.subscreen =  SkillScreen(self.active)
+    skill_button = Button((x,y,width,height), 
+      button_full.subsurface((base_x,base_y,width,height)),
+      button_full.subsurface((base_x,base_y+height,width,height)),
+      button_full.subsurface((base_x,base_y+height+height,width,height)),
+      skill_func
+    )
+    skill_button.set_tooltip("S: Skills")
+    self.buttons.append(skill_button)
+    base_x += width
+    x += width
+
+    def map_func():
+      self.subscreen = MapScreen(self.world, self.screen, self.active)
+    map_button = Button((x,y,width,height), 
+      button_full.subsurface((base_x,base_y,width,height)),
+      button_full.subsurface((base_x,base_y+height,width,height)),
+      button_full.subsurface((base_x,base_y+height+height,width,height)),
+      map_func
+    )
+    map_button.set_tooltip("M: Map")
+    self.buttons.append(map_button)
+
+    width, height = 160, 64
+    self.end_turn_button = Button((self.screen.width - width, y - height, width, height),
+      button_full.subsurface((0, 208, width, height)),
+      button_full.subsurface((0, 208 + height, width, height)),
+      button_full.subsurface((width, 208, width, height)),
+      self.end_player_turn
+    )
+    self.end_turn_button.set_text("End Turn", 26)
 
 def start():
   args = sys.argv
@@ -351,7 +422,7 @@ def print_help():
     --maze
     --no_paths
     --no_walls
-  Note: maze, no_paths, no_walls are not actively supported and kind of suck
+  Note: maze, no_paths, no_walls are not self.actively supported and kind of suck
 
   Press [h] in game to view the controls""")
   sys.exit(0)

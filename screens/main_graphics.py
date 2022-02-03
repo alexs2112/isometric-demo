@@ -11,7 +11,7 @@ def initialize_screen(width, height):
   return Screen(width, height, display, tileset)
 
 def write_active_player(screen: Screen, active: Creature):
-  x = screen.width - 24
+  x = screen.width - 192
   y = screen.height - 64
   if active.ap == 0 and active.free_movement == 0:
     y -= 26
@@ -316,3 +316,12 @@ def show_mouse_tooltips(screen: Screen, world: World, mouse_x, mouse_y, tile_x, 
       pygame.draw.rect(screen.display, screen.tileset.DARK_GREY, (x, y + i * line_height, line_width + 4, line_height))
       screen.write(line, (x+2, y + i * line_height), font)
       i += 1
+
+def draw_buttons(screen: Screen, buttons, mouse_x, mouse_y):
+  for b in buttons:
+    b.draw(screen, mouse_x, mouse_y)
+
+def draw_end_turn_button(screen: Screen, button, active, mouse_x, mouse_y):
+  button.draw(screen, mouse_x, mouse_y)
+  if active.ap == 0 and active.free_movement == 0:
+    screen.blit(screen.tileset.get_ui("end_turn_highlight"), (button.x, button.y))

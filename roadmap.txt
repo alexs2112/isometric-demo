@@ -8,7 +8,6 @@ Unordered Roadmap:
    - New pickup subscreen
    - New skill subscreen
    - Escape key menu that doesn't immediately kill the game
-   - UI buttons on the main screen to simulate keypresses
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
  - Better Ranged Weapons:
@@ -39,6 +38,7 @@ Unordered Roadmap:
  - Animated Attacks: Figure out a way to not change game state (health and messages) until after the animation is done playing
    - Maybe cache changes and messages until after, then apply them?
  - Limit the number of messages that show up when out of combat
+   - Instead of limiting them, just pop the oldest ones after a few seconds
  - Allow the player to build their party of 4 out of a pool of available characters in the beginning
  - Different variations of base enemy sprites to make it a bit more unique
  - Clean up how enemies use skills to make it more elegant and powerful
@@ -59,3 +59,4 @@ Known Bugs:
  - Starting combat with a player that is not edward sometimes fucks up
  - Enemies that have lost the player no longer end their turn and deactivate, game just loops...
  - Sometimes the game randomly freezes in combat, not sure if it is a loop or if it will break out of it
+ - Opening a door doesn't update FOV for other characters that can see through it

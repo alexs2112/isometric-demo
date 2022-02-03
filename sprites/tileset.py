@@ -322,6 +322,9 @@ class TileSet:
     self.ui["map_items_dot"] = map_icons.subsurface((24,0,24,8))
     self.ui["map_floor_orange"] = map_icons.subsurface((0,16,32,16))
 
+    buttons = pygame.image.load("assets/ui/main_buttons.png")
+    self.ui["end_turn_highlight"] = buttons.subsurface((160,272,160,64))
+
   def initialize_character_screen(self):
     full = pygame.image.load("assets/ui/character_screen_icons.png")
     self.ui["char_screen_inv_name"] = full.subsurface((0,0,420,36))

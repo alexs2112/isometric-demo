@@ -92,5 +92,4 @@ class ActionBar:
 
   def mouse_click(self, mouse_x, mouse_y):
     for b, _ in self.buttons:
-      if b.in_bounds(mouse_x, mouse_y):
-        b.click()
+      b.click_if_in_bounds(mouse_x, mouse_y)
