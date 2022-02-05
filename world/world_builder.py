@@ -97,6 +97,9 @@ class World:
   def update_fov(self, creature):
     self.fov.update(self, creature)
   
+  def update_fov_all(self):
+    self.fov.update_all(self, self.players)
+  
   def has_seen(self, x, y):
     return self.fov.contains(x,y)
   
@@ -170,6 +173,9 @@ class World:
         return self.players[0]
       if c.hp <= 0:
         return self.get_next_active_creature()
+      if self.no_active_enemies():
+        self.end_combat()
+        return self.players[0]
       return c
     else:
       return self.players[0]

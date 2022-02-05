@@ -1,5 +1,6 @@
 class CombatQueue:
   def __init__(self, world_creatures):
+    self.start_y = -72
     self.creatures = []
     self.index = 0
     for c in world_creatures:
@@ -45,6 +46,9 @@ class CombatQueue:
     active_box = screen.tileset.get_ui("queue_box_active")
     unknown = screen.tileset.get_misc("unknown_creature_sprite")
 
+    y += self.start_y
+    if y < 0:
+      self.start_y = min(self.start_y + 10, 0)
     for i in range(len(self.creatures)):
       c = self.creatures[i]
       if i == self.index:

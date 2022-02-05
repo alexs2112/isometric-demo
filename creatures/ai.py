@@ -108,6 +108,10 @@ class Basic(AI):
         return True
     else:
       path = self.creature.get_path_to(self.move_to[0], self.move_to[1])
+      
+      # Temporary, to try to fix infinite loop in combat
+      print(path)
+      
       if not path:
         return True
       x,y = path[0]

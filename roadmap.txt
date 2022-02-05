@@ -42,13 +42,14 @@ Unordered Roadmap:
  - Allow the player to build their party of 4 out of a pool of available characters in the beginning
  - Different variations of base enemy sprites to make it a bit more unique
  - Clean up how enemies use skills to make it more elegant and powerful
- - Make equipping/unequipping stuff cost AP in combat
+ - Make using items cost AP in combat
  - Make custom skill icons, effect icons, effect sprites
  - Add a few frames of delay at the end of AI turns
- - Right clicking unloads a loaded skill
-   - Change all current mouse effects to left click only
  - Minor effect icon to represent more than 2 concurrent effects
    - Only show at most 1 of each effect icon...
+ - Loading a skill darkens each tile outside of range
+ - Walking on open doors is permitted, right click them to close them
+ - Increase the frame rate, add a helper function to calculate how many frames need to pass to count as seconds
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
@@ -59,7 +60,7 @@ Tech Debt:
     - Small example with stats in the character screen
 
 Known Bugs:
- - Starting combat with a player that is not edward sometimes fucks up
  - Enemies that have lost the player no longer end their turn and deactivate, game just loops...
  - Sometimes the game randomly freezes in combat, not sure if it is a loop or if it will break out of it
- - Opening a door doesn't update FOV for other characters that can see through it
+   - I think both of the above is related and has to do when an enemy gets stuck in a hallway?
+   - Printing an AIs path every turn to see if we can deduce it when it comes up

@@ -31,6 +31,15 @@ class FieldOfView(list):
 
   # Add new tiles to the remembered FOV, and then recalculate the current tiles each player can see
   def update(self, world, creature):
+    self.update_total(world, creature)
+    self.refresh_current(world.players)
+  
+  def update_all(self, world, players):
+    for p in players:
+      self.update_total(world, p)
+    self.refresh_current(world.players)
+
+  def update_total(self, world, creature):
     for x in range(-creature.vision_radius, creature.vision_radius + 1):
       for y in range(-creature.vision_radius, creature.vision_radius + 1):
         to_x, to_y = creature.x + x, creature.y + y
@@ -51,8 +60,9 @@ class FieldOfView(list):
             if world.is_wall(to_x - 1, to_y - 1):
               self[to_x-1][to_y-1] = True
 
+  def refresh_current(self, players):
     self.reset_current()
-    for p in world.players:
+    for p in players:
       self.update_current(p)
   
   def update_current(self, creature):

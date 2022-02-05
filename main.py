@@ -85,7 +85,7 @@ class Game:
 
         self.subscreen = self.subscreen.respond_to_events(pygame.event.get())
 
-        # If we move from a subscreen back to main, refocus on the self.active player
+        # If we move from a subscreen back to main, refocus on the active player
         if not self.subscreen:
           self.screen.center_offset_on_creature(self.active)
       else:
@@ -94,7 +94,10 @@ class Game:
         # If we are waiting for movement, projetiles, or for AI
         if self.world.movement_in_progress():
           if frame_counter == 0:
+            combat_before = self.world.in_combat()
             self.world.apply_next_move()
+            if not combat_before and self.world.in_combat():
+              self.active = self.world.get_current_active_creature()
             self.screen.center_offset_on_creature(self.active)
         elif self.world.projectile_sequence:
           self.world.iterate_projectiles()
@@ -104,10 +107,7 @@ class Game:
             self.screen.center_offset_on_creature(self.active)
             if done_turn:
               self.active = self.world.get_next_active_creature()
-            while not self.world.can_see(self.active.x, self.active.y):
-              done_turn = self.active.take_turn()
-              if done_turn:
-                self.active = self.world.get_next_active_creature()
+              self.screen.center_offset_on_creature(self.active)
         else:
           # Take player input
           for event in pygame.event.get():
@@ -116,8 +116,14 @@ class Game:
               sys.exit(0)
 
             if event.type == MOUSEBUTTONDOWN:
+              left, _, right = pygame.mouse.get_pressed()
+
+              # Right clicking unloads the current loaded skill
+              if self.active.loaded_skill and right:
+                self.active.loaded_skill = None
+
               # If we are clicking a button
-              if mouse_x > self.active.action_bar.screen_x and mouse_y > self.active.action_bar.screen_y:
+              elif mouse_x > self.active.action_bar.screen_x and mouse_y > self.active.action_bar.screen_y:
                 self.active.action_bar.mouse_click(mouse_x, mouse_y)
               elif self.clicking_button(self.buttons + [self.end_turn_button], mouse_x, mouse_y):
                 pass

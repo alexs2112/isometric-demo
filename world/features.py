@@ -41,7 +41,7 @@ class Door(Feature):
 
   def interact(self, creature):
     self.opened = not self.opened
-    creature.world.update_fov(creature)
+    creature.world.update_fov_all()
   
   def see_through(self):
     return self.opened
