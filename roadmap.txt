@@ -1,15 +1,21 @@
 Active Work:
+ - * Pickup subscreen
+ - * Drawn on top of main
+ - * Clicking off of the pickup box closes the subscreen
+ - Clicking an item brings up a small dropdown menu on the mouse, to pick up, send to [other player], and equip/use
+ - Pick up all button
+ - Item preview window at the bottom, showing icon, stats, desc and how it will affect stats
 
 Unordered Roadmap:
  - Dungeon Overhaul:
    - Up to 3 floors with increasing difficulty. Use staircases to traverse from one "world" to the next
    - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Prettier subscreens and UI
-   - New pickup subscreen
    - New skill subscreen
    - Escape key menu that doesn't immediately kill the game
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
+   - Inspect enemy screen
  - Better Ranged Weapons:
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
@@ -43,6 +49,10 @@ Unordered Roadmap:
  - Make equipping/unequipping stuff cost AP in combat
  - Make custom skill icons, effect icons, effect sprites
  - Add a few frames of delay at the end of AI turns
+ - Right clicking unloads a loaded skill
+   - Change all current mouse effects to left click only
+ - Minor effect icon to represent more than 2 concurrent effects
+   - Only show at most 1 of each effect icon...
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this

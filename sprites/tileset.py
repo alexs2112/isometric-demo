@@ -53,6 +53,7 @@ class TileSet:
 
     # Some subscreen related inits that don't have specific image hashes
     self.initialize_character_screen()
+    self.initialize_pickup_screen()
 
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
@@ -332,6 +333,12 @@ class TileSet:
     self.ui["item_icon_box"] = full.subsurface((0,72,52,52))
     self.ui["item_icon_box_green"] = full.subsurface((52,72,52,52))
     self.ui["item_icon_box_yellow"] = full.subsurface((104,72,52,52))
+
+  def initialize_pickup_screen(self):
+    full = pygame.image.load("assets/ui/pickup_screen.png")
+    self.ui["pickup_screen_background"] = full.subsurface((0,0,320,216))
+    self.ui["item_box"] = full.subsurface((0,216,52,52))
+    self.ui["item_box_highlight"] = full.subsurface((52,216,52,52))
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")

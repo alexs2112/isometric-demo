@@ -1,7 +1,9 @@
 import pygame, sys
+from items.inventory import Inventory
 import misc.init as init
 from items.item_factory import ItemFactory
 from screens.character_screen import CharacterScreen
+from screens.pickup_screen import PickupScreen
 from screens.screen import Button
 from screens.skill_screen import SkillScreen
 from skills.effect_factory import EffectFactory
@@ -23,7 +25,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m, K_i, K_s, K_h, K_p, K_c,
+    K_m, K_i, K_s, K_h, K_p, K_c, K_g,
     K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0,
     KEYDOWN,
     MOUSEBUTTONDOWN,
@@ -72,7 +74,15 @@ class Game:
       tile_x, tile_y = get_mouse_tile(self.screen.offset_x, self.screen.offset_y, mouse_x, mouse_y)
 
       if self.subscreen:
+        if self.subscreen.is_overlay():
+          draw_world(self.screen, self.world)
+          if self.active.is_player():
+            draw_player_stats(self.screen, self.active, path, target)
+            self.active.action_bar.draw(self.screen, mouse_x, mouse_y)
+          draw_buttons(self.screen, self.buttons, mouse_x, mouse_y)
+          display_messages(self.screen, self.messages)
         self.subscreen.draw(self.screen)
+
         self.subscreen = self.subscreen.respond_to_events(pygame.event.get())
 
         # If we move from a subscreen back to main, refocus on the self.active player
@@ -198,6 +208,12 @@ class Game:
                 self.subscreen = PartyScreen(self.world.players)
               elif event.key == K_h:
                 self.subscreen = HelpScreen()
+              elif event.key == K_g:
+                test_inventory = Inventory()
+                test_inventory.add_item(self.item_factory.weapon.hand_axe(), 2)
+                test_inventory.add_item(self.item_factory.potion.potion_minor_healing())
+                test_inventory.add_item(self.item_factory.tomes.tome_of_flame_lash())
+                self.subscreen = PickupScreen(self.active, test_inventory)
               elif event.key == K_s:
                 if self.active.skills:
                   self.subscreen = SkillScreen(self.active)
@@ -295,7 +311,7 @@ class Game:
     self.active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):
-    self.subscreen = InventoryScreen(self.world.players, self.world.get_inventory(tile_x, tile_y))
+    self.subscreen = PickupScreen(self.active, self.world.get_inventory(tile_x, tile_y))
 
   def move_party(self, start, end):
     # If we arent in combat, we want the party to all follow the active player

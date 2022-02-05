@@ -51,9 +51,7 @@ class Inventory:
     return len(self.items.keys())
 
   def get_item_at_index(self, index):
-    i = 0
-    for item, quantity in self.get_items():
-      if i == index:
-        return item, quantity
-      i += 1
-    return (None, 0)
+    items = self.get_items()
+    if index >= len(items):
+      return (None, 0)
+    return items[index]

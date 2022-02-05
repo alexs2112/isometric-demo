@@ -17,6 +17,10 @@ class Subscreen:
           sys.exit(0)
     return self
 
+  def is_overlay(self):
+    # If the subscreen is drawn on top of the main screen or not
+    return False
+
 class StartScreen(Subscreen):
   def draw(self, screen: Screen):
     screen.write_centered("Press ENTER to start the game", (screen.width / 2, screen.height / 2), screen.tileset.get_font(48))
