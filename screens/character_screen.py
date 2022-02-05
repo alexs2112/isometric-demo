@@ -317,6 +317,8 @@ class CharacterScreen(Subscreen):
           creature.add_item(item)
         creature.equip(item)
     elif item.is_consumable():
+      owner.remove_item(item)
+      creature.add_item(item)
       item.consume(creature)
     if owner.inventory.get_quantity(item) <= 0:
       self.clicked_item = None

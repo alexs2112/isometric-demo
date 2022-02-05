@@ -1,10 +1,4 @@
 Active Work:
- - * Pickup subscreen
- - * Drawn on top of main
- - * Clicking off of the pickup box closes the subscreen
- - Clicking an item brings up a small dropdown menu on the mouse, to pick up, send to [other player], and equip/use
- - Pick up all button
- - Item preview window at the bottom, showing icon, stats, desc and how it will affect stats
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -16,6 +10,8 @@ Unordered Roadmap:
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
    - Inspect enemy screen
+   - Character screen: Left click an item "picks it up" letting you click another player to give to them or click an equipment slot
+     to equip it
  - Better Ranged Weapons:
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg

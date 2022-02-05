@@ -25,7 +25,7 @@ from pygame.locals import (
     K_ESCAPE,
     K_SPACE,
     K_RETURN,
-    K_m, K_i, K_s, K_h, K_p, K_c, K_g,
+    K_m, K_i, K_s, K_h, K_p, K_c,
     K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0,
     KEYDOWN,
     MOUSEBUTTONDOWN,
@@ -208,12 +208,6 @@ class Game:
                 self.subscreen = PartyScreen(self.world.players)
               elif event.key == K_h:
                 self.subscreen = HelpScreen()
-              elif event.key == K_g:
-                test_inventory = Inventory()
-                test_inventory.add_item(self.item_factory.weapon.hand_axe(), 2)
-                test_inventory.add_item(self.item_factory.potion.potion_minor_healing())
-                test_inventory.add_item(self.item_factory.tomes.tome_of_flame_lash())
-                self.subscreen = PickupScreen(self.active, test_inventory)
               elif event.key == K_s:
                 if self.active.skills:
                   self.subscreen = SkillScreen(self.active)
@@ -311,7 +305,7 @@ class Game:
     self.active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):
-    self.subscreen = PickupScreen(self.active, self.world.get_inventory(tile_x, tile_y))
+    self.subscreen = PickupScreen(self.screen, self.active, self.world.get_inventory(tile_x, tile_y))
 
   def move_party(self, start, end):
     # If we arent in combat, we want the party to all follow the active player

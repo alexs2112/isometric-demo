@@ -114,22 +114,24 @@ def get_projectile_path(projectile, tile_path):
       (x2,y2) = tile_path[i+1]
       if x == x2:
         if y > y2:
-          result.append(((x,y), projectile.ne))
+          image = projectile.ne
         else:
-          result.append(((x,y), projectile.sw))
+          image = projectile.sw
       elif y == y2:
         if x > x2:
-          result.append(((x,y), projectile.nw))
+          image = projectile.nw
         else:
-          result.append(((x,y), projectile.se))
+          image = projectile.se
       elif x > x2:
         if y > y2:
-          result.append(((x,y), projectile.n))
+          image = projectile.n
         else:
-          result.append(((x,y), projectile.w))
+          image = projectile.w
       else:
         if y > y2:
-          result.append(((x,y), projectile.e))
+          image = projectile.e
         else:
-          result.append(((x,y), projectile.s))
+          image = projectile.s
+      if image:
+        result.append(((x,y), image))
   return result

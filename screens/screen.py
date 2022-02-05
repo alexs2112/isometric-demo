@@ -105,6 +105,9 @@ class Button:
 
   def in_bounds(self, mouse_x, mouse_y):
     return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
+  
+  def not_in_bounds(self, mouse_x, mouse_y):
+    return mouse_x < self.x or mouse_y < self.y or mouse_x > self.x + self.width or mouse_y > self.y + self.height
 
   def get_image(self, mouse_x, mouse_y):
     if self.click_frames > 0 and self.click_image:

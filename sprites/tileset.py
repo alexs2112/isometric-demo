@@ -336,9 +336,15 @@ class TileSet:
 
   def initialize_pickup_screen(self):
     full = pygame.image.load("assets/ui/pickup_screen.png")
-    self.ui["pickup_screen_background"] = full.subsurface((0,0,320,216))
-    self.ui["item_box"] = full.subsurface((0,216,52,52))
-    self.ui["item_box_highlight"] = full.subsurface((52,216,52,52))
+    self.ui["pickup_screen_background"] = full.subsurface((0,0,320,416))
+    self.ui["item_box"] = full.subsurface((0,416,52,52))
+    self.ui["item_box_highlight"] = full.subsurface((52,416,52,52))
+    self.ui["pick_up_all"] = full.subsurface((104,416,120,40))
+    self.ui["pick_up_all_highlight"] = full.subsurface((224,416,120,40))
+    self.ui["option_button"] = full.subsurface((0,468,128,18))
+    self.ui["option_button_highlight"] = full.subsurface((128,468,128,18))
+    self.ui["exit_button"] = full.subsurface((256,456,40,35))
+    self.ui["exit_button_highlight"] = full.subsurface((296,456,40,35))
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")

@@ -5,7 +5,9 @@ class ProjectileSequence:
     self.sequence = []
 
   def add_projectile_path(self, projectile, path):
-    self.sequence.append(get_projectile_path(projectile, path))
+    res = get_projectile_path(projectile, path)
+    if res:
+      self.sequence.append(res)
 
   def get_iteration(self):
     out = []
