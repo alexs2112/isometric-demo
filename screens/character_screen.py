@@ -12,7 +12,7 @@ from pygame.locals import (
 )
 
 EQUIPMENT_START_X = 420
-INVENTORIES_START_X = 860
+INVENTORIES_START_X = 864
 EQUIPMENT_ORDER = [
   "Head",
   "Chest",
@@ -26,13 +26,12 @@ class CharacterScreen(Subscreen):
   def __init__(self, tileset: TileSet, creature: Creature, party):
     self.creature = creature
     self.party = party
-    self.font = tileset.get_font()
+    self.tileset = tileset
 
     # Don't cache these rather large images in tileset
-    self.stats_block = pygame.image.load("assets/screens/player_stats_block.png")
     self.stats_cache_surface = None
     self.equipment_block = pygame.image.load("assets/screens/player_equipment_block.png")
-    self.update_player_stats()
+    self.update_player_stats(tileset)
 
     self.clicked_item = None
     self.clicked_player = None
@@ -47,7 +46,7 @@ class CharacterScreen(Subscreen):
     self.player_buttons.clear()
     base_x = INVENTORIES_START_X
     base_y = 0
-    button_width = 420
+    button_width = 416
     button_height = 36
 
     button_default = tileset.get_ui("char_screen_inv_name")
@@ -69,7 +68,7 @@ class CharacterScreen(Subscreen):
       if self.creature == creature:
         return
       self.creature = creature
-      self.update_player_stats()
+      self.update_player_stats(tileset)
       self.set_player_buttons(tileset)
     return func
   
@@ -84,39 +83,110 @@ class CharacterScreen(Subscreen):
     self.draw_inventories(screen)
     self.write_item_description(screen)
 
-  def update_player_stats(self):
+  def update_player_stats(self, tileset: TileSet):
     # Left: All stats, attributes, and statss. Increase them on level up here
     self.stats_cache_surface = pygame.Surface((420, 800))
-    self.stats_cache_surface.blit(self.stats_block, (0,0))
-    write_centered(self.stats_cache_surface, "Stats (Temporary)", (210, 12), self.font)
-    text = [
-      "HP: " + str(self.creature.hp) + "/" + str(self.creature.get_max_hp()),
-      "Mana: " + str(self.creature.mana) + "/" + str(self.creature.get_max_mana()),
-      "Physical Armor: " + str(self.creature.p_armor) + "/" + str(self.creature.get_p_armor_cap()),
-      "Magical Armor: " + str(self.creature.m_armor) + "/" + str(self.creature.get_m_armor_cap()),
-      "Action Points: " + str(self.creature.ap) + "/" + str(self.creature.max_ap),
-      "Initiative: " + str(self.creature.get_initiative()) + "      Speed: " + str(self.creature.get_speed()),
-      "",
-      "Basic Attack:",
-      "   " + str(self.creature.get_attack_min()) + "-" + str(self.creature.get_attack_max()) + " damage",
-      "   Cost: " + str(self.creature.get_attack_cost()) + " AP",
-      "Attributes"
-    ]
-    for attribute in ATTRIBUTE_LIST.keys():
-      text.append("   " + attribute + ": " + str(self.creature.get_attribute(attribute)))
-    text.append("Stats:")
-    for stat in STAT_LIST.keys():
-      text.append("   " + stat + ": " + str(self.creature.get_stat(stat)))
+    y = 0
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_half_box"), (0,y))
+    self.stats_cache_surface.blit(tileset.get_ui("stats_health_icon"), (2,y+2))
+    write_centered(self.stats_cache_surface, "HP: " + str(self.creature.hp) + "/" + str(self.creature.get_max_hp()),
+          (122, y + 6), tileset.get_font(22))
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_half_box"), (210,y))
+    self.stats_cache_surface.blit(tileset.get_ui("stats_mana_icon"), (212,y+2))
+    write_centered(self.stats_cache_surface, "MP: " + str(self.creature.mana) + "/" + str(self.creature.get_max_mana()),
+          (332, y + 6), tileset.get_font(22))
+    
+    y += 36
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_half_box"), (0,y))
+    self.stats_cache_surface.blit(tileset.get_ui("armor_physical"), (8, y + 5))
+    write_centered(self.stats_cache_surface, "PA: " + str(self.creature.p_armor) + "/" + str(self.creature.get_p_armor_cap()),
+          (122, y + 6), tileset.get_font(22))
+    x = 210
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_half_box"), (x,y))
+    self.stats_cache_surface.blit(tileset.get_ui("armor_magical"), (x + 8, y + 5))
+    write_centered(self.stats_cache_surface, "MA: " + str(self.creature.m_armor) + "/" + str(self.creature.get_m_armor_cap()),
+          (x + 122, y + 6), tileset.get_font(22))
+    
+    y += 36
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_third_box"), (0,y))
+    self.stats_cache_surface.blit(tileset.get_ui("ap_active"), (6, y + 6))
+    write_centered(self.stats_cache_surface, "AP: " + str(self.creature.ap) + "/" + str(self.creature.max_ap),
+          (88, y + 6), tileset.get_font(22))
+    x = 140
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_third_box"), (x,y))
+    self.stats_cache_surface.blit(tileset.get_ui("stats_question_icon"), (x+2, y+2))
+    write_centered(self.stats_cache_surface, "SPD: " + str(self.creature.get_speed()),
+          (x+88, y + 6), tileset.get_font(22))
+    x = 280
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_third_box"), (x,y))
+    self.stats_cache_surface.blit(tileset.get_ui("stats_question_icon"), (x+2, y+2))
+    write_centered(self.stats_cache_surface, "INIT: " + str(self.creature.get_initiative()),
+          (x+88, y + 6), tileset.get_font(22))
+    
+    y += 36
+    x = 0
+    self.stats_cache_surface.blit(tileset.get_ui("stats_divider"), (x,y))
 
-    x = 12
-    y = 28
-    line_height = 24
-    for line in text:
-      if line == "":
-        y += int(line_height / 2)
-      else:
-        write(self.stats_cache_surface, line, (x,y), self.font)
-        y += line_height
+    y += 12
+    self.stats_cache_surface.blit(tileset.get_ui("stats_weapon_box"), (x,y))
+    w = self.creature.equipment.slot("Main")
+    if w:
+      self.stats_cache_surface.blit(w.icon, (x+2,y+2))
+    else:
+      self.stats_cache_surface.blit(tileset.get_ui("unarmed_icon"), (x+2,y+2))
+    write(self.stats_cache_surface, "Damage: " + str(self.creature.get_attack_min()) + "-" + str(self.creature.get_attack_max()) + " " + self.creature.get_damage_type().capitalize(),
+          (x + 60, y + 2), tileset.get_font(20))
+    write(self.stats_cache_surface, "Cost: " + str(self.creature.get_attack_cost()) + " AP" + ", Range: " + str(self.creature.get_attack_range()),
+          (x + 60, y + 24), tileset.get_font(20))
+
+    y += 52
+    self.stats_cache_surface.blit(tileset.get_ui("stats_divider"), (x,y))
+
+    y += 12
+    self.stats_cache_surface.blit(tileset.get_ui("stats_title_box"), (0,y))
+    write(self.stats_cache_surface, "Attributes", (12, y + 4), tileset.get_font())
+
+    y += 36
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_third_box_large"), (0,y))
+    self.stats_cache_surface.blit(tileset.get_ui("brawn_icon"), (2, y + 2))
+    write_centered(self.stats_cache_surface, str(self.creature.get_attribute("Brawn")),
+          (96, y + 12), tileset.get_font(26))
+    x = 140
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_third_box_large"), (x,y))
+    self.stats_cache_surface.blit(tileset.get_ui("agility_icon"), (x+2, y + 2))
+    write_centered(self.stats_cache_surface, str(self.creature.get_attribute("Agility")),
+          (x+96, y + 12), tileset.get_font(26))
+    x = 280
+    self.stats_cache_surface.blit(tileset.get_ui("stats_icon_third_box_large"), (x,y))
+    self.stats_cache_surface.blit(tileset.get_ui("will_icon"), (x+2, y + 2))
+    write_centered(self.stats_cache_surface, str(self.creature.get_attribute("Will")),
+          (x+96, y + 12), tileset.get_font(26))
+
+    x = 0
+    y += 52
+    self.stats_cache_surface.blit(tileset.get_ui("stats_divider"), (x,y))
+
+    y += 12
+    self.stats_cache_surface.blit(tileset.get_ui("stats_title_box"), (0,y))
+    write(self.stats_cache_surface, "Stats", (12, y + 4), tileset.get_font())
+
+    y += 36
+    stats = self.creature.stats.items()
+    if stats:
+      for stat, value in stats:
+        self.stats_cache_surface.blit(tileset.get_ui("stats_stat_box"), (0,y))
+        self.stats_cache_surface.blit(tileset.get_ui("stats_question_icon"), (2, y+2))
+        write_centered(self.stats_cache_surface, stat, (198, y + 4), tileset.get_font())
+        if value < 0:
+          colour = tileset.HP_RED
+        else:
+          colour = tileset.WHITE
+        write_centered(self.stats_cache_surface, str(value), (390, y + 4), tileset.get_font(), colour)
+        y += 36
+    else:
+      self.stats_cache_surface.blit(tileset.get_ui("stats_title_box"), (0,y))
+      write(self.stats_cache_surface, "No stats to speak of...", (12, y + 4), tileset.get_font())
+      y += 36
 
   def draw_inventories(self, screen: Screen):
     x,y = INVENTORIES_START_X, 0
@@ -128,9 +198,8 @@ class CharacterScreen(Subscreen):
       y = self.draw_player_inventory(screen, c, x, y)
 
   def draw_player_inventory(self, screen: Screen, creature:  Creature, x, y):
-    screen.write_centered(creature.name, (x+210, y+4), screen.tileset.get_font())
+    screen.write_centered(creature.name, (x+210, y+4), screen.tileset.get_font(22))
     y += 36
-    x += 2
 
     items = creature.inventory.get_unequipped_items(creature)
     num_items = len(items)
@@ -170,7 +239,7 @@ class CharacterScreen(Subscreen):
   def draw_player_equipment(self, screen: Screen):
     x, y = EQUIPMENT_START_X, 0
     screen.blit(self.equipment_block, (x,y))
-    screen.blit(self.creature.get_sprite(86), (x + 338, y + 15))
+    screen.blit(self.creature.get_sprite(86), (x + 342, y + 15))
     x += 12
     y += 6
     screen.write(self.creature.name, (x,y), screen.tileset.get_font(26))
@@ -199,7 +268,7 @@ class CharacterScreen(Subscreen):
     x += 12
     y += 64
 
-    lines = split_text_to_list(i.description, 388, screen.tileset.get_font(20))
+    lines = split_text_to_list(i.description, 392, screen.tileset.get_font(20))
     lines.append("")
     lines += self.get_item_description(i, self.creature)
     screen.write_list(lines, (x,y), screen.tileset.get_font(20))
@@ -323,4 +392,4 @@ class CharacterScreen(Subscreen):
     if owner.inventory.get_quantity(item) <= 0:
       self.clicked_item = None
       self.clicked_player = None
-    self.update_player_stats()
+    self.update_player_stats(self.tileset)

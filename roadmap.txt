@@ -1,4 +1,11 @@
 Active Work:
+ - Character screen: 
+   - * Only show stats that != 0. mousing over them shows a brief description
+   - Mousing over stats brings up a tooltip telling you what it is and what it affects
+   - Left click an item "picks it up" letting you click another player to give to them or click an equipment slot
+    to equip it
+   - Draw the current players action bar, let you drag items into it
+   - A way to exit the screen via mouse...
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -10,8 +17,6 @@ Unordered Roadmap:
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
    - Inspect enemy screen
-   - Character screen: Left click an item "picks it up" letting you click another player to give to them or click an equipment slot
-     to equip it
  - Better Ranged Weapons:
    - You can quiver special arrows to automatically fire them, or just fire them via mouse click from inventory
       - Default quiver has no ammunition cost because that sucks in an rpg
