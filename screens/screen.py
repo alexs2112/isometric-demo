@@ -158,3 +158,59 @@ class Button:
 
       if bounds and self.tooltip_frames >= self.tooltip_delay:
         screen.write_centered(self.tooltip, (self.x + self.width // 2, self.y - self.tooltip_size - 2), screen.tileset.get_font(self.tooltip_size))
+
+class TooltipBox:
+  def __init__(self, text, rect, text_width, text_bg, font):
+    self.text_line = text
+    self.x, self.y, self.width, self.height = rect
+    self.text_bg = text_bg
+    self.font = font
+
+    self.header_text = None
+    self.header_bg = None
+    self.header_size = 0
+
+    self.bottom_bg = None
+
+    self.delay = 0
+    self.mouse_over = 0
+
+    self.text = split_text_to_list(self.text_line, text_width, self.font)
+
+  def set_header(self, header_text, header_bg, header_size):
+    self.header_text = header_text
+    self.header_bg = header_bg
+    self.header_size = header_size
+  
+  def set_bottom_bg(self, bottom_bg):
+    self.bottom_bg = bottom_bg
+
+  def set_delay(self, delay_frames):
+    self.delay = delay_frames
+
+  def in_bounds(self, mouse_x, mouse_y):
+    return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
+  
+  def draw(self, screen: Screen, mouse_x, mouse_y):
+    if self.in_bounds(mouse_x, mouse_y):
+      if self.mouse_over < self.delay:
+        self.mouse_over += 1
+      else:
+        x,y = mouse_x, mouse_y
+        line_height = self.text_bg.get_height()
+        if self.header_text:
+          screen.blit(self.header_bg, (x, y))
+          screen.write(self.header_text, (x + 4, y + 1), screen.tileset.get_font(self.header_size))
+          y += self.header_bg.get_height()
+        for line in self.text[:-1]:
+          screen.blit(self.text_bg, (x, y))
+          screen.write(line, (x + 4, y + 1), self.font)
+          y += line_height
+        
+        if self.bottom_bg:
+          screen.blit(self.bottom_bg, (x, y))
+        else:
+          screen.blit(self.text_bg, (x, y))
+        screen.write(self.text[-1], (x + 4, y + 1), self.font)
+    else:
+      self.mouse_over = 0

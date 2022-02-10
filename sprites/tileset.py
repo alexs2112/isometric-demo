@@ -347,6 +347,10 @@ class TileSet:
     self.ui["will_icon"] = full.subsurface((236,260,48,48))
     self.ui["unarmed_icon"] = full.subsurface((284,260,48,48))
     self.ui["stats_stat_box"] = full.subsurface((0,312,420,36))
+    self.ui["stats_tooltip_line_header"] = full.subsurface((0,348,220,22))
+    self.ui["stats_tooltip_line"] = full.subsurface((0,350,220,20))
+    self.ui["stats_tooltip_line_bottom"] = full.subsurface((0,350,220,22))
+
 
   def initialize_pickup_screen(self):
     full = pygame.image.load("assets/screens/pickup_screen.png")

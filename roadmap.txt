@@ -1,7 +1,7 @@
 Active Work:
  - Character screen: 
    - * Only show stats that != 0. mousing over them shows a brief description
-   - Mousing over stats brings up a tooltip telling you what it is and what it affects
+   - * Mousing over stats brings up a tooltip telling you what it is and what it affects
    - Left click an item "picks it up" letting you click another player to give to them or click an equipment slot
     to equip it
    - Draw the current players action bar, let you drag items into it
@@ -55,6 +55,7 @@ Unordered Roadmap:
  - Loading a skill darkens each tile outside of range
  - Walking on open doors is permitted, right click them to close them
  - Increase the frame rate, add a helper function to calculate how many frames need to pass to count as seconds
+ - Change Wizards unarmed to default, introduce Wand weapon that deals magic damage at a short range and increases stat of that type
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
