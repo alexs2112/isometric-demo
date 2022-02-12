@@ -2,8 +2,9 @@ Active Work:
  - Character screen: 
    - * Only show stats that != 0. mousing over them shows a brief description
    - * Mousing over stats brings up a tooltip telling you what it is and what it affects
-   - Left click an item "picks it up" letting you click another player to give to them or click an equipment slot
-    to equip it
+   - * Left click an item "picks it up"
+     - * Clicking another players inventory gives it to them
+     - * Clicking in your equipment box equips/uses it
    - Draw the current players action bar, let you drag items into it
    - A way to exit the screen via mouse...
 
@@ -64,6 +65,7 @@ Tech Debt:
    to the screen. This way if we don't make changes we can simply blit this section every time without recalculating where
    everything needs to be
     - Small example with stats in the character screen
+ - Character screen is getting pretty unwieldy, clean it up
 
 Known Bugs:
  - Enemies that have lost the player no longer end their turn and deactivate, game just loops...

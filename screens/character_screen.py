@@ -1,4 +1,5 @@
 import pygame
+from sympy import ilcm
 from screens.screen import Screen, Button, TooltipBox, write, write_centered, split_text_to_list
 from sprites.tileset import TileSet
 from screens.subscreen import Subscreen
@@ -8,6 +9,7 @@ from pygame.locals import (
   MOUSEBUTTONDOWN,
   KEYDOWN,
   K_ESCAPE,
+  K_SPACE,
   K_d
 )
 
@@ -88,7 +90,9 @@ class CharacterScreen(Subscreen):
     self.draw_inventories(screen)
     self.write_item_description(screen)
 
-    if mouse_x < EQUIPMENT_START_X:
+    if self.clicked_item:
+      screen.blit(self.clicked_item.icon, (mouse_x - 24, mouse_y - 24))
+    elif mouse_x < EQUIPMENT_START_X:
       if mouse_y < STAT_TOOLTIP_START_Y:
         for t in self.tooltips:
           t.draw(screen, mouse_x, mouse_y)
@@ -121,7 +125,7 @@ class CharacterScreen(Subscreen):
 
         if i and self.clicked_item == i and self.clicked_player == creature:
           box = screen.tileset.get_ui("item_icon_box_green")
-        elif i and self.mouse_item == i and self.mouse_player == creature:
+        elif i and not self.clicked_item and self.mouse_item == i and self.mouse_player == creature:
           box = screen.tileset.get_ui("item_icon_box_yellow")
         else:
           box = screen.tileset.get_ui("item_icon_box")
@@ -153,8 +157,16 @@ class CharacterScreen(Subscreen):
     screen.write(self.creature.name, (x,y), screen.tileset.get_font(26))
     y += 36
     for slot in EQUIPMENT_ORDER:
-      screen.blit(screen.tileset.get_ui("item_icon_box"), (x,y))
       i = self.creature.equipment.slot(slot)
+
+      if i and self.clicked_item == i and self.clicked_player == self.creature:
+        box = screen.tileset.get_ui("item_icon_box_green")
+      elif i and not self.clicked_item and self.mouse_item == i and self.mouse_player == self.creature:
+        box = screen.tileset.get_ui("item_icon_box_yellow")
+      else:
+        box = screen.tileset.get_ui("item_icon_box")
+      screen.blit(box, (x,y))
+      
       if i:
         screen.blit(i.icon, (x + 2, y + 2))
         screen.write(i.name, (x + 64, y + 14), screen.tileset.get_font())
@@ -164,9 +176,9 @@ class CharacterScreen(Subscreen):
 
   def write_item_description(self, screen: Screen):
     x, y = EQUIPMENT_START_X, 480
-    i = self.mouse_item
+    i = self.clicked_item
     if not i:
-      i = self.clicked_item
+      i = self.mouse_item
     if not i:
       return
     
@@ -185,11 +197,11 @@ class CharacterScreen(Subscreen):
     options = []
     if item.is_equipment():
       if creature.is_equipped(item):
-        options.append("[R_CLICK]: Unequip")
+        options.append("[SPACE]: Unequip")
       else:
-        options.append("[R_CLICK]: Equip")
+        options.append("[SPACE]: Equip")
     if item.is_consumable():
-      options.append("[R_CLICK]: Use")
+      options.append("[SPACE]: Use")
     options.append("[D]: Drop")
     return options
 
@@ -252,36 +264,70 @@ class CharacterScreen(Subscreen):
     for event in events:
       if event.type == KEYDOWN:
         if event.key == K_ESCAPE:
-          return None
+          if self.clicked_item:
+            self.clicked_item = None
+            self.clicked_player = None
+          else:
+            return None
         elif event.key == K_d:
-          i = self.mouse_item
-          p = self.mouse_player
+          i, p = self.clicked_item, self.clicked_player
           if not i:
-            i = self.clicked_item
-            p = self.clicked_player
-          p.remove_item(i)
-          p.world.add_item(i, (p.x, p.y))
+            i, p = self.mouse_item, self.mouse_player
+          if i:
+            p.remove_item(i)
+            p.world.add_item(i, (p.x, p.y))
+            if p.inventory.get_quantity(i) <= 0:
+              self.clicked_item = None
+              self.clicked_player = None
+        elif event.key == K_SPACE:
+          i, p = self.clicked_item, self.clicked_player
+          if not i:
+            i, p = self.mouse_item, self.mouse_player
+          if i:
+            self.use_item(p, self.creature, i)
+            self.clicked_item = None
+            self.clicked_player = None
       elif event.type == MOUSEBUTTONDOWN:
         x,y = pygame.mouse.get_pos()
+        left, _, right = pygame.mouse.get_pressed()
 
-        if x > INVENTORIES_START_X:
+        if self.clicked_item:
+          if left:
+            if x > INVENTORIES_START_X:
+              p, _ = self.get_player_by_mouse(y)
+              if p:
+                self.clicked_player.remove_item(self.clicked_item)
+                p.add_item(self.clicked_item)
+            elif x > EQUIPMENT_START_X:
+              self.use_item(self.clicked_player, self.creature, self.clicked_item)
+          self.clicked_item = None
+          self.clicked_player = None
+
+        elif x > INVENTORIES_START_X:
           for b in self.player_buttons:
             if b.in_bounds(x,y):
               b.click()
 
           self.clicked_player, player_base_height = self.get_player_by_mouse(y)
           if self.clicked_player:
-            self.clicked_item = self.get_inventory_item_by_mouse(self.clicked_player, x - INVENTORIES_START_X, y - player_base_height)
+            i = self.get_inventory_item_by_mouse(self.clicked_player, x - INVENTORIES_START_X, y - player_base_height)
 
             # For now, if we right clicked it then "use" the item immediately
             # Left click simply selects it
             # The creature using the item is the current selected one, so you can use items from other inventories
-            if self.clicked_item and pygame.mouse.get_pressed()[2]:
-              self.use_item(self.clicked_player, self.creature, self.clicked_item)
+            if i:
+              if left:
+                self.clicked_item = i
+              elif right:
+                self.use_item(self.clicked_player, self.creature, i)
         elif x > EQUIPMENT_START_X:
-          self.clicked_item = self.get_equipped_item_by_mouse(x,y)
-          if self.clicked_item and pygame.mouse.get_pressed()[2]:
-              self.use_item(self.creature, self.creature, self.clicked_item)
+          i = self.get_equipped_item_by_mouse(x,y)
+          if i:
+            if left:
+              self.clicked_item = i
+              self.clicked_player = self.creature
+            elif right:
+              self.use_item(self.creature, self.creature, i)
     return self
 
   def use_item(self, owner: Creature, creature: Creature, item):
