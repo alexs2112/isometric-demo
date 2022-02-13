@@ -6,7 +6,7 @@ from screens.screen import Screen, Button
 class ActionBar:
   def __init__(self, creature, screen_x, screen_y):
     self.creature = creature
-    self.buttons = []   # A list of tuples of [(Button: Skill/Item)]
+    self.buttons = [None] * 10   # A list of tuples of [(Button: Skill/Item) | None]
 
     # Some hardcoded values when it is initialized in case we want to shift it around on the screen later in development
     self.screen_x, self.screen_y = screen_x, screen_y
@@ -22,18 +22,46 @@ class ActionBar:
     # - When a player is initialized
     # - When a player adds or removes a consumable
     # - When a player prepares or unprepares a skill
-    self.buttons.clear()  # A bit of a lazy solution, we won't bother with letting unchanged buttons persist through updates
+    self.buttons = [None] * 10  # A bit of a lazy solution, we won't bother with letting unchanged buttons persist through updates
     x, y = self.screen_x, self.screen_y
+
+    index = 0
     for s in self.creature.get_prepared_skills():
       b = Button((x,y,52,52), self.button_default, self.button_select, self.button_click, self.get_skill_function(s))
-      self.buttons.append((b,s))
+      self.buttons[index] = (b,s)
+      index += 1
       x += 52
 
     for i, _ in self.creature.inventory.get_items():
       if i.is_consumable():
         b = Button((x,y,52,52), self.button_default, self.button_select, self.button_click, self.get_consumable_function(i))
-        self.buttons.append((b,i))
+        self.buttons[index] = (b,i)
+        index += 1
         x += 52
+
+  def set_button(self, element, index):
+    # Element: Item | Skill
+    if element.is_skill():
+      f = self.get_skill_function(element)
+    else:
+      f = self.get_consumable_function(element)
+    b = Button((self.screen_x + index * 52, self.screen_y, 52, 52), self.button_default, self.button_select, self.button_click, f)
+    self.buttons[index] = (b, element)
+  
+  # Add a button to the first available spot
+  def add_button(self, element):
+    for i in range(10):
+      if self.buttons[i] == None:
+        self.set_button(element, i)
+        return True
+    return False
+
+  def remove_button(self, element):
+    for i in range(10):
+      if self.buttons[i][1] == element:
+        self.buttons[i] = None
+        return i
+    return -1
 
   def get_skill_function(self, skill):
     def func():
@@ -49,21 +77,21 @@ class ActionBar:
   def draw(self, screen: Screen, mouse_x, mouse_y):
     x, y = self.screen_x, self.screen_y
     for i in range(10):
-      if i < len(self.buttons):
+      if self.buttons[i]:
         b,o = self.buttons[i]
         screen.blit(o.icon, (x+2, y+2))
         screen.blit(b.get_image(mouse_x, mouse_y), (x,y))
 
-        # Another lazy solution using try/catch to differentiate between skills, consumables
-        # Can't import Skill here because of a circular import
-        try:
+        if o.is_skill():
           if not o.is_castable(self.creature):
             screen.blit(self.dark_highlight, (x,y))
           if o.downtime > 0:
             screen.write_centered(str(o.downtime), (x + 26, y + 6), screen.tileset.get_font(32))
-        except:
-          pass
-        
+        else:
+          q = self.creature.inventory.get_quantity(o)
+          if q > 1:
+            screen.write(str(q), (x + 6, y + 6), screen.tileset.get_font(16))
+
         if b.in_bounds(mouse_x, mouse_y):
           screen.write_centered(o.name, (x + 26, y - 18), screen.tileset.get_font(16))
       else:
@@ -87,9 +115,11 @@ class ActionBar:
     elif key == K_0: i = 9
     else: return
 
-    if i < len(self.buttons):
+    if self.buttons[i]:
       self.buttons[i][0].click()
 
   def mouse_click(self, mouse_x, mouse_y):
-    for b, _ in self.buttons:
-      b.click_if_in_bounds(mouse_x, mouse_y)
+    for i in range(10):
+      if self.buttons[i]:
+        b, _ = self.buttons[i]
+        b.click_if_in_bounds(mouse_x, mouse_y)

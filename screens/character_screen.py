@@ -31,8 +31,11 @@ class CharacterScreen(Subscreen):
     self.party = party
     self.tileset = tileset
 
-    # Don't cache these rather large images in tileset
     self.stats_cache_surface = None
+    self.tooltips = []
+    self.stat_tooltips = []
+    self.initialize_tooltips(tileset)
+
     self.equipment_block = pygame.image.load("assets/screens/player_equipment_block.png")
     self.update_player_stats(tileset)
 
@@ -44,10 +47,6 @@ class CharacterScreen(Subscreen):
 
     self.player_buttons = []
     self.set_player_buttons(tileset)
-
-    self.tooltips = []
-    self.stat_tooltips = []
-    self.initialize_tooltips(tileset)
 
   def set_player_buttons(self, tileset: TileSet):
     self.player_buttons.clear()

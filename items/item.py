@@ -18,6 +18,10 @@ class Item:
   def is_consumable(self):
     return False
 
+  def is_skill(self):
+    # To differentiate between skills and items in the action bar, this should never be true for an item
+    return False
+
   def set_description(self, desc):
     self.description = desc
 

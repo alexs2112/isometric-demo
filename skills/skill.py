@@ -18,6 +18,9 @@ class Skill:
     self.basic_attack = False     # For now if this is true just call attack on each target
     self.projectile = None
 
+  def is_skill(self):
+    return True
+
   def get_type(self):
     return self.type
   

@@ -37,7 +37,11 @@ class Creature:
     self.loaded_skill = None
     self.attributes = {}
     self.stats = {}
-    self.action_bar = None
+
+    if self.is_player():
+      self.action_bar = ActionBar(self, 760, 748)
+    else:
+      self.action_bar = None
 
   def set_ai(self, ai):
     self.ai = ai
@@ -97,12 +101,6 @@ class Creature:
     self.sprite = get_sprite(self)
     self.sprite_86 = pygame.transform.scale(self.sprite, (86, 86))
     self.sprite_64 = pygame.transform.scale(self.sprite, (64, 64))
-
-  def update_action_bar(self):
-    if self.is_player():
-      if not self.action_bar:
-        self.action_bar = ActionBar(self, 760, 748)
-      self.action_bar.update()
 
 #######################
 # GETTERS AND SETTERS #
@@ -207,16 +205,19 @@ class Creature:
 ######################
   def add_item(self, item, quantity=1):
     self.inventory.add_item(item, quantity)
-    if item.is_consumable():
-      self.update_action_bar()
+    if item.is_consumable() and self.inventory.get_quantity(item) == quantity:
+      # Add consumables to the action bar by default
+      if self.action_bar:
+        self.action_bar.add_button(item)
 
   def remove_item(self, item, quantity=1):
     remaining = self.inventory.remove_item(item, quantity)
     if remaining <= 0:
       if item.is_equipment() and self.equipment.is_equipped(item):
         self.unequip(item)
-      if item.is_consumable():
-        self.update_action_bar()
+      
+      if self.action_bar:
+        self.action_bar.remove_button(item)
   
   def unequip(self, item):
     self.equipment.remove(item)
@@ -603,7 +604,9 @@ class Creature:
   def add_skill(self, skill):
     if skill not in self.skills:
       self.skills[skill] = True     # Default to true for now until we fix preparing skills
-      self.update_action_bar()
+
+      if self.action_bar:
+        self.action_bar.add_button(skill)
 
   def get_remaining_skill_slots(self):
     v = self.get_skill_slots()
@@ -621,12 +624,16 @@ class Creature:
   def prepare_skill(self, skill):
     if skill in self.skills:
       self.skills[skill] = True
-      self.update_action_bar()
+
+      if self.action_bar:
+        self.action_bar.add_button(skill)
 
   def unprepare_skill(self, skill):
     if skill in self.skills:
       self.skills[skill] = False
-      self.update_action_bar()
+
+      if self.action_bar:
+        self.action_bar.remove_button(skill)
 
   def skill_prepared(self, skill):
     if skill in self.skills:
