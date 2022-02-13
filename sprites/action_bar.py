@@ -17,28 +17,6 @@ class ActionBar:
     self.button_click = button_full.subsurface((104,0,52,52))
     self.dark_highlight = button_full.subsurface((156,0,52,52))
 
-  def update(self):
-    # Update is slow and should only be called when necessary
-    # - When a player is initialized
-    # - When a player adds or removes a consumable
-    # - When a player prepares or unprepares a skill
-    self.buttons = [None] * 10  # A bit of a lazy solution, we won't bother with letting unchanged buttons persist through updates
-    x, y = self.screen_x, self.screen_y
-
-    index = 0
-    for s in self.creature.get_prepared_skills():
-      b = Button((x,y,52,52), self.button_default, self.button_select, self.button_click, self.get_skill_function(s))
-      self.buttons[index] = (b,s)
-      index += 1
-      x += 52
-
-    for i, _ in self.creature.inventory.get_items():
-      if i.is_consumable():
-        b = Button((x,y,52,52), self.button_default, self.button_select, self.button_click, self.get_consumable_function(i))
-        self.buttons[index] = (b,i)
-        index += 1
-        x += 52
-
   def set_button(self, element, index):
     # Element: Item | Skill
     if element.is_skill():
@@ -58,10 +36,22 @@ class ActionBar:
 
   def remove_button(self, element):
     for i in range(10):
-      if self.buttons[i][1] == element:
-        self.buttons[i] = None
-        return i
-    return -1
+      if self.buttons[i]:
+        if self.buttons[i][1] == element:
+          self.buttons[i] = None
+
+  def pop_element(self, index):
+    if self.buttons[index]:
+      e = self.buttons[index][1]
+      self.buttons[index] = None
+      return e
+
+  def element_has_button(self, element):
+    for i in range(10):
+      if self.buttons[i]:
+        if self.buttons[i][1] == element:
+          return True
+    return False
 
   def get_skill_function(self, skill):
     def func():
@@ -79,8 +69,8 @@ class ActionBar:
     for i in range(10):
       if self.buttons[i]:
         b,o = self.buttons[i]
-        screen.blit(o.icon, (x+2, y+2))
         screen.blit(b.get_image(mouse_x, mouse_y), (x,y))
+        screen.blit(o.icon, (x+2, y+2))
 
         if o.is_skill():
           if not o.is_castable(self.creature):

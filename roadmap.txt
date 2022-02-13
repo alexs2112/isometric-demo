@@ -5,8 +5,8 @@ Active Work:
    - * Left click an item "picks it up"
      - * Clicking another players inventory gives it to them
      - * Clicking in your equipment box equips/uses it
-   - Draw the current players action bar, let you drag items into it
-   - A way to exit the screen via mouse...
+   - * Draw the current players action bar, let you drag items into it
+     - * Only rearrange skills and add consumables
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -57,6 +57,7 @@ Unordered Roadmap:
  - Walking on open doors is permitted, right click them to close them
  - Increase the frame rate, add a helper function to calculate how many frames need to pass to count as seconds
  - Change Wizards unarmed to default, introduce Wand weapon that deals magic damage at a short range and increases stat of that type
+ - More exit buttons for subscreens to navigate with mouse
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this

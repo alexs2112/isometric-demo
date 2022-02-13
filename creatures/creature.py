@@ -207,7 +207,7 @@ class Creature:
     self.inventory.add_item(item, quantity)
     if item.is_consumable() and self.inventory.get_quantity(item) == quantity:
       # Add consumables to the action bar by default
-      if self.action_bar:
+      if self.action_bar and not self.action_bar.element_has_button(item):
         self.action_bar.add_button(item)
 
   def remove_item(self, item, quantity=1):
@@ -605,7 +605,7 @@ class Creature:
     if skill not in self.skills:
       self.skills[skill] = True     # Default to true for now until we fix preparing skills
 
-      if self.action_bar:
+      if self.action_bar and not self.action_bar.element_has_button(skill):
         self.action_bar.add_button(skill)
 
   def get_remaining_skill_slots(self):
@@ -625,7 +625,7 @@ class Creature:
     if skill in self.skills:
       self.skills[skill] = True
 
-      if self.action_bar:
+      if self.action_bar and not self.action_bar.element_has_button(skill):
         self.action_bar.add_button(skill)
 
   def unprepare_skill(self, skill):

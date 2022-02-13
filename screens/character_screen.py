@@ -41,6 +41,7 @@ class CharacterScreen(Subscreen):
 
     self.clicked_item = None
     self.clicked_player = None
+    self.clicked_skill = None
 
     self.mouse_item = None
     self.mouse_player = None
@@ -88,9 +89,12 @@ class CharacterScreen(Subscreen):
     self.draw_player_equipment(screen)
     self.draw_inventories(screen)
     self.write_item_description(screen)
+    self.creature.action_bar.draw(screen, mouse_x, mouse_y)
 
     if self.clicked_item:
       screen.blit(self.clicked_item.icon, (mouse_x - 24, mouse_y - 24))
+    elif self.clicked_skill:
+      screen.blit(self.clicked_skill.icon, (mouse_x - 24, mouse_y - 24))
     elif mouse_x < EQUIPMENT_START_X:
       if mouse_y < STAT_TOOLTIP_START_Y:
         for t in self.tooltips:
@@ -292,7 +296,13 @@ class CharacterScreen(Subscreen):
 
         if self.clicked_item:
           if left:
-            if x > INVENTORIES_START_X:
+            if self.in_action_bar(x,y) and self.clicked_item.is_consumable():
+              index = (x - self.creature.action_bar.screen_x) // 52
+              self.creature.action_bar.set_button(self.clicked_item, index)
+              if self.creature != self.clicked_player:
+                self.clicked_player.remove_item(self.clicked_item)
+                self.creature.add_item(self.clicked_item)
+            elif x > INVENTORIES_START_X:
               p, _ = self.get_player_by_mouse(y)
               if p:
                 self.clicked_player.remove_item(self.clicked_item)
@@ -301,6 +311,22 @@ class CharacterScreen(Subscreen):
               self.use_item(self.clicked_player, self.creature, self.clicked_item)
           self.clicked_item = None
           self.clicked_player = None
+
+        elif self.clicked_skill:
+          if left:
+            if self.in_action_bar(x,y):
+              index = (x - self.creature.action_bar.screen_x) // 52
+              self.creature.action_bar.set_button(self.clicked_skill, index)
+          self.clicked_skill = None
+
+        elif self.in_action_bar(x,y):
+          index = (x - self.creature.action_bar.screen_x) // 52
+          element = self.creature.action_bar.pop_element(index)
+          if element.is_skill():
+            self.clicked_skill = element
+          else:
+            self.clicked_item = element
+            self.clicked_player = self.creature
 
         elif x > INVENTORIES_START_X:
           for b in self.player_buttons:
@@ -319,6 +345,7 @@ class CharacterScreen(Subscreen):
                 self.clicked_item = i
               elif right:
                 self.use_item(self.clicked_player, self.creature, i)
+
         elif x > EQUIPMENT_START_X:
           i = self.get_equipped_item_by_mouse(x,y)
           if i:
@@ -328,6 +355,9 @@ class CharacterScreen(Subscreen):
             elif right:
               self.use_item(self.creature, self.creature, i)
     return self
+
+  def in_action_bar(self, mouse_x, mouse_y):
+    return mouse_x > self.creature.action_bar.screen_x and mouse_y > self.creature.action_bar.screen_y
 
   def use_item(self, owner: Creature, creature: Creature, item):
     if item.is_equipment():
