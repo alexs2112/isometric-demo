@@ -124,7 +124,13 @@ class Game:
 
               # If we are clicking a button
               elif mouse_x > self.active.action_bar.screen_x and mouse_y > self.active.action_bar.screen_y:
-                self.active.action_bar.mouse_click(mouse_x, mouse_y)
+                if left:
+                  self.active.action_bar.mouse_click(mouse_x, mouse_y)
+                elif right:
+                  index = self.active.action_bar.index_of_mouse(mouse_x)
+                  element = self.active.action_bar.element_at_index(index)
+                  if element.is_skill():
+                    self.subscreen = SkillScreen(self.active, element)
               elif self.clicking_button(self.buttons + [self.end_turn_button], mouse_x, mouse_y):
                 pass
 
@@ -388,7 +394,7 @@ class Game:
     x += width
 
     def skill_func():
-      self.subscreen =  SkillScreen(self.active)
+      self.subscreen = SkillScreen(self.active)
     skill_button = Button((x,y,width,height), 
       button_full.subsurface((base_x,base_y,width,height)),
       button_full.subsurface((base_x,base_y+height,width,height)),

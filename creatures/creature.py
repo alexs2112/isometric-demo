@@ -1,5 +1,4 @@
 import math, random, pygame
-import misc.helpers as helpers
 from items.equipment_list import EquipmentList
 from items.inventory import Inventory
 from sprites.action_bar import ActionBar

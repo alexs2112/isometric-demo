@@ -54,6 +54,9 @@ class Skill:
   def reset_downtime(self):
     self.downtime = 0
 
+  def set_description(self, text):
+    self.description = text
+
   def is_castable(self, caster):
     if not caster.skill_prepared(self) or \
        self.ap_cost > caster.ap or \

@@ -40,11 +40,18 @@ class ActionBar:
         if self.buttons[i][1] == element:
           self.buttons[i] = None
 
+  def index_of_mouse(self, mouse_x):
+    return (mouse_x - self.screen_x) // 52
+
   def pop_element(self, index):
     if self.buttons[index]:
       e = self.buttons[index][1]
       self.buttons[index] = None
       return e
+  
+  def element_at_index(self, index):
+    if self.buttons[index]:
+      return self.buttons[index][1]
 
   def element_has_button(self, element):
     for i in range(10):

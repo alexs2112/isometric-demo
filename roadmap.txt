@@ -1,19 +1,24 @@
 Active Work:
- - Character screen: 
-   - * Only show stats that != 0. mousing over them shows a brief description
-   - * Mousing over stats brings up a tooltip telling you what it is and what it affects
-   - * Left click an item "picks it up"
-     - * Clicking another players inventory gives it to them
-     - * Clicking in your equipment box equips/uses it
-   - * Draw the current players action bar, let you drag items into it
-     - * Only rearrange skills and add consumables
+ - New skill screen
+ - Show all known skills as icons, mousing over/clicking one shows its description and stuff on the right
+ - Each spell has their description, cost, prerequisites, range
+   - Show the players magic skills, highlight prereqs in red if they don't meet them
+ - Highlight skill icons based on preparedness:
+   - Prepared skills: Blue
+   - Prepared don't meet reqs: Purple
+   - Unprepared skills: Grey
+   - Dont meet requirements: Red
+   - Selected: Yellow
+   - Selected Dont meet requirements: Orange
+ - Show the hotbar, you can drag spell icons either from the main page or from the spell page
+   to the hotbar
+ - Right clicking a skill on the hotbar opens this menu
 
 Unordered Roadmap:
  - Dungeon Overhaul:
    - Up to 3 floors with increasing difficulty. Use staircases to traverse from one "world" to the next
    - Room overhaul, make rooms more interesting and have purpose in the dungeon. Basically themed rooms with decorations
  - Prettier subscreens and UI
-   - New skill subscreen
    - Escape key menu that doesn't immediately kill the game
    - Mousing over things changes the cursor (attacking and grabbing items)
    - Redo main UI to have health, mana, and armor at the bottom along with an action bar
@@ -29,8 +34,7 @@ Unordered Roadmap:
      memorize skills that you have the stats for.
      - We can have items increase stats, so maybe also add this stat check in the `can_cast` method for skills
    - Reflavour cast to activate or something?
- - Action Bar Optimization:
-   - Allow the player to rearrange stuff and assign other things to hotkeys
+   - Let skills have multiple different skill requirements
  - Shadow optimizations:
    - Clean up wall shadows to use NE and NW separately (minor visual bug the current way). This is a little trickier than expected
      do to walls having thickness
@@ -57,7 +61,9 @@ Unordered Roadmap:
  - Walking on open doors is permitted, right click them to close them
  - Increase the frame rate, add a helper function to calculate how many frames need to pass to count as seconds
  - Change Wizards unarmed to default, introduce Wand weapon that deals magic damage at a short range and increases stat of that type
+    - Maybe deals a little more damage than the bow but costs mana to attack with
  - More exit buttons for subscreens to navigate with mouse
+ - Make skill screen use more icons and look less ugly
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this

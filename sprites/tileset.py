@@ -53,6 +53,7 @@ class TileSet:
 
     # Some subscreen related inits that don't have specific image hashes
     self.initialize_character_screen()
+    self.initialize_skill_screen()
     self.initialize_pickup_screen()
 
     # Fonts do not have to be initialized, they are dynamically loaded when needed
@@ -350,6 +351,15 @@ class TileSet:
     self.ui["stats_tooltip_line_header"] = full.subsurface((0,348,220,22))
     self.ui["stats_tooltip_line"] = full.subsurface((0,350,220,20))
     self.ui["stats_tooltip_line_bottom"] = full.subsurface((0,350,220,22))
+
+  def initialize_skill_screen(self):
+    full = pygame.image.load("assets/screens/skills_screen.png")
+    self.ui["skill_box_grey"] = full.subsurface((0,0,56,56))
+    self.ui["skill_box_blue"] = full.subsurface((56,0,56,56))
+    self.ui["skill_box_red"] = full.subsurface((112,0,56,56))
+    self.ui["skill_box_yellow"] = full.subsurface((168,0,56,56))
+    self.ui["skill_box_orange"] = full.subsurface((224,0,56,56))
+    self.ui["skill_box_purple"] = full.subsurface((280,0,56,56))
 
 
   def initialize_pickup_screen(self):
