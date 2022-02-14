@@ -17,14 +17,14 @@ STAT_LIST = {
   "Crushing": "A guaranteed amount of damage ignores physical armor by using crushing weapons (1 damage per point)",
   "Cleaving": "!NOT IMPLEMENTED! Deal a percentage of damage to each enemy creature adjacent to both you and the target when using cleaving weapons",
   "Polearms": "!NOT IMPLEMENTED!",
-  "Accuracy": "!NOT IMPLEMENTED! Increases accuracy when using bows and crossbows",
+  "Accuracy": "Increases range when using non-magical ranged weapons (1 tile per point)",
   "Unarmed": "Increases damage with unarmed strikes (1 damage per point)",
 
   # Magical
   "Fire": "!NOT IMPLEMENTED! Burning effects deal more damage",
   "Cold": "!NOT IMPLEMENTED! A percentage of cold magic damage is also applied to physical armor",
   "Air": "!NOT IMPLEMENTED! A percentage of air magic damage is dealt to creatures adjacent to each target of the spell",
-  "Poison": "!NOT IMPLEMENTED! A percentage of poison magic damage ignores magical armor",
+  "Poison": "!NOT IMPLEMENTED! A percentage of poison magic damage pierces magical armor",
   "Light": "!NOT IMPLEMENTED! Healing spells restore a percentage of magic armor",
   "Dark": "!NOT IMPLEMENTED! You heal for a percentage of dark magic damage dealt to health",
   "Summoning": "!NOT IMPLEMENTED! Magically summoned creatures have better stats"

@@ -51,7 +51,7 @@ class WeaponFactory:
     if name in self.cache:
       return self.cache[name]
     item = Weapon(name, self.tileset.get_item(name), self.tileset.get_item_sprite(name), "Ranged")
-    item.set_stats(attack_min=2, attack_max=3, damage_type="piercing", range=5)
+    item.set_stats(attack_min=2, attack_max=3, damage_type="piercing", range=4)
     item.set_description("Temp: A curved piece of wood and string, for shooting arrows.")
     item.set_projectile(self.tileset.get_projectile("default_arrow"))
     self.cache[name] = item

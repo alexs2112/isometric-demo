@@ -154,7 +154,7 @@ class Creature:
       if i.is_weapon():
         return i.attack_min
     
-    return self.unarmed_min + self.equipment.get_bonus("UNARMED_DAMAGE")
+    return self.unarmed_min + self.equipment.get_bonus("UNARMED_DAMAGE") + self.get_stat("Unarmed")
   
   def get_attack_max(self):
     i = self.get_main_hand()
@@ -162,7 +162,7 @@ class Creature:
       if i.is_weapon():
         return i.attack_max
     
-    return self.unarmed_max + self.equipment.get_bonus("UNARMED_DAMAGE")
+    return self.unarmed_max + self.equipment.get_bonus("UNARMED_DAMAGE") + self.get_stat("Unarmed")
   
   def get_attack_cost(self):
     i = self.get_main_hand()
@@ -188,7 +188,10 @@ class Creature:
     i = self.get_main_hand()
     if i:
       if i.is_weapon():
-        return i.range
+        v = i.range
+        if i.type == "Ranged":
+          v += self.get_stat("Accuracy")
+        return v
     
     return self.unarmed_range
 
@@ -555,7 +558,6 @@ class Creature:
         getting_attacked_flavour = " gets shot by "
     else:
       source = "Unarmed"
-      damage += self.get_stat("Unarmed")
 
     damage_value = damage - target.get_resistance(damage_type)
     self_string = self.name + attacking_flavour + target.name + " for " + str(damage_value) + " " + damage_type + " damage!"
