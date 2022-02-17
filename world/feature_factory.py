@@ -17,3 +17,6 @@ class FeatureFactory:
     open = self.tileset.get_feature("door_open_west")
     shadow = self.tileset.get_shadow("door_west")
     return Door(1, closed, open, shadow)
+
+  def staircase(self, next_level_func):
+    return Staircase(self.tileset.get_feature("staircase"), next_level_func)

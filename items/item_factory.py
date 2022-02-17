@@ -39,8 +39,7 @@ def get_item_image_ids():
   return image_ids
 
 class ItemFactory:
-  def __init__(self, world: World, tileset: TileSet, effect: EffectFactory, skill: SkillFactory):
-    self.world = world
+  def __init__(self, tileset: TileSet, effect: EffectFactory, skill: SkillFactory):
     self.tileset = tileset
 
     # Store all non-unique items in a hash, like the tileset

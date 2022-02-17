@@ -1,3 +1,6 @@
+from screens.staircase_screen import StaircaseConfirm
+
+
 class Feature:
   def __init__(self, image, shadow=None):
     self.image = image
@@ -54,3 +57,14 @@ class Door(Feature):
   
   def get_tile_blit_y_mod(self):
     return -26
+
+class Staircase(Feature):
+  def __init__(self, image, next_level_func):
+    super().__init__(image)
+    self.func = next_level_func
+
+  def get_image(self):
+    return self.image
+  
+  def interact(self, creature):
+    return StaircaseConfirm(creature.world, self.func)

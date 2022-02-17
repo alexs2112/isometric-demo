@@ -1,11 +1,12 @@
 Active Work:
  - Up to 3 floors with increasing difficulty. Use staircases to traverse from one "world" to the next
- - Traversal is one way, no going back
-   - Should be relatively simple to just regenerate the world
+ - * Traversal is one way, no going back
+   - * Should be relatively simple to just regenerate the world
  - Once you use a staircase, enter the level up screen
  - Each character gets 1 Attribute point and 2 Stat points per level, along with a full heal and basic stat increases
  - Each character also gets a choice of 3 perks per level that grant abilities and other bonuses.
    - Possibly the same perks for level 1->2, 2->3. So by the end each should have 2 of the 3 perks
+ - Dead players are resurrected here, but miss out on levelling up
 
 Unordered Roadmap:
  - Dungeon Overhaul:

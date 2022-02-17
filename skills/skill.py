@@ -125,4 +125,5 @@ class Skill:
     new.set_caster_effect(self.caster_effect)
     new.set_target_effect(self.target_effect)
     new.set_projectile(self.projectile)
+    new.set_description(self.description)
     return new
