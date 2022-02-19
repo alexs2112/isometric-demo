@@ -55,6 +55,7 @@ class TileSet:
     self.initialize_character_screen()
     self.initialize_skill_screen()
     self.initialize_pickup_screen()
+    self.initialize_staircase_screen()
 
     # Fonts do not have to be initialized, they are dynamically loaded when needed
     self.fonts = {}
@@ -373,6 +374,17 @@ class TileSet:
     self.ui["option_button_highlight"] = full.subsurface((128,468,128,18))
     self.ui["exit_button"] = full.subsurface((256,456,40,35))
     self.ui["exit_button_highlight"] = full.subsurface((296,456,40,35))
+  
+  def initialize_staircase_screen(self):
+    full = pygame.image.load("assets/screens/staircase_screen.png")
+    self.ui["confirmation_box"] = full.subsurface((0,0,360,128))
+    self.ui["confirm_button_highlight"] = full.subsurface((0,128,180,52))
+    self.ui["confirm_button_default"] = full.subsurface((180,128,180,52))
+    self.ui["stats_bar_default"] = full.subsurface((0,180,288,36))
+    self.ui["stats_bar_default_highlight"] = full.subsurface((0,216,288,36))
+    self.ui["stats_bar_toggle"] = full.subsurface((0,252,288,36))
+    self.ui["stats_bar_toggle_highlight"] = full.subsurface((0,288,288,36))
+    self.ui["character_sprite_box"] = full.subsurface((288,180,92,92))
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")
@@ -382,6 +394,7 @@ class TileSet:
     self.features["door_open_west"] = full.subsurface((40,52,40,52))
     self.shadows["door_east"] = full.subsurface((0,104,40,35))
     self.shadows["door_west"] = full.subsurface((40,104,40,35))
+    self.features["staircase"] = full.subsurface((80,0,64,40))
 
   def initialize_projectiles(self):
     full = pygame.image.load("assets/projectiles.png")

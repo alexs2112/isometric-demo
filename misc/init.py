@@ -1,5 +1,6 @@
 import random, sys
 from items.item_factory import ItemFactory
+from world.feature_factory import FeatureFactory
 import world.world_builder as world_builder
 from creatures.creature_factory import CreatureFactory
 
@@ -54,8 +55,7 @@ def create_players(world: world_builder.World, cf: CreatureFactory, messages):
     c.set_home_room(room)
     c.set_messages(messages)
 
-def create_creatures(args, world: world_builder.World, cf: CreatureFactory, messages):
-  create_players(world, cf, messages)
+def create_creatures(args, world: world_builder.World, cf: CreatureFactory):
   if "--no-enemies" in args:
     return
   for room in world.rooms:

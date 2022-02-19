@@ -102,9 +102,14 @@ class Button:
 
     self.text = None
     self.text_size = 0
+    self.text_colour = None
+
+    self.toggle_on_image = None
+    self.toggle_mouse_image = None
+    self.is_toggled = False
 
   def in_bounds(self, mouse_x, mouse_y):
-    return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
+    return self.active and mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
   
   def not_in_bounds(self, mouse_x, mouse_y):
     return mouse_x < self.x or mouse_y < self.y or mouse_x > self.x + self.width or mouse_y > self.y + self.height
@@ -113,6 +118,14 @@ class Button:
     if self.click_frames > 0 and self.click_image:
       self.click_frames -= 1
       return self.click_image
+    
+    if self.is_toggled:
+      if self.in_bounds(mouse_x, mouse_y):
+        if self.toggle_mouse_image:
+          return self.toggle_mouse_image
+      else:
+        return self.toggle_on_image
+        
     if self.in_bounds(mouse_x, mouse_y) and self.mouse_image:
       return self.mouse_image
     return self.default_image
@@ -122,14 +135,21 @@ class Button:
     self.tooltip_delay = delay
     self.tooltip_size = size
   
-  def set_text(self, text, size=24):
+  def set_text(self, text, size=24, colour=(255,255,255)):
     self.text = text
     self.text_size = size
+    self.text_colour = colour
+  
+  def set_toggle(self, toggle_image, toggle_highlight_image=None):
+    self.toggle_on_image = toggle_image
+    self.toggle_mouse_image = toggle_highlight_image
 
   def click(self, *args):
     if not self.active:
       return
 
+    if self.toggle_on_image:
+      self.is_toggled = not self.is_toggled
     if self.click_image:
       self.click_frames = 2
     if self.func:
@@ -146,7 +166,7 @@ class Button:
     screen.blit(self.get_image(mouse_x, mouse_y), (self.x, self.y))
 
     if self.text:
-      screen.write_centered(self.text, (self.x + self.width // 2, self.y + (self.height - self.text_size) // 2), screen.tileset.get_font(self.text_size))
+      screen.write_centered(self.text, (self.x + self.width // 2, self.y + (self.height - self.text_size * 1.2) // 2), screen.tileset.get_font(self.text_size), self.text_colour)
 
     if self.tooltip:
       bounds = self.in_bounds(mouse_x, mouse_y)

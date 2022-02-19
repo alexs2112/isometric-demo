@@ -1,5 +1,4 @@
 import pygame
-from sympy import ilcm
 from screens.screen import Screen, Button, TooltipBox, write, write_centered, split_text_to_list
 from sprites.tileset import TileSet
 from screens.subscreen import Subscreen
@@ -518,6 +517,7 @@ class CharacterScreen(Subscreen):
     y = STAT_TOOLTIP_START_Y
     y += 36
     stats = self.creature.stats.items()
+    self.stat_tooltips.clear()
     if stats:
       for stat, _ in stats:
         self.stat_tooltips.append(self.create_tooltip(tileset, (0, y, 420, 36), stat, STAT_LIST[stat]))

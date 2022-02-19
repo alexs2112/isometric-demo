@@ -47,13 +47,15 @@ class Game:
 
     self.feature_factory = FeatureFactory(self.screen.tileset)
     self.world = init.create_world(args, self.feature_factory)
+    self.place_stairs()
     self.effect_factory = EffectFactory(self.screen.tileset)
     self.skill_factory = SkillFactory(self.screen.tileset, self.effect_factory)
-    self.item_factory = ItemFactory(self.world, self.screen.tileset, self.effect_factory, self.skill_factory)
+    self.item_factory = ItemFactory(self.screen.tileset, self.effect_factory, self.skill_factory)
     self.creature_factory = CreatureFactory(self.world, self.screen.tileset, self.item_factory)
 
     self.messages = [] # Keep track of all the notifications each turn
-    init.create_creatures(args, self.world, self.creature_factory, self.messages)
+    init.create_players(self.world, self.creature_factory, self.messages)
+    init.create_creatures(args, self.world, self.creature_factory)
     init.create_items(self.world, self.item_factory)
     self.subscreen = StartScreen()
 
@@ -91,7 +93,7 @@ class Game:
       else:
         keys = pygame.key.get_pressed()
 
-        # If we are waiting for movement, projetiles, or for AI
+        # If we are waiting for movement, projectiles, or for AI
         if self.world.movement_in_progress():
           if frame_counter == 0:
             combat_before = self.world.in_combat()
@@ -129,7 +131,7 @@ class Game:
                 elif right:
                   index = self.active.action_bar.index_of_mouse(mouse_x)
                   element = self.active.action_bar.element_at_index(index)
-                  if element.is_skill():
+                  if element and element.is_skill():
                     self.subscreen = SkillScreen(self.active, element)
               elif self.clicking_button(self.buttons + [self.end_turn_button], mouse_x, mouse_y):
                 pass
@@ -426,6 +428,27 @@ class Game:
     )
     self.end_turn_button.set_text("End Turn", 26)
 
+  def place_stairs(self):
+    room = self.world.end_room
+    (x,y) = self.world.get_random_floor_in_room(room)
+    self.world.features[(x,y)] = self.feature_factory.staircase(self.traverse_staircase)
+
+  def traverse_staircase(self):
+    # Passed into staircase features that will call this, updating the world to the next level
+    new_world = init.create_world([], self.feature_factory)
+    self.creature_factory.world = new_world
+    room = new_world.start_room
+    for p in self.world.players:
+      new_world.add_creature(p)
+      p.world = new_world
+      (x,y) = new_world.get_random_floor_in_room(room)
+      p.move_to(x,y)
+    new_world.update_fov_all()
+    init.create_creatures([], new_world, self.creature_factory)
+    init.create_items(new_world, self.item_factory)
+    self.world = new_world
+    self.place_stairs()
+
 def start():
   args = sys.argv
   if "--help" in args or "-h" in args:
@@ -450,7 +473,7 @@ def print_help():
     --maze
     --no_paths
     --no_walls
-  Note: maze, no_paths, no_walls are not self.actively supported and kind of suck
+  Note: maze, no_paths, no_walls are not actively supported and kind of suck
 
   Press [h] in game to view the controls""")
   sys.exit(0)
