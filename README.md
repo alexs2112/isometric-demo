@@ -7,17 +7,17 @@ A simple prototype to learn the basics of an isometric viewpoint for a dungeon c
 ### Dependencies:
 The only external library in use is Pygame. https://www.pygame.org/wiki/GettingStarted
 
-`python3 -m pip install -U pygame --user`
+`pip install pygame`
 
 ### Screenshots (as of 2022-01-16)
 Combat!
-![combat](https://i.imgur.com/pD63dQ8.png)
+![combat](https://i.imgur.com/3zocXZJ.png)
 
 Map Screen to fast travel and rest
 ![map](https://i.imgur.com/F3QT76U.png)
 
 Basic Character Screen
-![inventory](https://i.imgur.com/xqLpyJw.png)
+![inventory](https://i.imgur.com/1u73Jpr.png)
 
 ### End Goal:
 The basic combat and exploration model is complete. Eventually you will be able to select up to 4 of several different characters to form a party, and select from a handful of different dungeon themes to explore. The goal of the game will to delve through up to 3 dungeon levels of increasing difficulty to retrieve an object of power in the furthest room from the start.

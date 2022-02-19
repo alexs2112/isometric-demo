@@ -1,4 +1,3 @@
-from typing_extensions import Annotated
 from creatures.pathfinder import Path
 
 def get_isometric_position(cart_x, cart_y):

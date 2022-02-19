@@ -378,8 +378,13 @@ class TileSet:
   def initialize_staircase_screen(self):
     full = pygame.image.load("assets/screens/staircase_screen.png")
     self.ui["confirmation_box"] = full.subsurface((0,0,360,128))
-    self.ui["confirm_button_default"] = full.subsurface((0,128,180,52))
-    self.ui["confirm_button_highlight"] = full.subsurface((180,128,180,52))
+    self.ui["confirm_button_highlight"] = full.subsurface((0,128,180,52))
+    self.ui["confirm_button_default"] = full.subsurface((180,128,180,52))
+    self.ui["stats_bar_default"] = full.subsurface((0,180,288,36))
+    self.ui["stats_bar_default_highlight"] = full.subsurface((0,216,288,36))
+    self.ui["stats_bar_toggle"] = full.subsurface((0,252,288,36))
+    self.ui["stats_bar_toggle_highlight"] = full.subsurface((0,288,288,36))
+    self.ui["character_sprite_box"] = full.subsurface((288,180,92,92))
 
   def initialize_features(self):
     full = pygame.image.load("assets/features.png")

@@ -109,7 +109,7 @@ class Button:
     self.is_toggled = False
 
   def in_bounds(self, mouse_x, mouse_y):
-    return mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
+    return self.active and mouse_x >= self.x and mouse_y >= self.y and mouse_x < self.x + self.width and mouse_y < self.y + self.height
   
   def not_in_bounds(self, mouse_x, mouse_y):
     return mouse_x < self.x or mouse_y < self.y or mouse_x > self.x + self.width or mouse_y > self.y + self.height
@@ -139,6 +139,10 @@ class Button:
     self.text = text
     self.text_size = size
     self.text_colour = colour
+  
+  def set_toggle(self, toggle_image, toggle_highlight_image=None):
+    self.toggle_on_image = toggle_image
+    self.toggle_mouse_image = toggle_highlight_image
 
   def click(self, *args):
     if not self.active:

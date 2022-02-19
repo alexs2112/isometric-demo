@@ -1,5 +1,4 @@
 import pygame
-from sympy import ilcm
 from screens.screen import Screen, Button, TooltipBox, write, write_centered, split_text_to_list
 from sprites.tileset import TileSet
 from screens.subscreen import Subscreen

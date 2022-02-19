@@ -443,10 +443,11 @@ class Game:
       p.world = new_world
       (x,y) = new_world.get_random_floor_in_room(room)
       p.move_to(x,y)
-    self.world.update_fov_all()
+    new_world.update_fov_all()
     init.create_creatures([], new_world, self.creature_factory)
     init.create_items(new_world, self.item_factory)
     self.world = new_world
+    self.place_stairs()
 
 def start():
   args = sys.argv
@@ -472,7 +473,7 @@ def print_help():
     --maze
     --no_paths
     --no_walls
-  Note: maze, no_paths, no_walls are not self.actively supported and kind of suck
+  Note: maze, no_paths, no_walls are not actively supported and kind of suck
 
   Press [h] in game to view the controls""")
   sys.exit(0)
