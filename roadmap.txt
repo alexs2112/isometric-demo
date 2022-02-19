@@ -1,15 +1,4 @@
 Active Work:
- - Up to 3 floors with increasing difficulty. Use staircases to traverse from one "world" to the next
- - * Traversal is one way, no going back
-   - * Should be relatively simple to just regenerate the world
- - Once you use a staircase, enter the level up screen
- - Each character gets 1 Attribute point and 2 Stat points per level, along with a full heal and basic stat increases
-   - Attribute Screen
-   - * Stat Screen
-   - * Full Heal
- - Each character also gets a choice of 3 perks per level that grant abilities and other bonuses.
-   - Possibly the same perks for level 1->2, 2->3. So by the end each should have 2 of the 3 perks
- - Dead players are resurrected here, but miss out on levelling up
 
 Unordered Roadmap:
  - Dungeon Overhaul:
@@ -36,6 +25,11 @@ Unordered Roadmap:
      do to walls having thickness
    - Door shadows, only show shadow on one side of the door if you can't see the other
    - We might want to add shadows to creatures again if it looks kind of funky without them
+ - Finalize levelling up:
+   - Each character gets 1 attribute point to spend, before spending stat points
+   - Each character also gets a choice of 3 perks per level that grant abilities and other bonuses.
+     - Possibly the same perks for level 1->2, 2->3. So by the end each should have 2 of the 3 perks
+   - Dead players are resurrected here, but miss out on levelling up
  - Chests:
    - A static inventory, needs to stay in the world even if empty
    - Maybe a closed icon for items, and an open icon if it is empty?
@@ -60,6 +54,7 @@ Unordered Roadmap:
     - Maybe deals a little more damage than the bow but costs mana to attack with
  - More exit buttons for subscreens to navigate with mouse
  - Make skill screen use more icons and look less ugly
+ - Make the level up stats screen more obvious what it wants from you when it disables to continue button
 
 Tech Debt:
  - Clean up dungeon_gen class to use a world object instead of passing around a million variables. Circular imports make this
@@ -75,4 +70,3 @@ Known Bugs:
  - Sometimes the game randomly freezes in combat, not sure if it is a loop or if it will break out of it
    - I think both of the above is related and has to do when an enemy gets stuck in a hallway?
    - Printing an AIs path every turn to see if we can deduce it when it comes up
- - Drinking the health potion and clicking that action again crashes because it is None

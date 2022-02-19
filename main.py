@@ -131,7 +131,7 @@ class Game:
                 elif right:
                   index = self.active.action_bar.index_of_mouse(mouse_x)
                   element = self.active.action_bar.element_at_index(index)
-                  if element.is_skill():
+                  if element and element.is_skill():
                     self.subscreen = SkillScreen(self.active, element)
               elif self.clicking_button(self.buttons + [self.end_turn_button], mouse_x, mouse_y):
                 pass
