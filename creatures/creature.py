@@ -261,6 +261,9 @@ class Creature:
     
     self.tick_time()
 
+    if self.ai:
+      self.ai.upkeep(self.world)
+
   def tick_time(self):
     for e in self.effects:
       e.update(self)
@@ -538,6 +541,10 @@ class Creature:
     damage_type = self.get_damage_type()
 
     w = self.get_main_hand()
+    if w:
+      if w.projectile:
+        attack_path = get_line(self.x, self.y, target.x, target.y)
+        self.world.add_projectile_path(w.projectile, attack_path[1:])
     attacking_flavour = " attacks "
     getting_attacked_flavour = " gets attacked by "
 

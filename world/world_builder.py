@@ -205,7 +205,7 @@ class World:
   
   def get_room_by_tile(self, x, y):
     for room in self.rooms:
-      if x >= room.p1[0] and x <= room.p2[0] and y >= room.p1[1] and y <= room.p2[1]:
+      if x >= room.p1[0] and x < room.p2[0] and y >= room.p1[1] and y < room.p2[1]:
         return room
     return None
 

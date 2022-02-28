@@ -145,8 +145,7 @@ class Game:
                 c = self.world.get_creature_at_location(tile_x, tile_y)
                 if c:
                   if self.active.can_attack(c.x, c.y):
-                    attack_path = get_line(self.active.x, self.active.y, tile_x, tile_y)
-                    self.attack_target(attack_path, c)
+                    self.attack_target(c)
                   else:
                     path = self.active.get_path_to(c.x, c.y)
                     self.active.move_along_path(path[:-self.active.get_attack_range()])
@@ -165,8 +164,7 @@ class Game:
                     self.active = c
                   else:
                     if self.active.can_attack(c.x, c.y):
-                      attack_path = get_line(self.active.x, self.active.y, tile_x, tile_y)
-                      self.attack_target(attack_path, c)
+                      self.attack_target(c)
                     else:
                       path = self.active.get_path_to(c.x, c.y)
                       self.active.move_along_path(path[:-self.active.get_attack_range()])
@@ -311,11 +309,7 @@ class Game:
     self.active.loaded_skill.cast(self.active, tiles)
     self.active.loaded_skill = None
 
-  def attack_target(self, path, target: Creature):
-    w = self.active.get_main_hand()
-    if w:
-      if w.projectile:
-        self.world.add_projectile_path(w.projectile, path[1:])
+  def attack_target(self, target: Creature):
     self.active.attack_creature(target)
 
   def loot_inventory_at(self, tile_x, tile_y):

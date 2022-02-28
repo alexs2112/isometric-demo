@@ -67,6 +67,4 @@ Tech Debt:
 
 Known Bugs:
  - Enemies that have lost the player no longer end their turn and deactivate, game just loops...
- - Sometimes the game randomly freezes in combat, not sure if it is a loop or if it will break out of it
-   - I think both of the above is related and has to do when an enemy gets stuck in a hallway?
-   - Printing an AIs path every turn to see if we can deduce it when it comes up
+ - Casting skills (embers) and firing the bow sometimes cause the game to freeze?? Really not sure what is going on, I didnt touch that code
